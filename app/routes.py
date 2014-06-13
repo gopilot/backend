@@ -3,6 +3,8 @@ import os
 from pymongo import MongoClient
 from app import app
 
+from controllers import students, events
+
 app = Flask(__name__)
 
 @app.route('/')
