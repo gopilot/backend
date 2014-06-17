@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, make_response, session
+from flask import Flask, Blueprint, request, redirect, session
 from app import app, db
 
 import pymongo
 from bson import objectid
 import bcrypt
+
+auth = Blueprint('auth', __name__)
 
 # Can be used to ensure that user is logged in. Returns the user if the user is logged in, otherwise returns False
 def ensure_login():
@@ -20,7 +22,7 @@ def ensure_login():
 		print 'no user', cookie
 		return False
 
-# POST /login
+@auth.route('/login', methods=["POST"])
 def login():
 	form_email = request.form.get('email')
 	form_password = request.form.get('password').encode('utf-8')
@@ -38,7 +40,7 @@ def login():
 	else:
 		return 'Incorrect password', 401
 
-# POST /signup
+@auth.route('/signup', methods=["POST"])
 def signup():
 	form_name = request.form.get('name')
 	form_email = request.form.get('email')
@@ -58,7 +60,7 @@ def signup():
 		session['user_id'] = str(insert_id)
 		return redirect('/')
 
-# GET /logout
+@auth.route('/logout', methods=["GET"])
 def logout():
 	if 'user_id' in session:
 		del session['user_id']
