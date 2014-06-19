@@ -60,8 +60,8 @@ def signup():
 
 @auth.route('/debug_token', methods=["GET"])
 def debug_token():
-	token = request.query.get('token')
-	if redis.get('session:'+token):
+	token = request.args.get('token')
+	if sessions.get('session:'+token):
 		return "Valid token"
 	else:
 		return "Invalid token"
