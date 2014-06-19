@@ -63,7 +63,7 @@ def debug_token():
 	token = request.query.get('token')
 	if redis.get('session:'+token):
 		return "Valid token"
-	else
+	else:
 		return "Invalid token"
 
 
