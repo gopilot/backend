@@ -3,7 +3,7 @@ import pymongo
 
 app = Flask(__name__)
 
-client = pymongo.MongoClient("localhost", 27017)
+mongo_client = pymongo.MongoClient("localhost", 27017)
 db = client.backend
 
 # Config variables
