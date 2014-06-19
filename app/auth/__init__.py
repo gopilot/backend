@@ -46,6 +46,9 @@ def signup():
 	form_password = request.form.get('password')
 	form_type = request.form.get('type') # student or mentor
 
+	if db.users.find_one({'email': form_email }):
+		return 'Email already exists', 400
+
 	insert_id = db.users.insert({
 		'name': form_name,
 		'email': form_email,
