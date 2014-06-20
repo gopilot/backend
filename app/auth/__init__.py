@@ -11,13 +11,10 @@ auth = Blueprint('auth', __name__)
 # Can be used to ensure that user is logged in. Returns the user_id if the user is logged in, otherwise returns False
 def check_token(token):
 	# TODO: Make this work
-	print 'token', token
 	if not token:
 		return False
 
-	print 'looking for: \t', 'session:'+token
 	user_id = sessions.get('session:'+token)
-	print 'user_id', user_id
 	if not user_id:
 		return False
 	

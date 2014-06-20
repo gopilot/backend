@@ -6,15 +6,16 @@ from bson.json_util import dumps as to_json
 from bson.objectid import ObjectId
 events = Blueprint('events', __name__)
 
-@events.route('/', methods=['POST'])
+# POST /events
+@events.route('', methods=['POST'])
 def create_event():
 	user_id = auth.check_token( request.args.get('session') )
-	print 'user2', user_id
+
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
 	user = db.users.find_one({'_id': ObjectId(user_id) })
-	print 'user', user
+
 	if not user or not user['type'] == 'organizer':
 		return "Unauthorized request: User doesn't have permission", 401
 
@@ -40,6 +41,7 @@ def create_event():
 
 	return str(event_id)
 
+# GET /events/<event_id>
 @events.route('/<event_id>', methods=['GET'])
 def find_event(event_id):
 	## Do we need auth here?
@@ -49,6 +51,7 @@ def find_event(event_id):
 
 	return to_json(event)
 
+# PUT /events/<event_id>
 @events.route('/<event_id>', methods=['PUT'])
 def update_event(event_id):
 	user_id = auth.check_token( request.args.get('session') )
@@ -71,6 +74,7 @@ def update_event(event_id):
 
 	return to_json(event)
 
+# DELETE /events/<event_id>
 @events.route('/<event_id>', methods=["DELETE"])
 def remove_event(event_id):
 	user_id = auth.check_token( request.args.get('session') )
@@ -89,6 +93,6 @@ def remove_event(event_id):
 	event['deleted_on'] = datetime.today()
 	db.deleted_events.insert(event)
 	
-	return 'Event Deleted'
+	return 'Event deleted'
 
 
