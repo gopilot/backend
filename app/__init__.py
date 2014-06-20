@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import os
 import pymongo
 import redis
@@ -26,3 +26,7 @@ app.register_blueprint(users, url_prefix="/users")
 from events import events
 app.register_blueprint(events, url_prefix="/events")
 
+
+@app.route('/')
+def index():
+  return render_template("index.html")
