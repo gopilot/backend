@@ -1,18 +1,16 @@
-<html>
-<head>
- <title>Demo</title>
-</head>
-<body>
- <h1>Hello</h1>
- <form action="/write" method="POST">
-  <input type="text" name="userinput" id="userinput">
-  <input type="submit" value="Submit">
- </form>
- <a href="./deleteall">Delete all</a>
-
-  {% for userinput in userinputs %}
- <p>'{{userinput.message}}' has database id {{userinput._id}}</p>
- {% endfor %}
-</body>
-
+<!doctype html>
+<html ng-app="app">
+  <head>
+    <link rel="stylesheet" href="/static/master.css">
+    <title>Pilot</title>
+  </head>
+  <body ng-controller="AppController">
+    <div ui-view>
+    </div>
+    <script src="/static/js/vendor/jquery-2.1.0.min.js"></script>
+    <script src="/static/js/vendor/lodash.js"></script>
+    <script src="/static/js/vendor/angular.min.js"></script>
+    <script src="/static/js/vendor/angular-ui-router.min.js"></script>
+    <script src="/static/js/vendor/angular-cookies.min.js"></script>
+  </body>
 </html>
