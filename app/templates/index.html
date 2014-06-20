@@ -5,12 +5,28 @@
     <title>Pilot</title>
   </head>
   <body ng-controller="AppController">
+    <div class="header" ng-controller="HeaderController">
+      <h1>Pilot</h1>
+      <nav>
+        <ul>
+          <li>
+            <a href="#">Your events</a>
+          </li>
+          <li>
+            <a href="#">Gabe</a>
+          </li>
+        </ul>
+      </nav>
+      <div ui-view="masthead">
+
+      </div>
+    </div>
     <div ui-view>
     </div>
-    <script src="/static/js/vendor/jquery-2.1.0.min.js"></script>
-    <script src="/static/js/vendor/lodash.js"></script>
-    <script src="/static/js/vendor/angular.min.js"></script>
-    <script src="/static/js/vendor/angular-ui-router.min.js"></script>
-    <script src="/static/js/vendor/angular-cookies.min.js"></script>
+    <script src="/static/vendor/jquery-2.1.0.min.js"></script>
+    <script src="/static/vendor/lodash.js"></script>
+    <script src="/static/vendor/angular.min.js"></script>
+    <script src="/static/vendor/angular-ui-router.min.js"></script>
+    <script src="/static/vendor/angular-cookies.min.js"></script>
   </body>
 </html>
