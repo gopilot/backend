@@ -9,4 +9,3 @@ pymongo==2.7.1
 wsgiref==0.1.2
 py-bcrypt
 redis==2.10.1
-https://github.com/jarus/flask-testing
