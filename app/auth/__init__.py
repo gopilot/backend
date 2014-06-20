@@ -25,8 +25,8 @@ def create_token(user_id):
 
 @auth.route('/login', methods=["POST"])
 def login():
-	form_email = request.form.get('email')
-	form_password = request.form.get('password').encode('utf-8')
+	form_email = request.get_json().get('email')
+	form_password = request.get_json().get('password').encode('utf-8')
 
 	user = db.users.find_one({ 'email': form_email })
 	if not user:
@@ -41,20 +41,21 @@ def login():
 
 @auth.route('/signup', methods=["POST"])
 def signup():
-	form_name = request.form.get('name')
-	form_email = request.form.get('email')
-	form_password = request.form.get('password')
-	form_type = request.form.get('type') # student or mentor
+	print request.get_json()
+	# form_name = request.json['name']
+	# form_email = request.json['email']
+	# form_password = request.json['password']
+	# form_type = request.json['type'] # student or mentor
 
-	if db.users.find_one({'email': form_email }):
-		return 'Email already exists', 400
+	# if db.users.find_one({'email': form_email }):
+	# 	return 'Email already exists', 400
 
-	insert_id = db.users.insert({
-		'name': form_name,
-		'email': form_email,
-		'password': bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() ),
-		'type': form_type
-	});
+	# insert_id = db.users.insert({
+	# 	'name': form_name,
+	# 	'email': form_email,
+	# 	'password': bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() ),
+	# 	'type': form_type
+	# });
 
 	if not insert_id:
 		return 'Error creating account', 500
