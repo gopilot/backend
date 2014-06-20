@@ -1,6 +1,7 @@
 from flask import Flask, Blueprint, request
 from app import app, db, auth
 from dateutil import parser as dateParser
+from datetime import datetime
 from bson.json_util import dumps as to_json
 from bson.objectid import ObjectId
 events = Blueprint('events', __name__)
@@ -37,7 +38,7 @@ def create_event():
 
 	db.users.update(user, { '$push': {'events': event_id} })
 
-	return event_id
+	return str(event_id)
 
 @events.route('/<event_id>', methods=['GET'])
 def find_event(event_id):
@@ -84,9 +85,10 @@ def remove_event(event_id):
 	if not event:
 		return "Event not found", 404
 
-	db.deleted_events.insert(event)
 	db.events.remove(event)
-
+	event['deleted_on'] = datetime.today()
+	db.deleted_events.insert(event)
+	
 	return 'Event Deleted'
 
 
