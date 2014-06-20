@@ -65,7 +65,7 @@ def signup():
 
 @auth.route('/debug_token', methods=["GET"])
 def debug_token():
-	token = request.args.get('token')
+	token = request.args.get('session')
 	if sessions.get('session:'+token):
 		return "Valid token"
 	else:

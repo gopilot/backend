@@ -33,12 +33,12 @@ class BackendAuthTests(unittest.TestCase):
 
 	## Test the debug_token endpoint	
 	def test_debug_token(self):
-		response = self.app.get('/debug_token?token='+self.test_token)
+		response = self.app.get('/debug_token?session='+self.test_token)
 		assert response.data == 'Valid token'
 
 	## Test the debug_token endpoint with a bad token
 	def test_debug_token_fail(self):
-		response = self.app.get('/debug_token?token=X'+self.test_token)
+		response = self.app.get('/debug_token?session=X'+self.test_token)
 		assert response.data == 'Invalid token'
 
 	## Test the signup
@@ -52,7 +52,7 @@ class BackendAuthTests(unittest.TestCase):
 		response = self.app.post('/signup', headers={'Content-Type': 'application/json'}, data=data)
 		assert len(response.data) > 0
 
-		token_debug = self.app.get('/debug_token?token='+response.data)
+		token_debug = self.app.get('/debug_token?session='+response.data)
 		assert token_debug.data == 'Valid token'
 
 	## Test the signup, reusing the email from above.
@@ -76,7 +76,7 @@ class BackendAuthTests(unittest.TestCase):
 		response = self.app.post('/login', headers={'Content-Type': 'application/json'}, data=data)
 		assert len(response.data) > 0
 
-		token_debug = self.app.get('/debug_token?token='+response.data)
+		token_debug = self.app.get('/debug_token?session='+response.data)
 		assert token_debug.data == 'Valid token'
 
 	## Test login, with a bad email
