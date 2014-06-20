@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, request, redirect, session
 from app import app, db, sessions
 
 import pymongo
-from bson import objectid
+from bson.objectid import ObjectId
 from uuid import uuid4 as random_uuid
 import bcrypt
 
@@ -11,12 +11,17 @@ auth = Blueprint('auth', __name__)
 # Can be used to ensure that user is logged in. Returns the user_id if the user is logged in, otherwise returns False
 def check_token(token):
 	# TODO: Make this work
-	user_id = session.get('session:'+token)
-	if user_id:
-		return user_id
-	else:
-		print 'no user', user_id
+	print 'token', token
+	if not token:
 		return False
+
+	print 'looking for: \t', 'session:'+token
+	user_id = sessions.get('session:'+token)
+	print 'user_id', user_id
+	if not user_id:
+		return False
+	
+	return user_id
 
 def create_token(user_id):
 	token = random_uuid().hex
@@ -54,7 +59,7 @@ def signup():
 		'email': form_email,
 		'password': bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() ),
 		'type': form_type
-	});
+	})
 
 	if not insert_id:
 		return 'Error creating account', 500
