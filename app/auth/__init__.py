@@ -41,26 +41,28 @@ def login():
 
 @auth.route('/signup', methods=["POST"])
 def signup():
-	print request.get_json()
-	# form_name = request.json['name']
-	# form_email = request.json['email']
-	# form_password = request.json['password']
-	# form_type = request.json['type'] # student or mentor
+	form_name = request.json['name']
+	form_email = request.json['email']
+	form_password = request.json['password']
+	form_type = request.json['type'] # student or mentor
 
-	# if db.users.find_one({'email': form_email }):
-	# 	return 'Email already exists', 400
+	if db.users.find_one({'email': form_email }):
+		print 'form_email', db.users.find_one({'email': form_email })
+		return 'Email already exists', 400
 
-	# insert_id = db.users.insert({
-	# 	'name': form_name,
-	# 	'email': form_email,
-	# 	'password': bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() ),
-	# 	'type': form_type
-	# });
+	insert_id = db.users.insert({
+		'name': form_name,
+		'email': form_email,
+		'password': bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() ),
+		'type': form_type
+	});
 
 	if not insert_id:
 		return 'Error creating account', 500
 	else:
 		return create_token(insert_id)
+
+	return 'ok'
 
 @auth.route('/debug_token', methods=["GET"])
 def debug_token():
