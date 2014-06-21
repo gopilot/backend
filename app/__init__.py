@@ -12,7 +12,7 @@ app.config['REDIS_URL'] = os.getenv('REDIS_URL',	'redis://localhost:6379')
 app.config['REDIS_DB']	= os.getenv('REDIS_DB',		'0')
 app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
-#print app.config
+print app.config
 
 mongo_url = urlparse( app.config['MONGO_URL'] )
 
@@ -31,6 +31,8 @@ def update_dbs():
 	global sessions
 	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
 
+print 'set up dbs'
+
 from auth import auth as AuthBlueprint
 app.register_blueprint(AuthBlueprint)
 
@@ -40,6 +42,9 @@ app.register_blueprint(UserBlueprint, url_prefix="/users")
 from events import events as EventBlueprint
 app.register_blueprint(EventBlueprint, url_prefix="/events")
 
+print "registered blueprints"
+
 @app.route('/')
 def index():
+	print 'in index'
 	return render_template("index.html")
