@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config['MONGO_URL'] = os.getenv('MONGO_URL',	'mongodb://localhost:27017')
 app.config['MONGO_DB']	= os.getenv('MONGO_DB',		'backend')
 app.config['REDIS_URL'] = os.getenv('REDIS_URL',	'redis://localhost:6379')
-app.config['REDIS_DB']	= os.getenv('REDIS_DB',		'0')
+app.config['REDIS_DB']	= int(os.getenv('REDIS_DB',		'0'))
 app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
 print app.config
