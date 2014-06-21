@@ -146,7 +146,8 @@ class EventTests(unittest.TestCase):
 			'start_date': str(datetime.datetime.today()),
 			'end_date': str(datetime.datetime.today() + datetime.timedelta(days=1)),
 			'location': 'Tech Inc. HQ',
-			'address': '1111 Random Way, Townville, CA'
+			'address': '1111 Random Way, Townville, CA',
+			'image': 'http://placekitten.com/400/400'
 		})
 		response = self.app.post('/events?session='+self.organizer_token, headers={'Content-Type': 'application/json'}, data=data)
 		assert len(response.data) > 20

@@ -26,13 +26,15 @@ def create_event():
 	event_end_date = dateParser.parse( body.get('end_date') )
 	event_location = body.get('location')
 	event_address = body.get('address')
+	event_image = body.get('image')
 
 	event_id = app.db.events.insert({
 		'name': event_name,
 		'start_date': event_start_date,
 		'end_date': event_end_date,
 		'location': event_location,
-		'address': event_address
+		'address': event_address,
+		'image': event_image
 	})
 
 	if not event_id:
