@@ -4,33 +4,38 @@ import pymongo
 import redis
 from urlparse import urlparse
 
-def init_app(config='config.ProductionConfig'):
-	global app
-	app = Flask(__name__)
-	app.config.from_object( config )
+global app
+app = Flask(__name__)
 
-	mongo_url = urlparse( app.config['MONGO_URL'] )
+app.config['MONGO_URL'] = os.getenv('MONGO_URL',	'mongodb://localhost:27017')
+app.config['MONGO_DB']	= os.getenv('MONGO_DB',		'backend')
+app.config['REDIS_URL'] = os.getenv('REDIS_URL',	'redis://localhost:6379')
+app.config['REDIS_DB']	= os.getenv('REDIS_DB',		'0')
+app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
+app.config['TESTING']			= bool(os.getenv('TESTING', False))
 
-	global mongo_client
-	mongo_client = pymongo.MongoClient( mongo_url.geturl() )
+mongo_url = urlparse( app.config['MONGO_URL'] )
 
-	global db
-	db = mongo_client[ app.config['MONGO_DB']]
+global mongo_client
+mongo_client = pymongo.MongoClient( mongo_url.geturl() )
 
-	redis_url = urlparse( app.config['REDIS_URL'] )
+global db
+db = mongo_client[ app.config['MONGO_DB']]
 
-	global sessions
-	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
+redis_url = urlparse( app.config['REDIS_URL'] )
 
-	from auth import auth
-	app.register_blueprint(auth)
+global sessions
+sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
 
-	from users import users
-	app.register_blueprint(users, url_prefix="/users")
+from auth import auth
+app.register_blueprint(auth)
 
-	from events import events
-	app.register_blueprint(events, url_prefix="/events")
+from users import users
+app.register_blueprint(users, url_prefix="/users")
 
-	@app.route('/')
-	def index():
-	  return render_template("index.html")
+from events import events
+app.register_blueprint(events, url_prefix="/events")
+
+@app.route('/')
+def index():
+	return render_template("index.html")
