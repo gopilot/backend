@@ -19,7 +19,7 @@ mongo_url = urlparse( app.config['MONGO_URL'] )
 print 'mongo url', mongo_url.geturl()
 mongo_client = pymongo.MongoClient( mongo_url.geturl() )
 print 'mongo client', mongo_client
-db = mongo_client[ app.config['MONGO_DB']]
+db = mongo_client[ app.config['MONGO_DB'] ]
 print 'mongo db', db
 redis_url = urlparse( app.config['REDIS_URL'] )
 print 'redis url', redis_url
