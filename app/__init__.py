@@ -27,7 +27,7 @@ def update_dbs():
 	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
 
 from auth import auth as AuthBlueprint
-app.register_blueprint(AuthBlueprint)
+app.register_blueprint(AuthBlueprint, url_prefix="/auth")
 
 from users import users as UserBlueprint
 app.register_blueprint(UserBlueprint, url_prefix="/users")

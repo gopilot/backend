@@ -2,6 +2,7 @@ from flask import Flask, Blueprint, request, redirect, session
 import app
 import pymongo
 from bson.objectid import ObjectId
+from bson.json_util import dumps as to_json
 from uuid import uuid4 as random_uuid
 import bcrypt
 
@@ -36,7 +37,11 @@ def login():
 	hashed = user['password'].encode('utf-8')
 
 	if bcrypt.hashpw(form_password, hashed)==hashed:
-		return create_token(user['_id'])
+		del user['password']
+		return to_json({
+			'session': create_token(user['_id']),
+			'user': user 
+		})
 	else:
 		return 'Incorrect password', 401
 
@@ -59,18 +64,32 @@ def signup():
 
 	if not insert_id:
 		return 'Error creating account', 500
-	else:
-		return create_token(insert_id)
+	
+	return create_token(insert_id)
 
-	return 'ok'
 
-@auth.route('/debug_token', methods=["GET"])
-def debug_token():
+@auth.route('/check_session', methods=["GET"])
+def check_session():
 	token = request.args.get('session')
 	if app.sessions.get('session:'+token):
-		return "Valid token"
+		return "true"
 	else:
-		return "Invalid token"
+		return "false"
+
+@auth.route('/retrieve_user', methods=["GET"])
+def retrieve_session():
+	token = request.args.get('session')
+
+	user_id = app.sessions.get('session:'+token)
+	if not user_id:
+		return "Session invalid", 401
+
+	user = app.db.users.find_one({'_id': ObjectId(user_id) })
+	if not user:
+		return "Session invalid", 401
+
+	del user['password']
+	return to_json(user)
 
 
 	

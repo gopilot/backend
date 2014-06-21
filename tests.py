@@ -27,7 +27,7 @@ class AuthTests(unittest.TestCase):
 			'password': 'test',
 			'type': 'student'
 		})
-		self.test_token = self.app.post('/signup', headers={'Content-Type': 'application/json'}, data=data).data
+		self.test_token = self.app.post('/auth/signup', headers={'Content-Type': 'application/json'}, data=data).data
 
 	## Clears database and redis connection after each test
 	def tearDown(self):
@@ -35,15 +35,23 @@ class AuthTests(unittest.TestCase):
 		backend.sessions.flushdb()
 		print 'Completed test:', str(time.clock() - self.start_time)+'s'
 
-	## Test the debug_token endpoint	
-	def test_debug_token(self):
-		response = self.app.get('/debug_token?session='+self.test_token)
-		assert response.data == 'Valid token'
+	## Test the check_session endpoint	
+	def test_check_session(self):
+		response = self.app.get('/auth/check_session?session='+self.test_token)
+		assert response.data == 'true'
 
-	## Test the debug_token endpoint with a bad token
-	def test_debug_token_fail(self):
-		response = self.app.get('/debug_token?session=X'+self.test_token)
-		assert response.data == 'Invalid token'
+	## Test the check_session endpoint with a bad token
+	def test_check_session_fail(self):
+		response = self.app.get('/auth/check_session?session=X'+self.test_token)
+		assert response.data == 'false'
+
+	def test_retrieve_user(self):
+		response = self.app.get('/auth/retrieve_user?session='+self.test_token)
+		assert json.loads(response.data)['name'] == 'Main user'
+
+	def test_retrieve_user_fail(self):
+		response = self.app.get('/auth/retrieve_user?session=X'+self.test_token)
+		assert response.data == 'Session invalid'
 
 	## Test the signup
 	def test_signup(self):
@@ -53,11 +61,11 @@ class AuthTests(unittest.TestCase):
 			'password': 'test',
 			'type': 'student'
 		})
-		response = self.app.post('/signup', headers={'Content-Type': 'application/json'}, data=data)
+		response = self.app.post('/auth/signup', headers={'Content-Type': 'application/json'}, data=data)
 		assert len(response.data) > 0
 
-		token_debug = self.app.get('/debug_token?session='+response.data)
-		assert token_debug.data == 'Valid token'
+		token_debug = self.app.get('/auth/check_session?session='+response.data)
+		assert token_debug.data == 'true'
 
 	## Test the signup, reusing the email from above.
 	def test_signup_repeat(self):
@@ -67,7 +75,7 @@ class AuthTests(unittest.TestCase):
 			'password': 'test',
 			'type': 'student'
 		})
-		response = self.app.post('/signup', headers={'Content-Type': 'application/json'}, data=data2)
+		response = self.app.post('/auth/signup', headers={'Content-Type': 'application/json'}, data=data2)
 
 		assert response.data == 'Email already exists'
 
@@ -77,11 +85,13 @@ class AuthTests(unittest.TestCase):
 			'email': 'test@gopilot.org',
 			'password': 'test'
 		})
-		response = self.app.post('/login', headers={'Content-Type': 'application/json'}, data=data)
-		assert len(response.data) > 0
+		response = self.app.post('/auth/login', headers={'Content-Type': 'application/json'}, data=data).data
+		response = json.loads(response)
+		assert len(response['session']) > 0
+		assert response['user']['name'] == 'Main user'
 
-		token_debug = self.app.get('/debug_token?session='+response.data)
-		assert token_debug.data == 'Valid token'
+		token_debug = self.app.get('/auth/check_session?session='+response['session'])
+		assert token_debug.data == 'true'
 
 	## Test login, with a bad email
 	def test_login_fail_email(self):
@@ -89,7 +99,7 @@ class AuthTests(unittest.TestCase):
 			'email': 'Xtest@gopilot.org',
 			'password': 'test'
 		})
-		response = self.app.post('/login', headers={'Content-Type': 'application/json'}, data=data)
+		response = self.app.post('/auth/login', headers={'Content-Type': 'application/json'}, data=data)
 		assert response.data == 'Email not found'
 
 	## Test login, with a bad password
@@ -98,7 +108,7 @@ class AuthTests(unittest.TestCase):
 			'email': 'test@gopilot.org',
 			'password': 'Xtest'
 		})
-		response = self.app.post('/login', headers={'Content-Type': 'application/json'}, data=data)
+		response = self.app.post('/auth/login', headers={'Content-Type': 'application/json'}, data=data)
 		assert response.data == 'Incorrect password'
 
 class EventTests(unittest.TestCase):
@@ -113,7 +123,7 @@ class EventTests(unittest.TestCase):
 			'password': 'test',
 			'type': 'organizer'
 		})
-		self.organizer_token = self.app.post('/signup', headers={'Content-Type': 'application/json'}, data=data).data
+		self.organizer_token = self.app.post('/auth/signup', headers={'Content-Type': 'application/json'}, data=data).data
 
 		data = json.dumps({
 			'name': 'Test Event',
