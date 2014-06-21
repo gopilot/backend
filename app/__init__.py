@@ -13,17 +13,17 @@ app.config['REDIS_DB']	= int(os.getenv('REDIS_DB',		'0'))
 app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
 print app.config
-
+print 'start mongo'
 mongo_url = urlparse( app.config['MONGO_URL'] )
 
 mongo_client = pymongo.MongoClient( mongo_url.geturl() )
-
+print 'mongo client'
 db = mongo_client[ app.config['MONGO_DB']]
-
+print 'mongo db'
 redis_url = urlparse( app.config['REDIS_URL'] )
-
+print 'redis url'
 sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
-
+print 'sessions'
 ## Used by tests to change databases after updating config values
 def update_dbs():
 	global db
