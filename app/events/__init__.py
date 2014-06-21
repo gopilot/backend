@@ -3,9 +3,10 @@ import app
 
 from dateutil import parser as dateParser
 from datetime import datetime
-from bson.json_util import dumps as to_json
 from bson.objectid import ObjectId
 events = Blueprint('events', __name__)
+
+
 
 # POST /events
 @events.route('', methods=['POST'])
@@ -52,7 +53,7 @@ def find_event(event_id):
 	if not event:
 		return "Event not found", 404
 
-	return to_json(event)
+	return app.to_json(event)
 
 # PUT /events/<event_id>
 @events.route('/<event_id>', methods=['PUT'])
@@ -75,7 +76,7 @@ def update_event(event_id):
 
 	app.db.events.save(event)
 
-	return to_json(event)
+	return app.to_json(event)
 
 # DELETE /events/<event_id>
 @events.route('/<event_id>', methods=["DELETE"])

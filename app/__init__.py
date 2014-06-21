@@ -1,8 +1,9 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, json
 import os
 import pymongo
 import redis
 from urlparse import urlparse
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
@@ -38,3 +39,19 @@ app.register_blueprint(EventBlueprint, url_prefix="/events")
 @app.route('/')
 def index():
 	return render_template("index.html")
+
+
+## Global helper function: to_json
+def clean(obj):
+	for key, value in obj.items():
+		if type(value) is dict: # Recurse and do it for inside objects too
+			obj[key] = clean(value)
+		if key == 'password': # Strip out all hashes
+			del obj[key]
+		if type(value) is ObjectId: # Convert all ObjectIds to strings
+			obj[key] = str(value)
+	return obj;
+
+
+def to_json(obj):
+	return json.dumps( clean( obj ) )
