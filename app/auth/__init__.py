@@ -1,6 +1,5 @@
 from flask import Flask, Blueprint, request, redirect, session
-from app import app, db, sessions
-
+import app
 import pymongo
 from bson.objectid import ObjectId
 from uuid import uuid4 as random_uuid
@@ -14,7 +13,7 @@ def check_token(token):
 	if not token:
 		return False
 
-	user_id = sessions.get('session:'+token)
+	user_id = app.sessions.get('session:'+token)
 	if not user_id:
 		return False
 	
@@ -22,7 +21,7 @@ def check_token(token):
 
 def create_token(user_id):
 	token = random_uuid().hex
-	sessions.set('session:'+token, user_id)
+	app.sessions.set('session:'+token, user_id)
 	return token;
 
 @auth.route('/login', methods=["POST"])
@@ -30,7 +29,7 @@ def login():
 	form_email = request.get_json().get('email')
 	form_password = request.get_json().get('password').encode('utf-8')
 
-	user = db.users.find_one({ 'email': form_email })
+	user = app.db.users.find_one({ 'email': form_email })
 	if not user:
 		return 'Email not found', 404
 
@@ -48,10 +47,10 @@ def signup():
 	form_password = request.json['password']
 	form_type = request.json['type'] # student or mentor
 
-	if db.users.find_one({'email': form_email }):
+	if app.db.users.find_one({'email': form_email }):
 		return 'Email already exists', 400
 
-	insert_id = db.users.insert({
+	insert_id = app.db.users.insert({
 		'name': form_name,
 		'email': form_email,
 		'password': bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() ),
@@ -68,7 +67,7 @@ def signup():
 @auth.route('/debug_token', methods=["GET"])
 def debug_token():
 	token = request.args.get('session')
-	if sessions.get('session:'+token):
+	if app.sessions.get('session:'+token):
 		return "Valid token"
 	else:
 		return "Invalid token"

@@ -1,5 +1,6 @@
 from flask import Flask, Blueprint, request
-from app import app, db, auth
+import app
+
 from dateutil import parser as dateParser
 from datetime import datetime
 from bson.json_util import dumps as to_json
@@ -9,12 +10,12 @@ events = Blueprint('events', __name__)
 # POST /events
 @events.route('', methods=['POST'])
 def create_event():
-	user_id = auth.check_token( request.args.get('session') )
+	user_id = app.auth.check_token( request.args.get('session') )
 
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
-	user = db.users.find_one({'_id': ObjectId(user_id) })
+	user = app.db.users.find_one({'_id': ObjectId(user_id) })
 
 	if not user or not user['type'] == 'organizer':
 		return "Unauthorized request: User doesn't have permission", 401
@@ -26,7 +27,7 @@ def create_event():
 	event_location = body.get('location')
 	event_address = body.get('address')
 
-	event_id = db.events.insert({
+	event_id = app.db.events.insert({
 		'name': event_name,
 		'start_date': event_start_date,
 		'end_date': event_end_date,
@@ -37,7 +38,7 @@ def create_event():
 	if not event_id:
 		return "Error creating event", 500
 
-	db.users.update(user, { '$push': {'events': event_id} })
+	app.db.users.update(user, { '$push': {'events': event_id} })
 
 	return str(event_id)
 
@@ -45,7 +46,7 @@ def create_event():
 @events.route('/<event_id>', methods=['GET'])
 def find_event(event_id):
 	## Do we need auth here?
-	event = db.events.find_one({'_id': ObjectId(event_id) })
+	event = app.db.events.find_one({'_id': ObjectId(event_id) })
 	if not event:
 		return "Event not found", 404
 
@@ -54,15 +55,15 @@ def find_event(event_id):
 # PUT /events/<event_id>
 @events.route('/<event_id>', methods=['PUT'])
 def update_event(event_id):
-	user_id = auth.check_token( request.args.get('session') )
+	user_id = app.auth.check_token( request.args.get('session') )
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
-	user = db.users.find_one({'_id': ObjectId(user_id) })
+	user = app.db.users.find_one({'_id': ObjectId(user_id) })
 	if not user['type'] == 'organizer':
 		return "Unauthorized request: User doesn't have permission", 401
 
-	event = db.events.find_one({'_id': ObjectId(event_id) })
+	event = app.db.events.find_one({'_id': ObjectId(event_id) })
 	if not event:
 		return "Event not found", 404
 
@@ -70,28 +71,28 @@ def update_event(event_id):
 	for key, value in request.get_json().items():
 		event[key] = value
 
-	db.events.save(event)
+	app.db.events.save(event)
 
 	return to_json(event)
 
 # DELETE /events/<event_id>
 @events.route('/<event_id>', methods=["DELETE"])
 def remove_event(event_id):
-	user_id = auth.check_token( request.args.get('session') )
+	user_id = app.auth.check_token( request.args.get('session') )
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
-	user = db.users.find_one({'_id': ObjectId(user_id) })
+	user = app.db.users.find_one({'_id': ObjectId(user_id) })
 	if not user['type'] == 'organizer':
 		return "Unauthorized request: User doesn't have permission", 401
 
-	event = db.events.find_one({'_id': ObjectId(event_id) })
+	event = app.db.events.find_one({'_id': ObjectId(event_id) })
 	if not event:
 		return "Event not found", 404
 
-	db.events.remove(event)
+	app.db.events.remove(event)
 	event['deleted_on'] = datetime.today()
-	db.deleted_events.insert(event)
+	app.db.deleted_events.insert(event)
 	
 	return 'Event deleted'
 

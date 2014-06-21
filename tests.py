@@ -10,7 +10,10 @@ import redis
 import time
 import datetime
 
-backend.init_app('app.config.TestingConfig')
+
+backend.app.config['MONGO_DB'] = 'backend_test'
+backend.app.config['REDIS_DB'] = 15
+backend.update_dbs()
 test_client = backend.app.test_client()
 
 class AuthTests(unittest.TestCase):
@@ -136,8 +139,7 @@ class EventTests(unittest.TestCase):
 			'address': '1111 Random Way, Townville, CA'
 		})
 		response = self.app.post('/events?session='+self.organizer_token, headers={'Content-Type': 'application/json'}, data=data)
-		assert len(response.data) == 24
-
+		assert len(response.data) > 20
 	def test_update_event(self):
 		data = json.dumps({
 			'name': 'Renamed Event'
