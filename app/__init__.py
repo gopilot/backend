@@ -12,6 +12,7 @@ app.config['REDIS_URL'] = os.getenv('REDIS_URL',	'redis://localhost:6379')
 app.config['REDIS_DB']	= os.getenv('REDIS_DB',		'0')
 app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
+print app.config
 
 mongo_url = urlparse( app.config['MONGO_URL'] )
 
