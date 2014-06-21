@@ -15,7 +15,7 @@ app.config['TESTING']		= bool(os.getenv('TESTING', False))
 print app.config
 print 'start mongo'
 mongo_url = urlparse( app.config['MONGO_URL'] )
-print 'mongo url'
+print 'mongo url', mongo_url.geturl()
 mongo_client = pymongo.MongoClient( mongo_url.geturl() )
 print 'mongo client'
 db = mongo_client[ app.config['MONGO_DB']]
