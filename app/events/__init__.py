@@ -42,6 +42,9 @@ def create_event():
 
 	return str(event_id)
 
+@events.route('', methods=['GET'])
+	return Event.find().to_json()
+
 # GET /events/<event_id>
 @events.route('/<event_id>', methods=['GET'])
 def find_event(event_id):

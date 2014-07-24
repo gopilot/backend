@@ -6,6 +6,8 @@ from json import dumps
 from uuid import uuid4 as random_uuid
 import bcrypt
 
+from models.users import User
+
 auth = Blueprint('auth', __name__)
 
 # Can be used to ensure that user is logged in. Returns the user_id if the user is logged in, otherwise returns False
@@ -30,17 +32,16 @@ def login():
 	form_email = request.get_json().get('email')
 	form_password = request.get_json().get('password').encode('utf-8')
 
-	user = app.db.users.find_one({ 'email': form_email })
+	user = User.find_one({ 'email': form_email })
 	if not user:
 		return 'Email not found', 404
 
-	hashed = user['password'].encode('utf-8')
+	hashed = user.password.encode('utf-8')
 
-	if bcrypt.hashpw(form_password, hashed)==hashed:
-		del user['password']
-		return app.to_json({
+	if bcrypt.hashpw(form_password, hashed) == hashed:
+		return {
 			'session': create_token(user['_id']),
-			'user': user 
+			'user': user.to_json()
 		})
 	else:
 		return 'Incorrect password', 401
@@ -52,15 +53,24 @@ def signup():
 	form_password = request.json['password']
 	form_type = request.json['type'] # student or mentor
 
-	if app.db.users.find_one({'email': form_email }):
+	if User.find_one({'email': form_email }):
 		return 'Email already exists', 400
 
-	insert_id = app.db.users.insert({
-		'name': form_name,
-		'email': form_email,
-		'password': bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() ),
-		'type': form_type
-	})
+	user = User()
+
+	if form_type == 'student':
+		user = Student()
+	elif form_type == 'mentor':
+		user = Mentor()
+	elif form_type == 'organizer':
+		user = Organizer()
+
+	user.type = form_type
+	user.name = form_name
+	user.email = form_email
+	user.password = bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() )
+
+	user_id = user.save()
 
 	if not insert_id:
 		return 'Error creating account', 500
@@ -84,11 +94,12 @@ def retrieve_user():
 	if not user_id:
 		return "Session invalid", 401
 
-	user = app.db.users.find_one({'_id': ObjectId(user_id) })
+	user = User.find_one({'_id': user_id })
+
 	if not user:
 		return "Session invalid", 401
 
-	return app.to_json(user)
+	return user.to_json()
 
 
 
