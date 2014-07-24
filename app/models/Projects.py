@@ -2,11 +2,11 @@ import humongolus as orm
 import humongolus.field as field
 import humongolus.widget as widget
 
+from models import Document
 from users import User, EmbeddedUser
 from events import Event, EmbeddedEvent
 
-class Project(orm.Document):
-	_db = 'backend'
+class Project(Document):
 	_collection = 'projects'
 
 	name = field.Char(required=true)

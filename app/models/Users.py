@@ -2,11 +2,11 @@ import humongolus as orm
 import humongolus.field as field
 import humongolus.widget as widget
 
-from Events import Event, EmbeddedEvent
-from Projects import Project, EmbeddedProject
+from models import Document
+from events import Event, EmbeddedEvent
+from projects import Project, EmbeddedProject
 
-class User(orm.Document):
-	_db = 'backend'
+class User(Document):
 	_collection = 'users'
 	_indexes = [
 		orm.Index("email", key=[('email', orm.Index.DESCENDING)])
@@ -18,6 +18,7 @@ class User(orm.Document):
 	email = field.Email(required=true)
 	password = field.Char(required=true)
 	events = orm.List(type=EmbeddedEvent) # Better way to do this? We want an array of DocumentIds
+
 
 class EmbeddedUser(orm.EmbeddedDocument):
 	_id = field.DocumentId(required=true, type=User)

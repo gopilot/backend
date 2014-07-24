@@ -3,7 +3,10 @@ import app
 
 from dateutil import parser as dateParser
 from datetime import datetime
-from bson.objectid import ObjectId
+
+from models.users import User
+from models.events import Event, EmbeddedEvent, DeletedEvent
+
 events = Blueprint('events', __name__)
 
 
@@ -16,33 +19,26 @@ def create_event():
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
-	user = app.db.users.find_one({'_id': ObjectId(user_id) })
+	user = User.find_one({'_id': user_id })
 
-	if not user or not user['type'] == 'organizer':
+	if not user or not user.type == 'organizer':
 		return "Unauthorized request: User doesn't have permission", 401
 
 	body = request.get_json()
-	event_name = body.get('name')
-	event_start_date = dateParser.parse( body.get('start_date') )
-	event_end_date = dateParser.parse( body.get('end_date') )
-	event_location = body.get('location')
-	event_address = body.get('address')
-	event_image = body.get('image')
+	event = Event()
+	event.name = body.get('name')
+	event.start_date = dateParser.parse( body.get('start_date') )
+	event.end_date = dateParser.parse( body.get('end_date') )
+	event.location = body.get('location')
+	event.address = body.get('address')
+	event.image = body.get('image')
 
-	event_id = app.db.events.insert({
-		'name': event_name,
-		'start_date': event_start_date,
-		'end_date': event_end_date,
-		'location': event_location,
-		'address': event_address,
-		'image': event_image,
-		'attendees': []
-	})
+	event_id = event.save()
 
 	if not event_id:
 		return "Error creating event", 500
 
-	app.db.users.update(user, { '$push': {'events': event_id} })
+	user.managed_events.append( EmbeddedEvent(_id=event_id) )
 
 	return str(event_id)
 
@@ -50,11 +46,11 @@ def create_event():
 @events.route('/<event_id>', methods=['GET'])
 def find_event(event_id):
 	## Do we need auth here?
-	event = app.db.events.find_one({'_id': ObjectId(event_id) })
+	event = Event.find_one({'_id': event_id })
 	if not event:
 		return "Event not found", 404
 
-	return app.to_json(event)
+	return event.to_json()
 
 # PUT /events/<event_id>
 @events.route('/<event_id>', methods=['PUT'])
@@ -63,21 +59,22 @@ def update_event(event_id):
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
-	user = app.db.users.find_one({'_id': ObjectId(user_id) })
-	if not user['type'] == 'organizer':
+	user = User.find_one({'_id': user_id })
+	if not user.type == 'organizer':
 		return "Unauthorized request: User doesn't have permission", 401
 
-	event = app.db.events.find_one({'_id': ObjectId(event_id) })
+	event = Event.find_one({'_id': event_id })
 	if not event:
 		return "Event not found", 404
 
 
 	for key, value in request.get_json().items():
-		event[key] = value
+		if not key.startswith('_'):
+			event.setattr(key, value)
 
-	app.db.events.save(event)
+	event.save()
 
-	return app.to_json(event)
+	return event.to_json()
 
 # DELETE /events/<event_id>
 @events.route('/<event_id>', methods=["DELETE"])
@@ -86,17 +83,19 @@ def remove_event(event_id):
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
-	user = app.db.users.find_one({'_id': ObjectId(user_id) })
-	if not user['type'] == 'organizer':
+	user = Event.find_one({'_id': user_id })
+	if not user.type == 'organizer':
 		return "Unauthorized request: User doesn't have permission", 401
 
-	event = app.db.events.find_one({'_id': ObjectId(event_id) })
+	event = Event.find_one({'_id': event_id })
 	if not event:
 		return "Event not found", 404
 
-	app.db.events.remove(event)
-	event['deleted_on'] = datetime.today()
-	app.db.deleted_events.insert(event)
+	deleted_event = DeletedEvent(base=event)
+	deleted_event.deleted_on = datetime.today()
+	deleted_event.save()
+
+	event.remove()
 	
 	return 'Event deleted'
 
