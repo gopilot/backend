@@ -35,7 +35,8 @@ def create_event():
 		'end_date': event_end_date,
 		'location': event_location,
 		'address': event_address,
-		'image': event_image
+		'image': event_image,
+		'attendees': []
 	})
 
 	if not event_id:
