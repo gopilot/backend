@@ -247,7 +247,6 @@ class Field(object):
     __args__ = ()
 
     def __init__(self, *args, **kwargs):
-        
         self.logger = _settings.LOGGER
         self._conn = _settings.DB_CONNECTION
         self.__kwargs__ = kwargs
@@ -268,6 +267,7 @@ class Field(object):
             return me._value
 
     def __set__(self, instance, value):
+        print "Beginning of set"
         me = instance.__dict__.get(self._name)
         print "Set "+str(self._name)+" = "+str(value)
         if me:

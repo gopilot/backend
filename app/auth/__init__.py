@@ -5,7 +5,6 @@ from bson.objectid import ObjectId
 from json import dumps
 from uuid import uuid4 as random_uuid
 import bcrypt
-
 from app.models.users import User, Student, Mentor, Organizer
 
 auth = Blueprint('auth', __name__)
@@ -40,10 +39,10 @@ def login():
     hashed = user.password.encode('utf-8')
 
     if bcrypt.hashpw(form_password, hashed) == hashed:
-        return {
-            'session': create_token(user['_id']),
+        return dumps({
+            'session': create_token( user._id ),
             'user': user.to_json()
-        }
+        })
     else:
         return 'Incorrect password', 401
 
@@ -102,15 +101,6 @@ def retrieve_user():
         return "Session invalid", 401
 
     return user.to_json()
-
-@auth.route('/test', methods=["GET"])
-def test():
-    u = User()
-    u.type = "organizer"
-    u.name = "Test Organizer"
-    u.email = "test@gmail.com"
-    u.password = "test test"
-    return str(u.save())
 
 
     

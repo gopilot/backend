@@ -1,6 +1,6 @@
 import datetime
 import re
-from humongolus import Field, FieldException, Document, import_class
+from . import Field, FieldException, Document, import_class
 from bson.objectid import ObjectId
 from gridfs import GridFS
 

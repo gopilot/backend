@@ -1,5 +1,5 @@
 import copy
-from humongolus import Widget, Field, Document, EmbeddedDocument, Lazy, List, DocumentException, EMPTY
+from . import Widget, Field, Document, EmbeddedDocument, Lazy, List, DocumentException, EMPTY
 
 def escape(s):
     orig = copy.copy(s)
