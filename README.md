@@ -19,4 +19,4 @@ To demo this, first run `python app/models/test.py`, to see what the output _sho
 
 Now, start the server using `python setup.py` and visit [/auth/test](http://localhost:5000/auth/test) in your browser. If you look at the console, you'll see that the \_\_set\_\_() method wasn't ever called, and the user object being saved in the DB isn't complete, missing all the values that were set.
 
-[This route](https://github.com/gopilot/backend/blob/bee4d092d01f282a8921e8aacf90a566f32328f6/app/auth/__init__.py#L106) contains the exact same code as [test.py](https://github.com/gopilot/backend/blob/bee4d092d01f282a8921e8aacf90a566f32328f6/app/models/test.py), but for some reason \_\_set\_\_() isn't being called, and the data isn't being saved. 
+[That route](https://github.com/gopilot/backend/blob/bee4d092d01f282a8921e8aacf90a566f32328f6/app/auth/__init__.py#L106) contains the exact same code as [test.py](https://github.com/gopilot/backend/blob/bee4d092d01f282a8921e8aacf90a566f32328f6/app/models/test.py), but for some reason \_\_set\_\_() isn't being called, and the data isn't being saved. I have no idea why - can someone take a look? A fresh pair of eyes might help.
