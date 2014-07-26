@@ -11,6 +11,7 @@ class User(Document):
     _indexes = [
         orm.Index("email", key=[('email', orm.Index.DESCENDING)])
     ]
+    _hidden = ['password']
 
     type = field.Char(required=True)
     name = field.Char(required=True)

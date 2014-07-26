@@ -4,16 +4,20 @@ import humongolus as orm
 class Document(orm.Document):
     _hidden = []
     _db = 'backend'
-
+    created = ""
+    modified = ""
     def to_json(self):
-        ret = []
-        for key, obj in self:
-            if not key in self._hidden:
+        ret = {}
+        self.created = str(self.__created__)
+        self.modified = str(self.__modified__)
+        
+        for key, obj in self.__dict__.iteritems():
+            if ( not key in self._hidden ) and ( not key.startswith("_") ) and ( not key == '_id' ):
                 try:
-                    ret.append(obj.to_json())
+                    ret[key] = obj.to_json()
                 except:
                     try:
-                        ret.append(obj._json())
+                        ret[key] = obj._json()
                     except:
-                        ret.append(obj)
+                        ret[key] = str(obj)
         return ret
