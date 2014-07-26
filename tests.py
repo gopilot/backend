@@ -13,7 +13,7 @@ import datetime
 
 backend.app.config['MONGO_DB'] = 'backend_test'
 backend.app.config['REDIS_DB'] = 15
-backend.update_dbs()
+backend.start()
 test_client = backend.app.test_client()
 
 class AuthTests(unittest.TestCase):
@@ -33,8 +33,7 @@ class AuthTests(unittest.TestCase):
 	def tearDown(self):
 		backend.mongo_client.drop_database('backend_test')
 		backend.sessions.flushdb()
-		print 'Completed test:', str(time.clock() - self.start_time)+'s'
-
+		
 	## Test the check_session endpoint	
 	def test_check_session(self):
 		response = self.app.get('/auth/check_session?session='+self.test_token)
@@ -46,7 +45,9 @@ class AuthTests(unittest.TestCase):
 		assert response.data == 'false'
 
 	def test_retrieve_user(self):
+		print "token: ", self.test_token
 		response = self.app.get('/auth/retrieve_user?session='+self.test_token)
+		print "test_retrieve_user ->", response.data
 		assert json.loads(response.data)['name'] == 'Main user'
 
 	def test_retrieve_user_fail(self):
@@ -86,7 +87,6 @@ class AuthTests(unittest.TestCase):
 			'password': 'test'
 		})
 		response = self.app.post('/auth/login', headers={'Content-Type': 'application/json'}, data=data).data
-		print "login response -----> "+str(response)
 		response = json.loads(response)
 		assert len(response['session']) > 0
 		assert response['user']['name'] == 'Main user'
@@ -139,7 +139,6 @@ class EventTests(unittest.TestCase):
 	def tearDown(self):
 		backend.mongo_client.drop_database('backend_test')
 		backend.sessions.flushdb()
-		print 'Completed test:', str(time.clock() - self.start_time)+'s'
 
 	def test_create_event(self):
 		data = json.dumps({
@@ -153,14 +152,17 @@ class EventTests(unittest.TestCase):
 		response = self.app.post('/events?session='+self.organizer_token, headers={'Content-Type': 'application/json'}, data=data)
 		assert len(response.data) > 20
 	def test_update_event(self):
+		print "token: ", self.organizer_token, self.test_event
 		data = json.dumps({
 			'name': 'Renamed Event'
 		})
 		response = self.app.put('/events/'+self.test_event+'?session='+self.organizer_token, headers={'Content-Type': 'application/json'}, data=data)
+		print "test_update_event ->", response.data
 		assert json.loads(response.data)['name'] == 'Renamed Event'
 
 	def test_get_event(self):
 		response = self.app.get('/events/'+self.test_event+'?session='+self.organizer_token)
+		print "test_get_event ->", response.data
 		assert json.loads(response.data)['name'] == 'Test Event'
 
 	def test_delete_event(self):

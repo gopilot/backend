@@ -16,29 +16,32 @@ app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
 #print app.config
 
-mongo_client = pymongo.MongoClient( app.config['MONGO_URL'] )
-db = mongo_client[ app.config['MONGO_DB'] ]
-redis_url = urlparse( app.config['REDIS_URL'] )
-sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
-
-orm.settings( mongo_client )
-
-## Used by tests to change databases after updating config values
-def update_dbs():
+def start():
+	global mongo_client
 	global db
-	db = mongo_client[ app.config['MONGO_DB'] ]
 	global sessions
+
+	mongo_client = pymongo.MongoClient( app.config['MONGO_URL'] )
+	db = mongo_client[ app.config['MONGO_DB'] ]
+
+	redis_url = urlparse( app.config['REDIS_URL'] )
 	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
 
-from auth import auth as AuthBlueprint
-app.register_blueprint(AuthBlueprint, url_prefix="/auth")
+	orm.settings( mongo_client )
 
-from users import users as UserBlueprint
-app.register_blueprint(UserBlueprint, url_prefix="/users")
 
-from events import events as EventBlueprint
-app.register_blueprint(EventBlueprint, url_prefix="/events")
+	db = mongo_client[ app.config['MONGO_DB'] ]
+	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
 
-@app.route('/')
-def index():
-	return render_template("index.html")
+	from auth import auth as AuthBlueprint
+	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
+
+	from users import users as UserBlueprint
+	app.register_blueprint(UserBlueprint, url_prefix="/users")
+
+	from events import events as EventBlueprint
+	app.register_blueprint(EventBlueprint, url_prefix="/events")
+
+	@app.route('/')
+	def index():
+		return render_template("index.html")

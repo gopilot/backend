@@ -1,7 +1,6 @@
 from flask import Flask, Blueprint, request, redirect, session
 import app
 import pymongo
-from bson.objectid import ObjectId
 from json import dumps
 from uuid import uuid4 as random_uuid
 import bcrypt
@@ -35,7 +34,6 @@ def login():
     if not user or not user.email:
         return 'Email not found', 404
 
-    print "user: "+str(user.to_json())
     hashed = user.password.encode('utf-8')
 
     if bcrypt.hashpw(form_password, hashed) == hashed:
@@ -92,13 +90,14 @@ def retrieve_user():
     token = request.args.get('session')
 
     user_id = app.sessions.get('session:'+token)
+    
     if not user_id:
         return "Session invalid", 401
 
-    user = User.find_one( user_id )
-
+    user = User.find_id( user_id )
+    print "USER", user
     if not user:
-        return "Session invalid", 401
+        return "Session invalids", 401
 
     return user.to_json()
 

@@ -267,9 +267,7 @@ class Field(object):
             return me._value
 
     def __set__(self, instance, value):
-        print "Beginning of set"
         me = instance.__dict__.get(self._name)
-        print "Set "+str(self._name)+" = "+str(value)
         if me:
             try:
                 me._clean(value)
@@ -569,8 +567,7 @@ class base(dict):
                 key = v._dbkey if v._dbkey else k
                 ns = ".".join([namespace, key]) if namespace else key
                 obj.update(v._save(namespace=ns))
-            except Exception as e: pass 
-        print "SAVED: "+str(obj)
+            except Exception as e: pass
         return obj
     
     def _errors(self, namespace=None):

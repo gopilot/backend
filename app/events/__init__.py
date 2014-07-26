@@ -4,7 +4,7 @@ import app
 from dateutil import parser as dateParser
 from datetime import datetime
 
-from app.models.users import User, Organizer
+from app.models.users import User
 from app.models.events import Event, EmbeddedEvent, DeletedEvent
 
 events = Blueprint('events', __name__)
@@ -14,93 +14,93 @@ events = Blueprint('events', __name__)
 # POST /events
 @events.route('', methods=['POST'])
 def create_event():
-	user_id = app.auth.check_token( request.args.get('session') )
+    user_id = app.auth.check_token( request.args.get('session') )
 
-	if not user_id:
-		return "Unauthorized request: Bad session token", 401
+    if not user_id:
+        return "Unauthorized request: Bad session token", 401
 
-	user = Organizer.find_one({'_id': user_id })
+    user = User.find_one({'_id': user_id })
 
-	if not user:
-		return "Unauthorized request: User doesn't have permission", 401
+    if not user or not user.type == 'organizer':
+        return "Unauthorized request: User doesn't have permission", 401
 
-	body = request.get_json()
-	event = Event()
-	event.name = body.get('name')
-	event.start_date = dateParser.parse( body.get('start_date') )
-	event.end_date = dateParser.parse( body.get('end_date') )
-	event.location = body.get('location')
-	event.address = body.get('address')
-	event.image = body.get('image')
+    body = request.get_json()
+    event = Event()
+    event.name = body.get('name')
+    event.start_date = dateParser.parse( body.get('start_date') )
+    event.end_date = dateParser.parse( body.get('end_date') )
+    event.location = body.get('location')
+    event.address = body.get('address')
+    event.image = body.get('image')
 
-	event_id = event.save()
+    event_id = event.save()
 
-	if not event_id:
-		return "Error creating event", 500
+    if not event_id:
+        return "Error creating event", 500
 
-	user.managed_events.append( EmbeddedEvent(_id=event_id) )
+    user.managed_events.append( EmbeddedEvent(_id=event_id) )
 
-	return str(event_id)
+    return str(event_id)
 
 @events.route('', methods=['GET'])
-def find_all_events():
-	return Event.find().to_json()
+def all_events():
+    return Event.find().to_json()
 
 # GET /events/<event_id>
 @events.route('/<event_id>', methods=['GET'])
 def find_event(event_id):
-	## Do we need auth here?
-	event = Event.find_one( event_id )
-	if not event:
-		return "Event not found", 404
+    ## Do we need auth here?
+    event = Event.find_one({'_id': event_id })
+    if not event:
+        return "Event not found", 404
 
-	return event.to_json()
+    return event.to_json()
 
 # PUT /events/<event_id>
 @events.route('/<event_id>', methods=['PUT'])
 def update_event(event_id):
-	user_id = app.auth.check_token( request.args.get('session') )
-	if not user_id:
-		return "Unauthorized request: Bad session token", 401
+    user_id = app.auth.check_token( request.args.get('session') )
+    if not user_id:
+        return "Unauthorized request: Bad session token", 401
 
-	user = Organizer.find_one( user_id )
-	if not user:
-		return "Unauthorized request: User doesn't have permission", 401
+    user = User.find_one({'_id': user_id })
+    if not user.type == 'organizer':
+        return "Unauthorized request: User doesn't have permission", 401
 
-	event = Event.find_one( event_id )
-	if not event:
-		return "Event not found", 404
+    event = Event.find_one({'_id': event_id })
+    if not event:
+        return "Event not found", 404
 
 
-	for key, value in request.get_json().items():
-		if not key.startswith('_'):
-			event.setattr(key, value)
+    for key, value in request.get_json().items():
+        if not key.startswith('_'):
+            event.setattr(key, value)
 
-	event.save()
+    event.save()
 
-	return event.to_json()
+    return event.to_json()
 
 # DELETE /events/<event_id>
 @events.route('/<event_id>', methods=["DELETE"])
 def remove_event(event_id):
-	user_id = app.auth.check_token( request.args.get('session') )
-	if not user_id:
-		return "Unauthorized request: Bad session token", 401
+    user_id = app.auth.check_token( request.args.get('session') )
+    if not user_id:
+        return "Unauthorized request: Bad session token", 401
 
-	user = Organizer.find_one( user_id )
-	if not user:
-		return "Unauthorized request: User doesn't have permission", 401
+    user = Event.find_one({'_id': user_id })
+    if not user.type == 'organizer':
+        return "Unauthorized request: User doesn't have permission", 401
 
-	event = Event.find_one( event_id )
-	if not event:
-		return "Event not found", 404
+    event = Event.find_one({'_id': event_id })
+    if not event:
+        return "Event not found", 404
 
-	deleted_event = DeletedEvent(base=event)
-	deleted_event.deleted_on = datetime.today()
-	deleted_event.save()
+    deleted_event = DeletedEvent(base=event)
+    deleted_event.deleted_on = datetime.today()
+    deleted_event.save()
 
-	event.remove()
-	
-	return 'Event deleted'
+    event.remove()
+    
+    return 'Event deleted'
 
 
