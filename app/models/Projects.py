@@ -2,16 +2,16 @@ import humongolus as orm
 import humongolus.field as field
 import humongolus.widget as widget
 
-from models import Document
-from users import User, EmbeddedUser
-from events import Event, EmbeddedEvent
+from document import Document
+import users
+import events
 
 class Project(Document):
-	_collection = 'projects'
+    _collection = 'projects'
 
-	name = field.Char(required=true)
-	event = field.DocumentId(type=Event)
-	owners = field.List(type=EmbeddedUser) # Better way to do this? We want an array of DocumentIds
+    name = field.Char(required=True)
+    # event = field.DocumentId(type=events.Event)
+    # owners = field.List(type=users.EmbeddedUser) # Better way to do this? We want an array of DocumentIds
 
-class EmbeddedProject(orm.EmbeddedDocument)
-	_id = field.DocumentId(required=true, type=Project)
+class EmbeddedProject(orm.EmbeddedDocument):
+    _id = field.DocumentId(required=True, type=Project)

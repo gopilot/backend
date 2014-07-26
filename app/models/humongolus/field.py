@@ -196,6 +196,11 @@ class Regex(Char):
         if not self._reg.search(val): raise FieldException("%s: pattern not found" % val if not self._disp_error else self._disp_error)
         return val
 
+class Url(Regex):
+    _disp_error = "Invalid url"
+    # Regex from http://daringfireball.net/2010/07/improved_regex_for_matching_urls
+    _reg = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
+
 class Email(Regex):
     _disp_error = "Invalid Email Address"
     _reg = re.compile(
@@ -244,8 +249,3 @@ class File(DocumentId):
     def __getattr__(self, key):
         f = GridFS(self._database, collection=self._collection)
         return getattr(f, key)
-
-
-
-
-

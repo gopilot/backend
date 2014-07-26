@@ -2,25 +2,25 @@ import humongolus as orm
 import humongolus.field as field
 import humongolus.widget as widget
 
-from models import Document
-from users import User, EmbeddedUser
-from projects import Project, EmbeddedProject
+from document import Document
+import users
+import projects
 
 class Event(Document):
-	_collection = 'events'
+    _collection = 'events'
 
-	name = field.Char(required=true)
-	location = field.Char(required=true)
-	address = field.Char(required=true)
-	start_date = field.Date(required=true)
-	end_date = field.Date(required=true)
-	projects = orm.Lazy(type=Project, key="event")
-	attendees = orm.Lazy(type=User, key="events")
+    name = field.Char(required=True)
+    location = field.Char(required=True)
+    address = field.Char(required=True)
+    start_date = field.Date(required=True)
+    end_date = field.Date(required=True)
+    # projects = orm.Lazy(type=projects.Project, key="event")
+    # attendees = orm.Lazy(type=users.User, key="events")
 
-	def to_json():
-		ret = []
+    def to_json():
+        ret = []
         for key, obj in self:
-        	# Check for any values you want to hide
+            # Check for any values you want to hide
             try:
                 ret.append(obj._json())
             except:
@@ -29,9 +29,9 @@ class Event(Document):
         return ret
 
 class EmbeddedEvent(orm.EmbeddedDocument):
-	_id = field.DocumentId(required=true, type=Event)
+    _id = field.DocumentId(required=True, type=Event)
 
 
 class DeletedEvent(Event):
-	_collection = 'deleted_events'
-	deleted_on = field.Date(required=true)
+    _collection = 'deleted_events'
+    deleted_on = field.Date(required=True)

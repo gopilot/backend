@@ -86,6 +86,7 @@ class AuthTests(unittest.TestCase):
 			'password': 'test'
 		})
 		response = self.app.post('/auth/login', headers={'Content-Type': 'application/json'}, data=data).data
+		print "login response -----> "+str(response)
 		response = json.loads(response)
 		assert len(response['session']) > 0
 		assert response['user']['name'] == 'Main user'

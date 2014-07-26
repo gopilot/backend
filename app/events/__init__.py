@@ -4,8 +4,8 @@ import app
 from dateutil import parser as dateParser
 from datetime import datetime
 
-from models.users import User
-from models.events import Event, EmbeddedEvent, DeletedEvent
+from app.models.users import User, Organizer
+from app.models.events import Event, EmbeddedEvent, DeletedEvent
 
 events = Blueprint('events', __name__)
 
@@ -19,9 +19,9 @@ def create_event():
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
-	user = User.find_one({'_id': user_id })
+	user = Organizer.find_one({'_id': user_id })
 
-	if not user or not user.type == 'organizer':
+	if not user:
 		return "Unauthorized request: User doesn't have permission", 401
 
 	body = request.get_json()
@@ -43,13 +43,14 @@ def create_event():
 	return str(event_id)
 
 @events.route('', methods=['GET'])
+def find_all_events():
 	return Event.find().to_json()
 
 # GET /events/<event_id>
 @events.route('/<event_id>', methods=['GET'])
 def find_event(event_id):
 	## Do we need auth here?
-	event = Event.find_one({'_id': event_id })
+	event = Event.find_one( event_id )
 	if not event:
 		return "Event not found", 404
 
@@ -62,11 +63,11 @@ def update_event(event_id):
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
-	user = User.find_one({'_id': user_id })
-	if not user.type == 'organizer':
+	user = Organizer.find_one( user_id )
+	if not user:
 		return "Unauthorized request: User doesn't have permission", 401
 
-	event = Event.find_one({'_id': event_id })
+	event = Event.find_one( event_id )
 	if not event:
 		return "Event not found", 404
 
@@ -86,11 +87,11 @@ def remove_event(event_id):
 	if not user_id:
 		return "Unauthorized request: Bad session token", 401
 
-	user = Event.find_one({'_id': user_id })
-	if not user.type == 'organizer':
+	user = Organizer.find_one( user_id )
+	if not user:
 		return "Unauthorized request: User doesn't have permission", 401
 
-	event = Event.find_one({'_id': event_id })
+	event = Event.find_one( event_id )
 	if not event:
 		return "Event not found", 404
 
