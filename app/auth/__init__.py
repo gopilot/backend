@@ -30,7 +30,7 @@ def login():
     form_email = request.get_json().get('email')
     form_password = request.get_json().get('password').encode('utf-8')
 
-    user = Organizer.find_one({ 'email': form_email })
+    user = User.find_one({ 'email': form_email })
     if not user or not user.email:
         return 'Email not found', 404
 
@@ -39,7 +39,7 @@ def login():
     if bcrypt.hashpw(form_password, hashed) == hashed:
         return dumps({
             'session': create_token( user._id ),
-            'user': user.to_json()
+            'user': user.to_json_obj()
         })
     else:
         return 'Incorrect password', 401
@@ -56,7 +56,6 @@ def signup():
 
     user = User()
 
-    # TODO: find a way we can use these classes and still call User.find or User.find_one
     if form_type == 'student':
         user = Student()
     elif form_type == 'mentor':
@@ -95,11 +94,8 @@ def retrieve_user():
         return "Session invalid", 401
 
     user = User.find_id( user_id )
-    print "USER", user
     if not user:
         return "Session invalids", 401
 
     return user.to_json()
-
-
     

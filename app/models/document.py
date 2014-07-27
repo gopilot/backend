@@ -1,7 +1,9 @@
 import humongolus as orm
 from app import app
 from bson.objectid import ObjectId
+from bson import json_util
 import json
+import datetime
 
 ## Superclass of all our documents
 class Document(orm.Document):
@@ -10,13 +12,13 @@ class Document(orm.Document):
     created = ""
     modified = ""
 
-    def to_json(self):
+    def to_json_obj(self):
         ret = {}
         self.created = str(self.__created__)
         self.modified = str(self.__modified__)
 
         for key, obj in self.__dict__.iteritems():
-            if ( not key in self._hidden ) and ( not key.startswith("_") ) and ( not key == '_id' ):
+            if ( not key in self._hidden ) and ( not key.startswith("_") ) and ( not key == '_id' ):     
                 try:
                     ret[key] = obj.to_json()
                 except:
@@ -24,7 +26,10 @@ class Document(orm.Document):
                         ret[key] = obj._json()
                     except:
                         ret[key] = str(obj)
-        return json.dumps(ret)
+        return ret;
+
+    def to_json(self):
+        return json.dumps( self.to_json_obj(), default=json_util.default )
 
     @classmethod
     def find_id(cls, id):

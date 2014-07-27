@@ -5,6 +5,7 @@ import humongolus.widget as widget
 from document import Document
 import events
 import projects
+from app import db
 
 class User(Document):
     _collection = 'users'
@@ -30,8 +31,42 @@ class EmbeddedUser(orm.EmbeddedDocument):
 class Student(User):
     type = field.Char(required=True, default='student')
 
+    @classmethod
+    def find_one(cls, *args, **kwargs):
+        if isinstance(args[0], dict):
+            args[0]['type'] = 'student';
+
+        res = db.users.find_one(args[0])
+        if(res):
+            return Student( cls._connection().find_one(*args, **kwargs) );
+        else:
+            return None
+
 class Mentor(User):
     type = field.Char(required=True, default='mentor')
 
+    @classmethod
+    def find_one(cls, *args, **kwargs):
+        if isinstance(args[0], dict):
+            args[0]['type'] = 'mentor';
+
+        res = db.users.find_one(args[0])
+        if(res):
+            return Mentor( cls._connection().find_one(*args, **kwargs) );
+        else:
+            return None
+
 class Organizer(User):
     type = field.Char(required=True, default='organizer')
+    managed_events = orm.List(type=events.EmbeddedEvent)
+
+    @classmethod
+    def find_one(cls, *args, **kwargs):
+        if isinstance(args[0], dict):
+            args[0]['type'] = 'organizer';
+
+        res = db.users.find_one(args[0])
+        if(res):
+            return Organizer( cls._connection().find_one(*args, **kwargs) );
+        else:
+            return None

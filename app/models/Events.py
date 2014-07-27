@@ -17,17 +17,6 @@ class Event(Document):
     # projects = orm.Lazy(type=projects.Project, key="event")
     # attendees = orm.Lazy(type=users.User, key="events")
 
-    def to_json():
-        ret = []
-        for key, obj in self:
-            # Check for any values you want to hide
-            try:
-                ret.append(obj._json())
-            except:
-                ret.append(obj)
-        
-        return ret
-
 class EmbeddedEvent(orm.EmbeddedDocument):
     _id = field.DocumentId(required=True, type=Event)
 

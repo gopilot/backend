@@ -646,10 +646,13 @@ class Document(base):
         self.__hargskeys__ = set()
         self._conn = _settings.DB_CONNECTION        
         self._coll = self.__class__._connection()
+        self._coll_from = self._collection
         if kwargs.get('data'):
             self._map(kwargs.get('data'), init=True)
-        if kwargs.get('id'): 
-            self._doc(kwargs['id'])        
+        if kwargs.get('id'):
+            if kwargs.get('from_collection'):
+                self._coll_from = kwargs['from_collection']
+            self._doc(kwargs['id'])    
     """
     this is called by pymongo for each key:val pair for each document
     returned by find and find_one
@@ -668,7 +671,7 @@ class Document(base):
         elif key == '_id': self._id = val
 
     def _get_doc(self, id):
-        return _settings.DB_CONNECTION[self._db][self._collection].find_one({'_id':ObjectId(id)})
+        return _settings.DB_CONNECTION[self._db][self._coll_from].find_one({'_id':ObjectId(id)})
 
     def _doc(self, id):
         doc = self._get_doc(id)

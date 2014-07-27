@@ -45,9 +45,7 @@ class AuthTests(unittest.TestCase):
 		assert response.data == 'false'
 
 	def test_retrieve_user(self):
-		print "token: ", self.test_token
 		response = self.app.get('/auth/retrieve_user?session='+self.test_token)
-		print "test_retrieve_user ->", response.data
 		assert json.loads(response.data)['name'] == 'Main user'
 
 	def test_retrieve_user_fail(self):
@@ -152,18 +150,19 @@ class EventTests(unittest.TestCase):
 		response = self.app.post('/events?session='+self.organizer_token, headers={'Content-Type': 'application/json'}, data=data)
 		assert len(response.data) > 20
 	def test_update_event(self):
-		print "token: ", self.organizer_token, self.test_event
 		data = json.dumps({
 			'name': 'Renamed Event'
 		})
 		response = self.app.put('/events/'+self.test_event+'?session='+self.organizer_token, headers={'Content-Type': 'application/json'}, data=data)
-		print "test_update_event ->", response.data
 		assert json.loads(response.data)['name'] == 'Renamed Event'
 
 	def test_get_event(self):
 		response = self.app.get('/events/'+self.test_event+'?session='+self.organizer_token)
-		print "test_get_event ->", response.data
 		assert json.loads(response.data)['name'] == 'Test Event'
+
+	def test_get_all_events(self):
+		response = self.app.get('/events')
+		assert len( json.loads(response.data) ) > 0
 
 	def test_delete_event(self):
 		response = self.app.delete('/events/'+self.test_event+'?session='+self.organizer_token)
