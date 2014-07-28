@@ -18,7 +18,7 @@ class Document(orm.Document):
         self.modified = str(self.__modified__)
 
         for key, obj in self.__dict__.iteritems():
-            if ( not key in self._hidden ) and ( not key.startswith("_") ) and ( not key == '_id' ):     
+            if (( not key in self._hidden ) and ( not key.startswith("_") )) or ( key == '_id' ):     
                 try:
                     ret[key] = obj.to_json()
                 except:

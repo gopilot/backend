@@ -42,6 +42,7 @@ def create_event():
 
     return str(event_id)
 
+# GET /events
 @events.route('', methods=['GET'])
 def all_events():
     events = []
@@ -52,7 +53,6 @@ def all_events():
 # GET /events/<event_id>
 @events.route('/<event_id>', methods=['GET'])
 def find_event(event_id):
-    ## Do we need auth here?
     event = Event.find_id( event_id )
     if not event:
         return "Event not found", 404

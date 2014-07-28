@@ -70,3 +70,7 @@ class Organizer(User):
             return Organizer( cls._connection().find_one(*args, **kwargs) );
         else:
             return None
+
+class DeletedUser(User):
+    _collection = 'deleted_events'
+    deleted_on = field.Date(required=True)
