@@ -123,11 +123,10 @@ def remove_user(user_id):
     user = User.find_id( user_id )
     if not user:
         return "User not found", 404
-
-    deleted_user = DeletedUser( user.id )
+    deleted_user = DeletedUser( **user._data )
     deleted_user.deleted_on = datetime.today()
     deleted_user.save()
 
-    user.remove()
+    user.delete()
     
     return 'User deleted'

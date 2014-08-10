@@ -54,8 +54,8 @@ def all_events():
 
 # GET /events/<event_id>
 @events.route('/<event_id>', methods=['GET'])
-def find_event(event):
-    
+def find_event(event_id):
+    event = Event.find_id( event_id )
     if not event:
         return "Event not found", 404
 
@@ -63,7 +63,7 @@ def find_event(event):
 
 # PUT /events/<event_id>
 @events.route('/<event_id>', methods=['PUT'])
-def update_event(event):
+def update_event(event_id):
     user_id = app.auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
@@ -72,6 +72,7 @@ def update_event(event):
     if not user:
         return "Unauthorized request: User doesn't have permission", 401
 
+    event = Event.find_id( event_id )
     if not event:
         return "Event not found", 404
 
@@ -86,7 +87,7 @@ def update_event(event):
 
 # DELETE /events/<event_id>
 @events.route('/<event_id>', methods=["DELETE"])
-def remove_event(event):
+def remove_event(event_id):
     user_id = app.auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
@@ -95,14 +96,15 @@ def remove_event(event):
     if not user:
         return "Unauthorized request: User doesn't have permission", 401
 
+    event = Event.find_id( event_id )
     if not event:
         return "Event not found", 404
 
-    deleted_event = DeletedEvent(event.id)
+    deleted_event = DeletedEvent(**event._data)
     deleted_event.deleted_on = datetime.today()
     deleted_event.save()
 
-    event.remove()
+    event.delete()
     
     return 'Event deleted'
 

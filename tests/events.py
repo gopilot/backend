@@ -17,7 +17,7 @@ class EventTests(unittest.TestCase):
 	def setUp(self):
 		mongo_client.drop_database('backend_test')
 		redis_client.flushdb()
-		
+
 		self.start_time = time.clock()
 		self.app = test_client
 
@@ -37,7 +37,7 @@ class EventTests(unittest.TestCase):
 			'location': 'Tech Inc. HQ',
 			'address': '1111 Random Way, Townville, CA'
 		})
-		self.test_event = self.app.post('/events', headers=h(session=self.organizer_token), data=data).data
+		self.test_event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data)['id']
 
 	def test_create_event(self):
 		data = json.dumps({

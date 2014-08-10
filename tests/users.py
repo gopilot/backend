@@ -90,7 +90,7 @@ class UserTests(unittest.TestCase):
 		data = json.dumps({
 			'name': 'Updated User1'
 		})
-		response = self.app.put('/users/'+self.test_organizer, headers=h(session=self.test_token+"X"), data=data)
+		response = self.app.put('/users/'+self.test_organizer, headers=h(session=self.test_token), data=data)
 		assert response.data == "Unauthorized request: You don't have permission for this action"
 
 
