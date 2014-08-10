@@ -1,9 +1,3 @@
-from flask import Flask, Blueprint
-import app
-
-from dateutil import parser as dateParser
-from datetime import datetime
-
 from flask import Flask, Blueprint, request
 import app
 
@@ -16,6 +10,8 @@ import bcrypt
 from app.models.users import User, Student, Mentor, Organizer, DeletedUser
 from app.models.events import Event
 from app.models.projects import Project
+
+jsonType = {'Content-Type': 'application/json'}
 
 users = Blueprint('users', __name__)
 
@@ -30,7 +26,7 @@ def signup():
     if len(form_password) < 8:
         return 'Password must be 8 characters or longer', 400
 
-    if User.find_one({ 'email': form_email }):
+    if User.objects(email=form_email).first():
         return 'Email already exists', 400
 
     user = User()
@@ -42,17 +38,19 @@ def signup():
     elif form_type == 'organizer':
         user = Organizer()
 
-    user.type = form_type
     user.name = form_name
     user.email = form_email
     user.password = bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() )
 
-    user_id = user.save()
+    user.save()
 
-    if not user_id:
+    if not user.id:
         return 'Error creating account', 500
     
-    return app.auth.create_token( user_id )
+    return json.dumps({
+            'session': app.auth.create_token( user.id ),
+            'user': user.to_json_obj()
+        }), 200, jsonType
 
 # GET /users
 @users.route('', methods=["GET"])
@@ -68,17 +66,10 @@ def get_all():
         return "Unauthorized request: User doesn't have permission", 401
 
     users = []
-    for usr in User.find():
-
-        if(usr.type == "student"):
-            usr = Student( id=usr._id )
-        elif(usr.type == "mentor"):
-            usr = Mentor( id=usr._id )
-        elif(usr.type == "organizer"):
-            usr = Organizer( id=usr._id )
-
+    for usr in User.objects:
         users.append( usr.to_json_obj() )
-    return json.dumps( users, default=json_util.default )
+
+    return json.dumps( users, default=json_util.default ), 200, jsonType
 
 # GET /users/<user_id>
 @users.route('/<user_id>', methods=['GET'])
@@ -86,13 +77,6 @@ def find_user(user_id):
     user = User.find_id( user_id )
     if not user:
         return "User not found", 404
-
-    if(user.type == "student"):
-        user = Student( id=user._id )
-    elif(user.type == "mentor"):
-        user = Mentor( id=user._id )
-    elif(user.type == "organizer"):
-        user = Organizer( id=user._id )
 
     return user.to_json()
 
@@ -113,13 +97,6 @@ def update_user(user_id):
     user = User.find_id( user_id )
     if not user:
         return "User not found", 404
-
-    if(user.type == "student"):
-        user = Student( id=user._id )
-    elif(user.type == "mentor"):
-        user = Mentor( id=user._id )
-    elif(user.type == "organizer"):
-        user = Organizer( id=user._id )
 
     for key, value in request.get_json().items():
         if not key.startswith('_'): # Some security
@@ -147,7 +124,7 @@ def remove_user(user_id):
     if not user:
         return "User not found", 404
 
-    deleted_user = DeletedUser( id=user._id, from_collection="users" )
+    deleted_user = DeletedUser( user.id )
     deleted_user.deleted_on = datetime.today()
     deleted_user.save()
 

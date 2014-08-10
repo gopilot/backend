@@ -1,17 +1,11 @@
-from flask import Flask, Blueprint
-import app
-
-from dateutil import parser as dateParser
-from datetime import datetime
-
 from flask import Flask, Blueprint, request
 import app
 
 from dateutil import parser as dateParser
 from datetime import datetime
+
 import json
 from bson import json_util
-from bson.objectid import ObjectId
 import bcrypt
 
 from app.models.users import User, Student, Mentor, Organizer, DeletedUser
@@ -31,11 +25,11 @@ def signup():
 
     project.name = form_name
     project.event = form_event
-    project.creators.append( ObjectId(form_creator) );
+    project.creators.append( form_creator );
 
-    project_id = project.save()
+    project.save()
 
-    if not project_id:
+    if not project.id:
         return 'Error creating project', 500
     
     return project.to_json()
@@ -55,14 +49,8 @@ def get_all():
 
     query = {};
 
-    if request.json['event']:
-        query['event'] = request.json['event']
-
-    if request.json['creator']:
-        query['creators'] = request.json['creator']
-
     projects = []
-    for project in Project.find(query):
+    for project in Project.objects(event=request.json['event'], creators=request.json['creator']):
         projects.append( project.to_json_obj() )
 
     return json.dumps( projects, default=json_util.default )
@@ -74,8 +62,7 @@ def find_project(project_id):
     if not project:
         return "Project not found", 404
 
-
-    return project.to_json(populate=["event"])
+    return project.to_json()
 
 # PUT /projects/<project_id>
 @projects.route('/<project_id>', methods=['PUT'])
@@ -101,7 +88,7 @@ def update_project(project_id):
 
     project.save()
 
-    return user.to_json()
+    return project.to_json()
 
 # DELETE /users/<project_id>
 @projects.route('/<project_id>', methods=["DELETE"])
@@ -121,7 +108,7 @@ def remove_project(project_id):
     if not project:
         return "Project not found", 404
 
-    deleted_project = DeletedProject( id=project._id, from_collection="projects" )
+    deleted_project = DeletedProject( project.id )
     deleted_project.deleted_on = datetime.today()
     deleted_project.save()
 

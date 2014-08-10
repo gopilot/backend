@@ -1,68 +1,27 @@
-import humongolus as orm
-import humongolus.field as field
-import humongolus.widget as widget
-from bson.objectid import ObjectId
+import mongoengine as orm
+
 from document import Document
-import events
-from app import db
 
 class User(Document):
-    _collection = 'users'
-    _indexes = [
-        orm.Index("email", key=[('email', orm.Index.DESCENDING)])
-    ]
+    meta = {
+        'allow_inheritance': True,
+        'hidden': ['password']
+    }
     _hidden = ['password']
-
-    type = field.Char(required=True)
-    name = field.Char(required=True)
-    image = field.Url()
-    email = field.Email(required=True)
-    password = field.Char(required=True)
-    events = orm.List(type=ObjectId)
+    type = orm.StringField()
+    name = orm.StringField(required=True)
+    image = orm.URLField()
+    email = orm.EmailField(required=True)
+    password = orm.StringField(required=True)
 
 class Student(User):
-    type = field.Char(required=True, default='student')
-
-    @classmethod
-    def find_one(cls, *args, **kwargs):
-        if isinstance(args[0], dict):
-            args[0]['type'] = 'student';
-
-        res = db.users.find_one(args[0])
-        if(res):
-            return Student( cls._connection().find_one(*args, **kwargs) );
-        else:
-            return None
+   type = "student"
 
 class Mentor(User):
-    type = field.Char(required=True, default='mentor')
-
-    @classmethod
-    def find_one(cls, *args, **kwargs):
-        if isinstance(args[0], dict):
-            args[0]['type'] = 'mentor';
-
-        res = db.users.find_one(args[0])
-        if(res):
-            return Mentor( cls._connection().find_one(*args, **kwargs) );
-        else:
-            return None
+    type = "mentor"
 
 class Organizer(User):
-    type = field.Char(required=True, default='organizer')
-    managed_events = orm.List(type=ObjectId)
-
-    @classmethod
-    def find_one(cls, *args, **kwargs):
-        if isinstance(args[0], dict):
-            args[0]['type'] = 'organizer';
-
-        res = db.users.find_one(args[0])
-        if(res):
-            return Organizer( cls._connection().find_one(*args, **kwargs) );
-        else:
-            return None
+    type = "organizer"
 
 class DeletedUser(User):
-    _collection = 'deleted_events'
-    deleted_on = field.Date(required=True)
+    deleted_on = orm.DateTimeField(required=True)
