@@ -44,41 +44,9 @@ def login():
     else:
         return 'Incorrect password', 401
 
-@auth.route('/signup', methods=["POST"])
-def signup():
-    form_name = request.json['name']
-    form_email = request.json['email']
-    form_password = request.json['password']
-    form_type = request.json['type'] # student or mentor
-
-    if User.find_one({'email': form_email }):
-        return 'Email already exists', 400
-
-    user = User()
-
-    if form_type == 'student':
-        user = Student()
-    elif form_type == 'mentor':
-        user = Mentor()
-    elif form_type == 'organizer':
-        user = Organizer()
-
-    user.type = form_type
-    user.name = form_name
-    user.email = form_email
-    user.password = bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() )
-
-    user_id = user.save()
-
-    if not user_id:
-        return 'Error creating account', 500
-    
-    return create_token( user_id )
-
-
 @auth.route('/check_session', methods=["GET"])
 def check_session():
-    token = request.args.get('session')
+    token = request.headers.get('session')
     if app.sessions.get('session:'+token):
         return "true"
     else:
@@ -86,7 +54,7 @@ def check_session():
 
 @auth.route('/retrieve_user', methods=["GET"])
 def retrieve_user():
-    token = request.args.get('session')
+    token = request.headers.get('session')
 
     user_id = app.sessions.get('session:'+token)
     

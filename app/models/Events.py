@@ -3,8 +3,6 @@ import humongolus.field as field
 import humongolus.widget as widget
 
 from document import Document
-import users
-import projects
 
 class Event(Document):
     _collection = 'events'
@@ -12,13 +10,9 @@ class Event(Document):
     name = field.Char(required=True)
     location = field.Char(required=True)
     address = field.Char(required=True)
+    image = field.Url()
     start_date = field.Date(required=True)
     end_date = field.Date(required=True)
-    # projects = orm.Lazy(type=projects.Project, key="event")
-    # attendees = orm.Lazy(type=users.User, key="events")
-
-class EmbeddedEvent(orm.EmbeddedDocument):
-    _id = field.DocumentId(required=True, type=Event)
 
 
 class DeletedEvent(Event):

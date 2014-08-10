@@ -12,7 +12,7 @@ class Document(orm.Document):
     created = ""
     modified = ""
 
-    def to_json_obj(self):
+    def to_json_obj(self, populate=[]):
         ret = {}
         self.created = str(self.__created__)
         self.modified = str(self.__modified__)
@@ -26,12 +26,18 @@ class Document(orm.Document):
                         ret[key] = obj._json()
                     except:
                         ret[key] = str(obj)
+
+        for field in populate:
+            if ret[field]:
+                print 'field', ret[field]
+                ret[field] = self.__class__.find_id( str(ret[field]) )
+
         return ret;
 
-    def to_json(self):
-        return json.dumps( self.to_json_obj(), default=json_util.default )
+    def to_json(self, populate=[]):
+        return json.dumps( self.to_json_obj(populate=populate), default=json_util.default ), 200, {'Content-Type': 'application/json'}
 
     @classmethod
     def find_id(cls, id):
-
+        print "finding", id
         return super(Document, cls).find_one({ '_id': ObjectId(id) });

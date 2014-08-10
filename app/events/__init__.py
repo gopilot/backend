@@ -5,16 +5,16 @@ from dateutil import parser as dateParser
 from datetime import datetime
 import json
 from bson import json_util
-
+from bson.objectid import ObjectId
 from app.models.users import User, Student, Mentor, Organizer
-from app.models.events import Event, EmbeddedEvent, DeletedEvent
+from app.models.events import Event, DeletedEvent
 
 events = Blueprint('events', __name__)
 
 # POST /events
 @events.route('', methods=['POST'])
 def create_event():
-    user_id = app.auth.check_token( request.args.get('session') )
+    user_id = app.auth.check_token( request.headers.get('session') )
 
     if not user_id:
         return "Unauthorized request: Bad session token", 401
@@ -38,9 +38,9 @@ def create_event():
     if not event_id:
         return "Error creating event", 500
 
-    user.managed_events.append( EmbeddedEvent(_id=event_id) )
+    user.managed_events.append( ObjectId(event_id) )
 
-    return str(event_id)
+    return event.to_json()
 
 # GET /events
 @events.route('', methods=['GET'])
@@ -62,7 +62,7 @@ def find_event(event_id):
 # PUT /events/<event_id>
 @events.route('/<event_id>', methods=['PUT'])
 def update_event(event_id):
-    user_id = app.auth.check_token( request.args.get('session') )
+    user_id = app.auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -86,7 +86,7 @@ def update_event(event_id):
 # DELETE /events/<event_id>
 @events.route('/<event_id>', methods=["DELETE"])
 def remove_event(event_id):
-    user_id = app.auth.check_token( request.args.get('session') )
+    user_id = app.auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
 

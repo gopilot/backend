@@ -1,10 +1,9 @@
 import humongolus as orm
 import humongolus.field as field
 import humongolus.widget as widget
-
+from bson.objectid import ObjectId
 from document import Document
 import events
-import projects
 from app import db
 
 class User(Document):
@@ -19,14 +18,7 @@ class User(Document):
     image = field.Url()
     email = field.Email(required=True)
     password = field.Char(required=True)
-    events = orm.List(type=events.EmbeddedEvent) # Better way to do this? We want an array of DocumentIds
-
-
-class EmbeddedUser(orm.EmbeddedDocument):
-    _id = field.DocumentId(required=True, type=User)
-
-
-# TODO: Find a way we can call User.find and User.find_one and still get Students or Mentors
+    events = orm.List(type=ObjectId)
 
 class Student(User):
     type = field.Char(required=True, default='student')
@@ -58,7 +50,7 @@ class Mentor(User):
 
 class Organizer(User):
     type = field.Char(required=True, default='organizer')
-    managed_events = orm.List(type=events.EmbeddedEvent)
+    managed_events = orm.List(type=ObjectId)
 
     @classmethod
     def find_one(cls, *args, **kwargs):

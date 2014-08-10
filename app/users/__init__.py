@@ -14,7 +14,7 @@ from bson import json_util
 import bcrypt
 
 from app.models.users import User, Student, Mentor, Organizer, DeletedUser
-from app.models.events import Event, EmbeddedEvent
+from app.models.events import Event
 from app.models.projects import Project
 
 users = Blueprint('users', __name__)
@@ -27,7 +27,10 @@ def signup():
     form_password = request.json['password']
     form_type = request.json['type'] # student or mentor
 
-    if User.find_one({'email': form_email }):
+    if len(form_password) < 8:
+        return 'Password must be 8 characters or longer', 400
+
+    if User.find_one({ 'email': form_email }):
         return 'Email already exists', 400
 
     user = User()
@@ -54,7 +57,7 @@ def signup():
 # GET /users
 @users.route('', methods=["GET"])
 def get_all():
-    user_id = app.auth.check_token( request.args.get('session') )
+    user_id = app.auth.check_token( request.headers.get('session') )
 
     if not user_id:
         return "Unauthorized request: Bad session token", 401
@@ -79,7 +82,7 @@ def get_all():
 
 # GET /users/<user_id>
 @users.route('/<user_id>', methods=['GET'])
-def find_event(user_id):
+def find_user(user_id):
     user = User.find_id( user_id )
     if not user:
         return "User not found", 404
@@ -96,7 +99,7 @@ def find_event(user_id):
 # PUT /users/<user_id>
 @users.route('/<user_id>', methods=['PUT'])
 def update_user(user_id):
-    session_id = app.auth.check_token( request.args.get('session') )
+    session_id = app.auth.check_token( request.headers.get('session') )
     if not session_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -129,7 +132,7 @@ def update_user(user_id):
 # DELETE /users/<user_id>
 @users.route('/<user_id>', methods=["DELETE"])
 def remove_user(user_id):
-    session_id = app.auth.check_token( request.args.get('session') )
+    session_id = app.auth.check_token( request.headers.get('session') )
     if not session_id:
         return "Unauthorized request: Bad session token", 401
 

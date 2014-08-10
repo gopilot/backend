@@ -42,6 +42,9 @@ def start():
 	from events import events as EventBlueprint
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
 
+	from projects import projects as ProjectBlueprint
+	app.register_blueprint(ProjectBlueprint, url_prefix="/projects")
+
 	@app.route('/')
 	def index():
 		return render_template("index.html")
