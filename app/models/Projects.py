@@ -1,14 +1,10 @@
-import humongolus as orm
-import humongolus.field as field
-import humongolus.widget as widget
-from bson.objectid import ObjectId
+import mongoengine as orm
+
 from document import Document
 import users
 import events
 
-class Project(Document):
-    _collection = 'projects'
-
-    name = field.Char(required=True)
-    event = field.DocumentId(type=events.Event)
-    creators = orm.List(type=ObjectId)
+class Project(orm.Document):
+    name = orm.StringField(required=True)
+    event = orm.ReferenceField(events.Event)
+    creators = orm.ListField( orm.ReferenceField(users.Student) )

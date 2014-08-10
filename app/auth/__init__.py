@@ -1,10 +1,12 @@
 from flask import Flask, Blueprint, request, redirect, session
 import app
-import pymongo
+
 from json import dumps
 from uuid import uuid4 as random_uuid
 import bcrypt
-from app.models.users import User, Student, Mentor, Organizer
+from app.models.users import User
+
+jsonType = {'Content-Type': 'application/json'}
 
 auth = Blueprint('auth', __name__)
 
@@ -23,14 +25,14 @@ def check_token(token):
 def create_token(user_id):
     token = random_uuid().hex
     app.sessions.set('session:'+token, user_id)
-    return token;
+    return token
 
 @auth.route('/login', methods=["POST"])
 def login():
     form_email = request.get_json().get('email')
     form_password = request.get_json().get('password').encode('utf-8')
 
-    user = User.find_one({ 'email': form_email })
+    user = User.objects(email=form_email).first()
     if not user or not user.email:
         return 'Email not found', 404
 
@@ -38,9 +40,9 @@ def login():
 
     if bcrypt.hashpw(form_password, hashed) == hashed:
         return dumps({
-            'session': create_token( user._id ),
+            'session': create_token( user.id ),
             'user': user.to_json_obj()
-        })
+        }), 200, jsonType
     else:
         return 'Incorrect password', 401
 

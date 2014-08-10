@@ -1,20 +1,24 @@
-import humongolus as orm
-import humongolus.field as field
-import humongolus.widget as widget
+import mongoengine as orm
 
 from document import Document
+import users
 
 class Event(Document):
-    _collection = 'events'
+    meta = {
+        'allow_inheritance': True
+    }
+    name = orm.StringField(required=True)
+    location = orm.StringField(required=True)
+    address = orm.StringField(required=True)
+    image = orm.URLField()
 
-    name = field.Char(required=True)
-    location = field.Char(required=True)
-    address = field.Char(required=True)
-    image = field.Url()
-    start_date = field.Date(required=True)
-    end_date = field.Date(required=True)
+    start_date = orm.DateTimeField(required=True)
+    end_date = orm.DateTimeField(required=True)
 
+    organizers = orm.ListField( orm.ReferenceField(users.Organizer) )
+    attendees = orm.ListField( orm.ReferenceField(users.Student) )
+    mentors = orm.ListField( orm.ReferenceField(users.Mentor) )
 
 class DeletedEvent(Event):
     _collection = 'deleted_events'
-    deleted_on = field.Date(required=True)
+    deleted_on = orm.DateTimeField(required=True)

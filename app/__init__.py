@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, json
 import os
 import pymongo
 import redis
-import models.humongolus as orm
+import mongoengine
 from urlparse import urlparse
 from bson.objectid import ObjectId
 
@@ -17,20 +17,11 @@ app.config['TESTING']		= bool(os.getenv('TESTING', False))
 #print app.config
 
 def start():
-	global mongo_client
-	global db
 	global sessions
-
-	mongo_client = pymongo.MongoClient( app.config['MONGO_URL'] )
-	db = mongo_client[ app.config['MONGO_DB'] ]
+	print "STARTING", app.config['MONGO_DB'], app.config['MONGO_URL']
+	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 
 	redis_url = urlparse( app.config['REDIS_URL'] )
-	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
-
-	orm.settings( mongo_client )
-
-
-	db = mongo_client[ app.config['MONGO_DB'] ]
 	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
 
 	from auth import auth as AuthBlueprint
