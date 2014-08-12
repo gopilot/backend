@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint, request, redirect, session
 import app
 
-from json import dumps
+import json
 from uuid import uuid4 as random_uuid
 import bcrypt
 from app.models.users import User
@@ -39,9 +39,9 @@ def login():
     hashed = user.password.encode('utf-8')
 
     if bcrypt.hashpw(form_password, hashed) == hashed:
-        return dumps({
+        return json.dumps({
             'session': create_token( user.id ),
-            'user': user.to_json_obj()
+            'user': user.to_dict()
         }), 200, jsonType
     else:
         return 'Incorrect password', 401

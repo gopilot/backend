@@ -4,7 +4,6 @@ import app
 from dateutil import parser as dateParser
 from datetime import datetime
 import json
-from bson import json_util
 import bcrypt
 
 from app.models.users import User, Student, Mentor, Organizer, DeletedUser
@@ -49,7 +48,7 @@ def signup():
     
     return json.dumps({
             'session': app.auth.create_token( user.id ),
-            'user': user.to_json_obj()
+            'user': user.to_dict()
         }), 200, jsonType
 
 # GET /users
@@ -67,9 +66,9 @@ def get_all():
 
     users = []
     for usr in User.objects:
-        users.append( usr.to_json_obj() )
+        users.append( usr.to_dict() )
 
-    return json.dumps( users, default=json_util.default ), 200, jsonType
+    return json.dumps( users ), 200, jsonType
 
 # GET /users/<user_id>
 @users.route('/<user_id>', methods=['GET'])

@@ -1,11 +1,11 @@
 import mongoengine as orm
 
 from document import Document
+import events
 
 class User(Document):
     meta = {
-        'allow_inheritance': True,
-        'hidden': ['password']
+        'allow_inheritance': True
     }
     _hidden = ['password']
     type = orm.StringField()
@@ -13,6 +13,9 @@ class User(Document):
     image = orm.URLField()
     email = orm.EmailField(required=True)
     password = orm.StringField(required=True)
+
+    # Different based on context of user - whether events attended, mentored, or organized
+    events = orm.ListField( orm.ReferenceField(events.Event) )
 
 class Student(User):
    type = "student"

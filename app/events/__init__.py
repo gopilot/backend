@@ -3,10 +3,11 @@ import app
 
 from dateutil import parser as dateParser
 from datetime import datetime
-import json
-from bson import json_util
+
 from app.models.users import User, Student, Mentor, Organizer
 from app.models.events import Event, DeletedEvent
+
+import json
 
 jsonType = {'Content-Type': 'application/json'}
 
@@ -34,9 +35,11 @@ def create_event():
     event.address = body.get('address')
     event.image = body.get('image')
 
-    event.organizers.append( user )
-
     event.save()
+
+    user.events.append( event )
+
+    user.save()
 
     if not event.id:
         return "Error creating event", 500
@@ -48,9 +51,9 @@ def create_event():
 def all_events():
     events = []
     for evt in Event.objects:
-        events.append( evt.to_json_obj() )
+        events.append( evt.to_dict() )
 
-    return json.dumps( events, default=json_util.default ), 200, jsonType
+    return json.dumps( events ), 200, jsonType
 
 # GET /events/<event_id>
 @events.route('/<event_id>', methods=['GET'])

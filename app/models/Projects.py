@@ -4,7 +4,7 @@ from document import Document
 import users
 import events
 
-class Project(orm.Document):
+class Project(Document):
     name = orm.StringField(required=True)
     event = orm.ReferenceField(events.Event)
-    creators = orm.ListField( orm.ReferenceField(users.Student) )
+    creators = orm.ListField( orm.ReferenceField(users.Student), default=[] )
