@@ -18,13 +18,13 @@ class User(Document):
     events = orm.ListField( orm.ReferenceField(events.Event) )
 
 class Student(User):
-   type = "student"
+   type = orm.StringField(default="student")
 
 class Mentor(User):
-    type = "mentor"
+    type = orm.StringField(default="mentor")
 
 class Organizer(User):
-    type = "organizer"
+    type = orm.StringField(default="organizer")
 
 class DeletedUser(User):
     deleted_on = orm.DateTimeField(required=True)
