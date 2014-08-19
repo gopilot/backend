@@ -34,8 +34,8 @@ class RegistrationTests(unittest.TestCase):
 
         data = json.dumps({
             'name': 'Test Event',
-            'start_date': str(datetime.datetime.today()),
-            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=1)),
+            'start_date': str(datetime.datetime.today()+ datetime.timedelta(days=5)),
+            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=6)),
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })
@@ -90,7 +90,12 @@ class RegistrationTests(unittest.TestCase):
 
     def test_unregister(self):
         response = self.app.delete('/events/'+self.event+"/register", headers=h(session=self.student_token))
-        assert json.loads(response.data)['status'] == "removed"   
+        assert json.loads(response.data)['status'] == "removed"
+
+    def test_user_events(self):
+        response = self.app.get('/users/'+self.student['id']+"/events", headers=h())
+        print response.data
+        assert json.loads(response.data)['upcoming'][0]['id'] == self.event
 
 if __name__ == '__main__':
     unittest.main()
