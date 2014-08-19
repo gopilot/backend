@@ -34,12 +34,24 @@ class RegistrationTests(unittest.TestCase):
 
         data = json.dumps({
             'name': 'Test Event',
-            'start_date': str(datetime.datetime.today()+ datetime.timedelta(days=5)),
-            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=6)),
+            'start_date': str(datetime.datetime.today()+ datetime.timedelta(days=12)),
+            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=13)),
+            'registration_end': str(datetime.datetime.today() + datetime.timedelta(days=6)),
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })
         self.event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data)['id']
+
+        data = json.dumps({
+            'name': 'Test Event',
+            'start_date': str(datetime.datetime.today()+ datetime.timedelta(days=5)),
+            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=6)),
+            'registration_end': str(datetime.datetime.now()),
+            'location': 'Tech Inc. HQ',
+            'address': '1111 Random Way, Townville, CA'
+        });
+        self.old_event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data)['id']
+
 
         data = json.dumps({
             'name': 'Main Student',
@@ -88,13 +100,17 @@ class RegistrationTests(unittest.TestCase):
         response = self.app.post('/events/'+self.event+"/register", headers=h(session=self.student_token))
         assert json.loads(response.data)['status'] == "registered"
 
+    def test_register_old(self):
+        response = self.app.post('/events/'+self.old_event+"/register", headers=h(session=self.student_token))
+        assert json.loads(response.data)['status'] == "failed"
+        assert json.loads(response.data)['reason'] == "Registration has closed"
+
     def test_unregister(self):
         response = self.app.delete('/events/'+self.event+"/register", headers=h(session=self.student_token))
         assert json.loads(response.data)['status'] == "removed"
 
     def test_user_events(self):
         response = self.app.get('/users/'+self.student['id']+"/events", headers=h())
-        print response.data
         assert json.loads(response.data)['upcoming'][0]['id'] == self.event
 
 if __name__ == '__main__':

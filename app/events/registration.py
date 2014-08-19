@@ -78,6 +78,13 @@ def register(event_id):
         pass;
 
     ## Check waitlist
+    
+    if(event.registration_end < datetime.now()):
+        return json.dumps({
+            "status": "failed",
+             "reason": "Registration has closed"
+        }), 200, jsonType
+
 
     return json.dumps({"status": "registered"}), 200, jsonType
 

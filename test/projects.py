@@ -44,8 +44,9 @@ class EventTests(unittest.TestCase):
 
         event_data = json.dumps({
             'name': 'Test Event',
-            'start_date': str(datetime.datetime.today()),
-            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=1)),
+            'start_date': str(datetime.datetime.today() + datetime.timedelta(days=9)),
+            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=10)),
+            'registration_end': str(datetime.datetime.today() + datetime.timedelta(days=6)),
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })
@@ -95,8 +96,9 @@ class EventTests(unittest.TestCase):
     def test_get_all_projects_event(self):
         event2_data = json.dumps({
             'name': 'Test Event 2',
-            'start_date': str(datetime.datetime.today()),
-            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=1)),
+            'start_date': str(datetime.datetime.today() + datetime.timedelta(days=9)),
+            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=10)),
+            'registration_end': str(datetime.datetime.today() + datetime.timedelta(days=6)),
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })

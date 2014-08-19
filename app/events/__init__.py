@@ -31,6 +31,7 @@ def create_event():
     event.name = body.get('name')
     event.start_date = dateParser.parse( body.get('start_date') )
     event.end_date = dateParser.parse( body.get('end_date') )
+    event.registration_end = dateParser.parse( body.get('registration_end') )
     event.location = body.get('location')
     event.address = body.get('address')
     event.image = body.get('image')

@@ -13,6 +13,7 @@ class Event(Document):
 
     start_date = orm.DateTimeField(required=True)
     end_date = orm.DateTimeField(required=True)
+    registration_end = orm.DateTimeField(required=True)
 
 class DeletedEvent(Event):
     deleted_on = orm.DateTimeField(required=True)
