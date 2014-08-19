@@ -10,7 +10,6 @@ from app.models.events import Event, DeletedEvent
 import json
 
 from . import events, jsonType
-print 'registration'
 
 ## These endpoints need any security?
 @events.route('/<event_id>/<attendee_type>', methods=['GET'])
@@ -71,14 +70,16 @@ def register(event_id):
     if not event:
         return "Event not found", 404
 
-    user.events.append( event_id )
+    user.events.append( event )
     user.save()
 
     if user.type == 'student' or user.type == 'mentor':
         ## Send confirmation email
         pass;
 
-    return "OK", 200
+    ## Check waitlist
+
+    return json.dumps({"status": "registered"}), 200, jsonType
 
 @events.route('/<event_id>/register', methods=['DELETE'])
 def unregister(event_id):
@@ -94,9 +95,9 @@ def unregister(event_id):
     if not event:
         return "Event not found", 404
 
-    user.events.remove( event_id )
+    user.events.remove( event )
     user.save()
 
-    return "OK", 200
+    return json.dumps({"status": "removed"}), 200, jsonType
 
 

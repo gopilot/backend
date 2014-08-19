@@ -64,16 +64,6 @@ class EventTests(unittest.TestCase):
         response = self.app.get('/events/'+self.test_event, headers=h(session=self.organizer_token))
         assert json.loads(response.data)['name'] == 'Test Event'
 
-    def test_get_organizers(self):
-        response = self.app.get('/events/'+self.test_event+"/organizers", headers=h())
-        assert self.organizer['id'] == json.loads(response.data)[0]['id']
-
-    def test_get_attendees(self):
-        response = self.app.get('/events/'+self.test_event+"/attendees", headers=h())
-        assert len(json.loads(response.data)['students']) >= 0 ## Change this later
-        assert len(json.loads(response.data)['mentors']) >= 0
-        assert self.organizer['id'] == json.loads(response.data)['organizers'][0]['id']
-
     def test_get_all_events(self):
         response = self.app.get('/events')
         assert len( json.loads(response.data) ) > 0
