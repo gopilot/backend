@@ -13,7 +13,12 @@ class Document(orm.Document):
     _hidden = []
 
     @classmethod
-    def find_id(cls, oid):
+    def find_id(cls, id):
+        try:
+            oid = ObjectId(id)
+        except:
+            return False
+
         return cls.objects(id=oid).first()
 
     def to_dict(self, debug=False):

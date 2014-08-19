@@ -31,6 +31,7 @@ def start():
 	app.register_blueprint(UserBlueprint, url_prefix="/users")
 
 	from events import events as EventBlueprint
+	from events import registration
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
 
 	from projects import projects as ProjectBlueprint

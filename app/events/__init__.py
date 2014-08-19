@@ -64,44 +64,6 @@ def find_event(event_id):
 
     return event.to_json()
 
-## These endpoints need any security?
-@events.route('/<event_id>/attendees', methods=['GET'])
-def get_attendees(event_id):
-    attendees = dict(
-        students=[],
-        mentors=[],
-        organizers=[]
-    )
-    
-    for usr in User.objects(events=event_id):
-        if usr.type in ['student', 'mentor', 'organizer']:
-            attendees[ usr.type+'s' ].append( usr.to_dict() )
-        else:
-            attendees['other'].append( usr.to_dict() )
-
-    return json.dumps( attendees ), 200, jsonType
-
-@events.route('/<event_id>/students', methods=['GET'])
-def get_students(event_id):
-    students = []
-    for usr in Student.objects(events=event_id):
-        students.append( usr.to_dict() )
-    return json.dumps( students ), 200, jsonType
-
-@events.route('/<event_id>/mentors', methods=['GET'])
-def get_mentors(event_id):
-    mentors = []
-    for usr in Mentor.objects(events=event_id):
-        mentors.append( usr.to_dict() )
-    return json.dumps( mentors )
-
-@events.route('/<event_id>/organizers', methods=['GET'])
-def get_organizers(event_id):
-    organizers = []
-    for usr in Organizer.objects(events=event_id):
-        organizers.append( usr.to_dict() )
-    return json.dumps( organizers )
-
 # PUT /events/<event_id>
 @events.route('/<event_id>', methods=['PUT'])
 def update_event(event_id):
@@ -148,5 +110,3 @@ def remove_event(event_id):
     event.delete()
     
     return 'Event deleted'
-
-
