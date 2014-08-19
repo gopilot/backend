@@ -129,3 +129,22 @@ def remove_user(user_id):
     user.delete()
     
     return 'User deleted'
+
+# GET /users/<user_id>
+@users.route('/<user_id>/events', methods=['GET'])
+def find_user_events(user_id):
+    user = User.find_id( user_id )
+    if not user:
+        return "User not found", 404
+
+    result = {
+        "upcoming": [],
+        "attended": []
+    }
+    for evt in user.events:
+        if evt.start_date > datetime.now():
+            result['upcoming'].append( evt.to_dict() )
+        else:
+            result['attended'].append( evt.to_dict() )
+
+    return json.dumps( result ), 200, jsonType
