@@ -14,11 +14,8 @@ class Document(orm.Document):
 
     @classmethod
     def find_id(cls, id):
-        print("Cls", cls)
-        print("id", id)
         try:
             oid = ObjectId(id)
-            print("oid", oid)
         except:
             return False
 
@@ -27,9 +24,9 @@ class Document(orm.Document):
     def to_dict(self, debug=False):
         data = {}
         if debug:
-            print(self._data)
+            print self._data
 
-        for key, obj in self._data.items():
+        for key, obj in self._data.iteritems():
             if not key in self._hidden and not key.startswith('_'):
                 if type(obj) == list and len(obj) > 0:
                     if isinstance(obj[0], Document):
@@ -56,7 +53,7 @@ class Document(orm.Document):
 
 def remove_hidden(obj, hidden):
     d = {}
-    for k, o in obj.items():
+    for k, o in obj.iteritems():
         if not k in hidden:
             if isinstance(o, Document):
                 d[k] = remove_hidden(o._data, hidden)

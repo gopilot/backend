@@ -28,7 +28,7 @@ class RegistrationTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'organizer'
         })
-        organizer_result = json.loads( self.app.post('/users', headers=h(), data=data).data )
+        organizer_result = json.loads( self.app.post('/users', headers=h(), data=data).data.decode('utf-8') )
         self.organizer = organizer_result['user']
         self.organizer_token = organizer_result['session']
 
@@ -40,7 +40,7 @@ class RegistrationTests(unittest.TestCase):
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })
-        self.event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data)['id']
+        self.event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data.decode('utf-8'))['id']
 
         data = json.dumps({
             'name': 'Test Event',
@@ -50,7 +50,7 @@ class RegistrationTests(unittest.TestCase):
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         });
-        self.old_event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data)['id']
+        self.old_event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data.decode('utf-8'))['id']
 
 
         data = json.dumps({
@@ -59,7 +59,7 @@ class RegistrationTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'student'
         })
-        student_result = json.loads( self.app.post('/users', headers=h(), data=data).data )
+        student_result = json.loads( self.app.post('/users', headers=h(), data=data).data.decode('utf-8') )
         self.student = student_result['user']
         self.student_token = student_result['session']
         self.app.post('/events/'+self.event+'/register', headers=h(session=self.student_token))
@@ -72,7 +72,7 @@ class RegistrationTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'mentor'
         })
-        mentor_result = json.loads( self.app.post('/users', headers=h(), data=data).data )
+        mentor_result = json.loads( self.app.post('/users', headers=h(), data=data).data.decode('utf-8') )
         self.mentor = mentor_result['user']
         self.mentor_token = mentor_result['session']
         self.app.post('/events/'+self.event+'/register', headers=h(session=self.mentor_token))
@@ -80,38 +80,38 @@ class RegistrationTests(unittest.TestCase):
 
     def test_get_attendees(self):
         response = self.app.get('/events/'+self.event+"/attendees", headers=h())
-        assert self.mentor['id'] == json.loads(response.data)['mentors'][0]['id']
-        assert self.student['id'] == json.loads(response.data)['students'][0]['id']
-        assert self.organizer['id'] == json.loads(response.data)['organizers'][0]['id']
+        assert self.mentor['id'] == json.loads(response.data.decode('utf-8'))['mentors'][0]['id']
+        assert self.student['id'] == json.loads(response.data.decode('utf-8'))['students'][0]['id']
+        assert self.organizer['id'] == json.loads(response.data.decode('utf-8'))['organizers'][0]['id']
 
     def test_get_organizers(self):
         response = self.app.get('/events/'+self.event+"/organizers", headers=h())
-        assert self.organizer['id'] == json.loads(response.data)[0]['id']
+        assert self.organizer['id'] == json.loads(response.data.decode('utf-8'))[0]['id']
 
     def test_get_mentors(self):
         response = self.app.get('/events/'+self.event+"/mentors", headers=h())
-        assert self.mentor['id'] == json.loads(response.data)[0]['id']
+        assert self.mentor['id'] == json.loads(response.data.decode('utf-8'))[0]['id']
 
     def test_get_students(self):
         response = self.app.get('/events/'+self.event+"/students", headers=h())
-        assert self.student['id'] == json.loads(response.data)[0]['id']
+        assert self.student['id'] == json.loads(response.data.decode('utf-8'))[0]['id']
 
     def test_register(self):
         response = self.app.post('/events/'+self.event+"/register", headers=h(session=self.student_token))
-        assert json.loads(response.data)['status'] == "registered"
+        assert json.loads(response.data.decode('utf-8'))['status'] == "registered"
 
     def test_register_old(self):
         response = self.app.post('/events/'+self.old_event+"/register", headers=h(session=self.student_token))
-        assert json.loads(response.data)['status'] == "failed"
-        assert json.loads(response.data)['reason'] == "Registration has closed"
+        assert json.loads(response.data.decode('utf-8'))['status'] == "failed"
+        assert json.loads(response.data.decode('utf-8'))['reason'] == "Registration has closed"
 
     def test_unregister(self):
         response = self.app.delete('/events/'+self.event+"/register", headers=h(session=self.student_token))
-        assert json.loads(response.data)['status'] == "removed"
+        assert json.loads(response.data.decode('utf-8'))['status'] == "removed"
 
     def test_user_events(self):
         response = self.app.get('/users/'+self.student['id']+"/events", headers=h())
-        assert json.loads(response.data)['upcoming'][0]['id'] == self.event
+        assert json.loads(response.data.decode('utf-8'))['upcoming'][0]['id'] == self.event
 
 if __name__ == '__main__':
     unittest.main()

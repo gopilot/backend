@@ -28,7 +28,7 @@ class PostTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'organizer'
         })
-        self.organizer = json.loads( self.app.post('/users', headers=h(), data=organizer_data).data )
+        self.organizer = json.loads( self.app.post('/users', headers=h(), data=organizer_data).data.decode('utf-8') )
         self.organizer_token = self.organizer['session']
         self.organizer = self.organizer['user']
 
@@ -38,7 +38,7 @@ class PostTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'student'
         })
-        self.student = json.loads( self.app.post('/users', headers=h(), data=student_data).data )
+        self.student = json.loads( self.app.post('/users', headers=h(), data=student_data).data.decode('utf-8') )
         self.student_token = self.student['session']
         self.student = self.student['user']
 
@@ -50,7 +50,7 @@ class PostTests(unittest.TestCase):
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })
-        self.event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event_data).data)
+        self.event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event_data).data.decode('utf-8'))
 
         post_data = json.dumps({
             'title': 'Test Post',
@@ -58,7 +58,7 @@ class PostTests(unittest.TestCase):
             'image': "http://placekitten.com/g/200/200",
             'notif': "Text of the iOS notification"
         })
-        self.post = json.loads(self.app.post('/events/'+ self.event['id'] +'/posts', headers=h(session=self.organizer_token), data=post_data).data)
+        self.post = json.loads(self.app.post('/events/'+ self.event['id'] +'/posts', headers=h(session=self.organizer_token), data=post_data).data.decode('utf-8'))
 
     def test_create_post(self):
         data = json.dumps({
@@ -69,37 +69,37 @@ class PostTests(unittest.TestCase):
         })
         response = self.app.post('/events/'+ self.event['id'] +'/posts', headers=h(session=self.organizer_token), data=data)
 
-        assert json.loads(response.data)['title'] == 'Test Post 2'
-        assert json.loads(response.data)['author']['name'] == 'Main Organizer'
-        assert json.loads(response.data)['event']['name'] == "Test Event"
+        assert json.loads(response.data.decode('utf-8'))['title'] == 'Test Post 2'
+        assert json.loads(response.data.decode('utf-8'))['author']['name'] == 'Main Organizer'
+        assert json.loads(response.data.decode('utf-8'))['event']['name'] == "Test Event"
 
     def test_update_post(self):
         data = json.dumps({
             'title': 'Re-titled Post'
         })
         response = self.app.put('/events/'+ self.event['id'] +'/posts/'+self.post['id'], headers=h(session=self.organizer_token), data=data)
-        assert json.loads(response.data)['title'] == 'Re-titled Post'
+        assert json.loads(response.data.decode('utf-8'))['title'] == 'Re-titled Post'
 
     def test_get_post(self):
         response = self.app.get('/events/'+ self.event['id'] +'/posts/'+self.post['id'], headers=h(session=self.organizer_token))
-        assert json.loads(response.data)['title'] == 'Test Post'
+        assert json.loads(response.data.decode('utf-8'))['title'] == 'Test Post'
 
     def test_get_post_unauthorized(self):
         response = self.app.get('/events/'+ self.event['id'] +'/posts/'+self.post['id'], headers=h(session=self.student_token))
-        assert response.data == "Unauthorized request: User doesn't have permission"
+        assert response.data.decode('utf-8') == "Unauthorized request: User doesn't have permission"
 
     def test_get_all_posts(self):
         response = self.app.get('/events/'+ self.event['id'] +'/posts', headers=h(session=self.organizer_token))
-        assert len( json.loads(response.data) ) == 1
+        assert len( json.loads(response.data.decode('utf-8')) ) == 1
 
     def test_get_all_posts_unauthorized(self):
         response = self.app.get('/events/'+ self.event['id'] +'/posts/'+self.post['id'], headers=h(session=self.student_token))
-        assert response.data == "Unauthorized request: User doesn't have permission"
+        assert response.data.decode('utf-8') == "Unauthorized request: User doesn't have permission"
 
 
     def test_delete_project(self):
         response = self.app.delete('/events/'+ self.event['id'] +'/posts/'+self.post['id'], headers=h(session=self.organizer_token))
-        assert response.data == 'Post deleted'
+        assert response.data.decode('utf-8') == 'Post deleted'
 
 if __name__ == '__main__':
     unittest.main()

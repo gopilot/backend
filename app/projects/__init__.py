@@ -53,7 +53,7 @@ def create_project():
 def get_all():
     projects = []
     query = {}
-    for key, obj in request.args.iteritems():
+    for key, obj in request.args.items():
         query[key] = ObjectId(obj)
 
     for project in Project.objects(**query):
@@ -85,7 +85,7 @@ def update_project(project_id):
     if not project:
         return "Project not found", 404
 
-    for key, value in request.get_json().items():
+    for key, value in list(request.get_json().items()):
         if not key.startswith('_'): # Some security
             setattr(project, key, value)
 

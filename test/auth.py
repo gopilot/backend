@@ -28,25 +28,25 @@ class AuthTests(unittest.TestCase):
             'type': 'student'
         })
 
-        self.test_token = json.loads( self.app.post('/users', headers=h(), data=data).data )['session']
+        self.test_token = json.loads( self.app.post('/users', headers=h(), data=data).data.decode('utf-8') )['session']
         
     ## Test the check_session endpoint  
     def test_check_session(self):
         response = self.app.get('/auth/check_session', headers=h(session=self.test_token))
-        assert response.data == 'true'
+        assert response.data.decode('utf-8') == 'true'
 
     ## Test the check_session endpoint with a bad token
     def test_check_session_fail(self):
         response = self.app.get('/auth/check_session', headers=h(session="X"+self.test_token))
-        assert response.data == 'false'
+        assert response.data.decode('utf-8') == 'false'
 
     def test_retrieve_user(self):
         response = self.app.get('/auth/retrieve_user', headers=h(session=self.test_token))
-        assert json.loads(response.data)['name'] == 'Main user'
+        assert json.loads(response.data.decode('utf-8'))['name'] == 'Main user'
 
     def test_retrieve_user_fail(self):
         response = self.app.get('/auth/retrieve_user', headers=h(session="X"+self.test_token))
-        assert response.data == 'Session invalid'
+        assert response.data.decode('utf-8') == 'Session invalid'
 
     ## Test the login
     def test_login(self):
@@ -54,13 +54,13 @@ class AuthTests(unittest.TestCase):
             'email': 'test@gopilot.org',
             'password': 'test-test'
         })
-        response = self.app.post('/auth/login', headers=h(), data=data).data
+        response = self.app.post('/auth/login', headers=h(), data=data).data.decode('utf-8')
         response = json.loads(response)
         assert len(response['session']) > 0
         assert response['user']['name'] == 'Main user'
 
         token_debug = self.app.get('/auth/check_session', headers=h(session=response['session']))
-        assert token_debug.data == 'true'
+        assert token_debug.data.decode('utf-8') == 'true'
 
     ## Test login, with a bad email
     def test_login_fail_email(self):
@@ -69,7 +69,7 @@ class AuthTests(unittest.TestCase):
             'password': 'test-test'
         })
         response = self.app.post('/auth/login', headers=h(), data=data)
-        assert response.data == 'Email not found'
+        assert response.data.decode('utf-8') == 'Email not found'
 
     ## Test login, with a bad password
     def test_login_fail_password(self):
@@ -78,7 +78,7 @@ class AuthTests(unittest.TestCase):
             'password': 'X test-test'
         })
         response = self.app.post('/auth/login', headers=h(), data=data)
-        assert response.data == 'Incorrect password'
+        assert response.data.decode('utf-8') == 'Incorrect password'
 
 if __name__ == '__main__':
     unittest.main()

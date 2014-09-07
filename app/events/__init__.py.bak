@@ -81,7 +81,7 @@ def update_event(event_id):
         return "Event not found", 404
 
 
-    for key, value in list(request.get_json().items()):
+    for key, value in request.get_json().items():
         if not key.startswith('_'): # Some security
             setattr(event, key, value)
 

@@ -28,7 +28,7 @@ class EventTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'organizer'
         })
-        organizer_result = json.loads( self.app.post('/users', headers=h(), data=data).data )
+        organizer_result = json.loads( self.app.post('/users', headers=h(), data=data).data.decode('utf-8') )
         self.organizer = organizer_result['user']
         self.organizer_token = organizer_result['session']
 
@@ -40,7 +40,7 @@ class EventTests(unittest.TestCase):
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })
-        self.test_event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data)['id']
+        self.test_event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data.decode('utf-8'))['id']
 
     def test_create_event(self):
         data = json.dumps({
@@ -53,26 +53,26 @@ class EventTests(unittest.TestCase):
             'image': 'http://placekitten.com/400/400'
         })
         response = self.app.post('/events', headers=h(session=self.organizer_token), data=data)
-        assert len(response.data) > 20
+        assert len(response.data.decode('utf-8')) > 20
 
     def test_update_event(self):
         data = json.dumps({
             'name': 'Renamed Event'
         })
         response = self.app.put('/events/'+self.test_event, headers=h(session=self.organizer_token), data=data)
-        assert json.loads(response.data)['name'] == 'Renamed Event'
+        assert json.loads(response.data.decode('utf-8'))['name'] == 'Renamed Event'
 
     def test_get_event(self):
         response = self.app.get('/events/'+self.test_event, headers=h(session=self.organizer_token))
-        assert json.loads(response.data)['name'] == 'Test Event'
+        assert json.loads(response.data.decode('utf-8'))['name'] == 'Test Event'
 
     def test_get_all_events(self):
         response = self.app.get('/events')
-        assert len( json.loads(response.data) ) > 0
+        assert len( json.loads(response.data.decode('utf-8')) ) > 0
 
     def test_delete_event(self):
         response = self.app.delete('/events/'+self.test_event, headers=h(session=self.organizer_token))
-        assert response.data == 'Event deleted'
+        assert response.data.decode('utf-8') == 'Event deleted'
 
 if __name__ == '__main__':
     unittest.main()

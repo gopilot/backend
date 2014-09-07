@@ -1,6 +1,6 @@
 import redis
 import pymongo
-import urllib.parse
+import urlparse
 
 import app as backend
 

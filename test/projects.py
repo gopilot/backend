@@ -28,7 +28,7 @@ class EventTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'student'
         })
-        self.student = json.loads( self.app.post('/users', headers=h(), data=student_data).data )
+        self.student = json.loads( self.app.post('/users', headers=h(), data=student_data).data.decode('utf-8') )
         self.student_token = self.student['session']
         self.student = self.student['user']
 
@@ -38,7 +38,7 @@ class EventTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'organizer'
         })
-        self.organizer = json.loads( self.app.post('/users', headers=h(), data=organizer_data).data )
+        self.organizer = json.loads( self.app.post('/users', headers=h(), data=organizer_data).data.decode('utf-8') )
         self.organizer_token = self.organizer['session']
         self.organizer = self.organizer['user']
 
@@ -50,14 +50,14 @@ class EventTests(unittest.TestCase):
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })
-        self.event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event_data).data)
+        self.event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event_data).data.decode('utf-8'))
 
         project_data = json.dumps({
             'name': 'Test Project',
             'event': self.event['id'],
             'creator': self.student['id']
         })
-        self.project = json.loads(self.app.post('/projects', headers=h(session=self.student_token), data=project_data).data)
+        self.project = json.loads(self.app.post('/projects', headers=h(session=self.student_token), data=project_data).data.decode('utf-8'))
 
     def test_create_project(self):
         data = json.dumps({
@@ -67,31 +67,31 @@ class EventTests(unittest.TestCase):
         })
         response = self.app.post('/projects', headers=h(session=self.student_token), data=data)
 
-        assert json.loads(response.data)['name'] == 'Test Project2'
-        assert json.loads(response.data)['creators'][0]['name'] == 'Main Student'
-        assert json.loads(response.data)['event']['name'] == "Test Event"
+        assert json.loads(response.data.decode('utf-8'))['name'] == 'Test Project2'
+        assert json.loads(response.data.decode('utf-8'))['creators'][0]['name'] == 'Main Student'
+        assert json.loads(response.data.decode('utf-8'))['event']['name'] == "Test Event"
 
     def test_update_project(self):
         data = json.dumps({
             'name': 'Renamed Project'
         })
         response = self.app.put('/projects/'+self.project['id'], headers=h(session=self.student_token), data=data)
-        assert json.loads(response.data)['name'] == 'Renamed Project'
+        assert json.loads(response.data.decode('utf-8'))['name'] == 'Renamed Project'
 
     def test_update_project_organizer(self):
         data = json.dumps({
             'name': 'Renamed Project2'
         })
         response = self.app.put('/projects/'+self.project['id'], headers=h(session=self.organizer_token), data=data)
-        assert json.loads(response.data)['name'] == 'Renamed Project2'
+        assert json.loads(response.data.decode('utf-8'))['name'] == 'Renamed Project2'
 
     def test_get_project(self):
         response = self.app.get('/projects/'+self.project['id'], headers=h(session=self.student_token))
-        assert json.loads(response.data)['name'] == 'Test Project'
+        assert json.loads(response.data.decode('utf-8'))['name'] == 'Test Project'
 
     def test_get_all_projects(self):
         response = self.app.get('/projects')
-        assert len( json.loads(response.data) ) == 1
+        assert len( json.loads(response.data.decode('utf-8')) ) == 1
 
     def test_get_all_projects_event(self):
         event2_data = json.dumps({
@@ -102,7 +102,7 @@ class EventTests(unittest.TestCase):
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })
-        self.event2 = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event2_data).data)
+        self.event2 = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event2_data).data.decode('utf-8'))
 
         project2_data = json.dumps({
             'name': 'Test Project',
@@ -112,7 +112,7 @@ class EventTests(unittest.TestCase):
 
         response = self.app.get('/projects?event='+self.event['id'])
 
-        assert len( json.loads(response.data) ) == 1
+        assert len( json.loads(response.data.decode('utf-8')) ) == 1
 
     def test_get_all_projects_creator(self):
         student_data = json.dumps({
@@ -121,7 +121,7 @@ class EventTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'student'
         })
-        self.student2_token = json.loads(self.app.post('/users', headers=h(), data=student_data).data )['session']
+        self.student2_token = json.loads(self.app.post('/users', headers=h(), data=student_data).data.decode('utf-8') )['session']
 
 
         project2_data = json.dumps({
@@ -132,15 +132,15 @@ class EventTests(unittest.TestCase):
 
         response = self.app.get('/projects?creators='+self.student['id'])
 
-        assert len( json.loads(response.data) ) == 1
+        assert len( json.loads(response.data.decode('utf-8')) ) == 1
 
     def test_delete_project(self):
         response = self.app.delete('/projects/'+self.project['id'], headers=h(session=self.student_token))
-        assert response.data == 'Project deleted'
+        assert response.data.decode('utf-8') == 'Project deleted'
 
     def test_delete_project_organizer(self):
         response = self.app.delete('/projects/'+self.project['id'], headers=h(session=self.organizer_token))
-        assert response.data == 'Project deleted'
+        assert response.data.decode('utf-8') == 'Project deleted'
 
 
 if __name__ == '__main__':

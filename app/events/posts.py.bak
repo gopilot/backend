@@ -123,7 +123,7 @@ def update_post(event_id, post_id):
     if not post:
         return "Post not found", 404
 
-    for key, value in list(request.get_json().items()):
+    for key, value in request.get_json().items():
         if not key.startswith('_'): # Some security
             setattr(post, key, value)
 

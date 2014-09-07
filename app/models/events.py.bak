@@ -1,6 +1,6 @@
 import mongoengine as orm
 
-from .document import Document
+from document import Document
 
 class Event(Document):
     meta = {

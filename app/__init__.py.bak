@@ -3,7 +3,7 @@ import os
 import pymongo
 import redis
 import mongoengine
-from urllib.parse import urlparse
+from urlparse import urlparse
 from bson.objectid import ObjectId
 
 app = Flask(__name__)
@@ -18,24 +18,24 @@ app.config['TESTING']		= bool(os.getenv('TESTING', False))
 
 def start():
 	global sessions
-	print("STARTING", app.config['MONGO_DB'], app.config['MONGO_URL'])
+	print "STARTING", app.config['MONGO_DB'], app.config['MONGO_URL']
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 
 	redis_url = urlparse( app.config['REDIS_URL'] )
 	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
 
-	from .auth import auth as AuthBlueprint
+	from auth import auth as AuthBlueprint
 	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
 
-	from .users import users as UserBlueprint
+	from users import users as UserBlueprint
 	app.register_blueprint(UserBlueprint, url_prefix="/users")
 
-	from .events import events as EventBlueprint
-	from .events import registration
-	from .events import posts
+	from events import events as EventBlueprint
+	from events import registration
+	from events import posts
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
 
-	from .projects import projects as ProjectBlueprint
+	from projects import projects as ProjectBlueprint
 	app.register_blueprint(ProjectBlueprint, url_prefix="/projects")
 
 	@app.route('/')

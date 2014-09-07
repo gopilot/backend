@@ -1,7 +1,7 @@
 import mongoengine as orm
 
-from .document import Document
-from . import events
+from document import Document
+import events
 
 class User(Document):
     meta = {

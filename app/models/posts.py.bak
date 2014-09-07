@@ -1,8 +1,8 @@
 import mongoengine as orm
 
-from .document import Document
-from . import users
-from . import events
+from document import Document
+import users
+import events
 
 class Post(Document):
     event = orm.ReferenceField(events.Event)
