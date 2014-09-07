@@ -32,6 +32,7 @@ def start():
 
 	from events import events as EventBlueprint
 	from events import registration
+	from events import posts
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
 
 	from projects import projects as ProjectBlueprint
