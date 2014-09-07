@@ -32,6 +32,16 @@ class PostTests(unittest.TestCase):
         self.organizer_token = self.organizer['session']
         self.organizer = self.organizer['user']
 
+        student_data = json.dumps({
+            'name': 'Test Student',
+            'email': 'student@gopilot.org',
+            'password': 'test-test',
+            'type': 'student'
+        })
+        self.student = json.loads( self.app.post('/users', headers=h(), data=student_data).data )
+        self.student_token = self.student['session']
+        self.student = self.student['user']
+
         event_data = json.dumps({
             'name': 'Test Event',
             'start_date': str(datetime.datetime.today() + datetime.timedelta(days=9)),
@@ -74,9 +84,18 @@ class PostTests(unittest.TestCase):
         response = self.app.get('/events/'+ self.event['id'] +'/posts/'+self.post['id'], headers=h(session=self.organizer_token))
         assert json.loads(response.data)['title'] == 'Test Post'
 
+    def test_get_post_unauthorized(self):
+        response = self.app.get('/events/'+ self.event['id'] +'/posts/'+self.post['id'], headers=h(session=self.student_token))
+        assert response.data == "Unauthorized request: User doesn't have permission"
+
     def test_get_all_posts(self):
         response = self.app.get('/events/'+ self.event['id'] +'/posts', headers=h(session=self.organizer_token))
         assert len( json.loads(response.data) ) == 1
+
+    def test_get_all_posts_unauthorized(self):
+        response = self.app.get('/events/'+ self.event['id'] +'/posts/'+self.post['id'], headers=h(session=self.student_token))
+        assert response.data == "Unauthorized request: User doesn't have permission"
+
 
     def test_delete_project(self):
         response = self.app.delete('/events/'+ self.event['id'] +'/posts/'+self.post['id'], headers=h(session=self.organizer_token))

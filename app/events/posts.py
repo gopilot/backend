@@ -55,12 +55,24 @@ def create_post(event_id):
 # GET /posts
 @events.route('/<event_id>/posts', methods=['GET'])
 def all_posts(event_id):
-    posts = []
+    user_id = app.auth.check_token( request.headers.get('session') )
+    if not user_id:
+        return "Unauthorized request: Bad session token", 401
+
+    user = User.find_id( user_id )
+    if not user:
+        return "User not found", 404
 
     event = Event.find_id( event_id )
     if not event:
         return "Event not found", 404
 
+    attended_ids = [ evt.id for evt in user.events ]
+
+    if not event.id in attended_ids:
+        return "Unauthorized request: User doesn't have permission"
+
+    posts = []
     for p in Post.objects(event=event):
         posts.append( p.to_dict() )
 
@@ -69,9 +81,22 @@ def all_posts(event_id):
 # GET /posts/<post_id>
 @events.route('/<event_id>/posts/<post_id>', methods=['GET'])
 def get_post(event_id, post_id):
+    user_id = app.auth.check_token( request.headers.get('session') )
+    if not user_id:
+        return "Unauthorized request: Bad session token", 401
+
+    user = User.find_id( user_id )
+    if not user:
+        return "User not found", 404
+
     event = Event.find_id( event_id )
     if not event:
         return "Event not found", 404
+
+    attended_ids = [ evt.id for evt in user.events ]
+
+    if not event.id in attended_ids:
+        return "Unauthorized request: User doesn't have permission"
 
     post = Post.find_id( post_id )
     if not post:
