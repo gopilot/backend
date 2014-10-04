@@ -5,10 +5,26 @@ import sys
 import json
 from uuid import uuid4 as random_uuid
 import bcrypt
+import types
+
+def list_modules(module_name):
+    try:
+        module = __import__(module_name, globals(), locals(), [module_name.split('.')[-1]])
+    except ImportError:
+        return
+    print(module_name)
+    for name in dir(module):
+        if type(getattr(module, name)) == types.ModuleType:
+            list_modules('.'.join([module_name, name]))
+
 try:
     from app.models.users import User ## CURRENTLY PRODUCES ERROR
-except:
-    print("ERROR", sys.exc_info())
+except ImportError:
+    print(sys.exc_info())
+    list_modules('app')
+    list_modules('app.models')
+    list_modules('app.events')
+
 print("users imported")
 jsonType = {'Content-Type': 'application/json'}
 
