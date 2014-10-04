@@ -14,15 +14,6 @@ app.debug = True
 app.logger.setLevel(logging.DEBUG)
 del app.logger.handlers[:]
 
-handler = logging.StreamHandler(stream=sys.stdout)
-handler.setLevel(logging.DEBUG)
-handler.formatter = logging.Formatter(
-    fmt=u"%(asctime)s level=%(levelname)s %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%SZ",
-)
-app.logger.addHandler(handler)
-
-
 app.config['MONGO_URL'] = os.getenv('MONGO_URL',	'mongodb://localhost:27017')
 app.config['MONGO_DB']	= os.getenv('MONGO_DB',		'backend')
 app.config['REDIS_URL'] = os.getenv('REDIS_URL',	'redis://localhost:6379')
@@ -34,6 +25,19 @@ app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 
 def start():
 	print("Booting up...")
+	# Configure logging.
+	app.logger.setLevel(logging.DEBUG)
+	del app.logger.handlers[:]
+
+	handler = logging.StreamHandler(stream=sys.stdout)
+	handler.setLevel(logging.DEBUG)
+	handler.formatter = logging.Formatter(
+	    fmt=u"%(asctime)s level=%(levelname)s %(message)s",
+	    datefmt="%Y-%m-%dT%H:%M:%SZ",
+	)
+	app.logger.addHandler(handler)
+
+
 	
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 	print("Connected to mongo")
@@ -69,3 +73,6 @@ def start():
 
 if app.config['PRODUCTION']:
 	start()
+elif __name__ == '__main__':
+	start()
+	app.run()
