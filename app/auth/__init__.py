@@ -1,11 +1,14 @@
 print("top of auth")
 from flask import Flask, Blueprint, request, redirect, session
 import app
-
+import sys
 import json
 from uuid import uuid4 as random_uuid
 import bcrypt
-from app.models.users import User ## CURRENTLY PRODUCES ERROR
+try:
+    from app.models.users import User ## CURRENTLY PRODUCES ERROR
+except:
+    print("ERROR", sys.exc_info())
 print("users imported")
 jsonType = {'Content-Type': 'application/json'}
 
