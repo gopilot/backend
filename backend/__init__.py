@@ -14,8 +14,7 @@ app.config['REDIS_URL'] = os.getenv('REDIS_URL',	'redis://localhost:6379')
 app.config['REDIS_DB']	= int(os.getenv('REDIS_DB',		'0'))
 app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
-#print app.config
-
+app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 
 
 def start():
@@ -48,3 +47,7 @@ def start():
 	def index():
 		return render_template("index.html")
 	print("Done!")
+
+print(__name__)
+if app.config['PRODUCTION']:
+	start()
