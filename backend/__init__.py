@@ -45,9 +45,9 @@ def start():
 
 	@app.route('/')
 	def index():
-		return render_template("index.html")
-	print("Done!")
+		return "OK"
 
-print(__name__)
+	print("App Booted!")
+
 if app.config['PRODUCTION']:
 	start()
