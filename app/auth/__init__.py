@@ -13,7 +13,6 @@ except ImportError:
     print(sys.exc_info())
     print("app", dir(app))
     print('app.models', dir(app.models))
-    print('package', app.models.__package__)
 
 
 print("users imported")
