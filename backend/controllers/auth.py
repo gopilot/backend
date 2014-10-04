@@ -36,15 +36,17 @@ def login():
     user = User.objects(email=form_email).first()
     if not user or not user.email:
         return 'Email not found', 404
-
+    print("found user")
     hashed = user.password.encode('utf-8')
-
+    print("hashed pw")
     if bcrypt.hashpw(form_password, hashed) == hashed:
+        print("Success!")
         return json.dumps({
             'session': create_token( user.id ),
             'user': user.to_dict()
         }), 200, jsonType
     else:
+        print("failure")
         return 'Incorrect password', 401
 
 @AuthBlueprint.route('/check_session', methods=["GET"])
