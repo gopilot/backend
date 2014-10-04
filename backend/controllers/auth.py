@@ -9,7 +9,7 @@ from backend import sessions, AuthBlueprint
 
 print("Trying to import users")
 try:
-    from backend.models.users import User ## CURRENTLY PRODUCES ERROR
+    from backend.models import users as UserModels ## CURRENTLY PRODUCES ERROR
 except ImportError:
     print(sys.exc_info())
     print("backend", dir(backend))
@@ -19,6 +19,10 @@ except ImportError:
 print("users imported")
 jsonType = {'Content-Type': 'application/json'}
 
+User = UserModels.User
+Student = UserModels.Student
+Organizer = UserModels.Organizer
+Mentor = UserModels.Mentor
 
 # Can be used to ensure that user is logged in. Returns the user_id if the user is logged in, otherwise returns False
 def check_token(token):
