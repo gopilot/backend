@@ -1,21 +1,22 @@
-from flask import Flask, Blueprint, request
-import app
+from flask import Flask, request
 
 from dateutil import parser as dateParser
 from datetime import datetime
 
-from app.models.users import User, Student, Mentor, Organizer
-from app.models.events import Event
-from app.models.posts import Post
+from backend import EventBlueprint
+from . import auth
+
+from backend.models.users import User, Student, Mentor, Organizer
+from backend.models.events import Event
+from backend.models.posts import Post
 
 import json
-
-from . import events, jsonType
+jsonType = {'Content-Type': 'application/json'}
 
 # POST /posts
-@events.route('/<event_id>/posts', methods=['POST'])
+@EventBlueprint.route('/<event_id>/posts', methods=['POST'])
 def create_post(event_id):
-    user_id = app.auth.check_token( request.headers.get('session') )
+    user_id = auth.check_token( request.headers.get('session') )
 
     if not user_id:
         return "Unauthorized request: Bad session token", 401
@@ -53,9 +54,9 @@ def create_post(event_id):
     return post.to_json()
 
 # GET /posts
-@events.route('/<event_id>/posts', methods=['GET'])
+@EventBlueprint.route('/<event_id>/posts', methods=['GET'])
 def all_posts(event_id):
-    user_id = app.auth.check_token( request.headers.get('session') )
+    user_id = auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -79,9 +80,9 @@ def all_posts(event_id):
     return json.dumps( posts ), 200, jsonType
 
 # GET /posts/<post_id>
-@events.route('/<event_id>/posts/<post_id>', methods=['GET'])
+@EventBlueprint.route('/<event_id>/posts/<post_id>', methods=['GET'])
 def get_post(event_id, post_id):
-    user_id = app.auth.check_token( request.headers.get('session') )
+    user_id = auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -105,9 +106,9 @@ def get_post(event_id, post_id):
     return post.to_json()
 
 # PUT /posts/<post_id>
-@events.route('/<event_id>/posts/<post_id>', methods=['PUT'])
+@EventBlueprint.route('/<event_id>/posts/<post_id>', methods=['PUT'])
 def update_post(event_id, post_id):
-    user_id = app.auth.check_token( request.headers.get('session') )
+    user_id = auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -132,9 +133,9 @@ def update_post(event_id, post_id):
     return post.to_json()
 
 # DELETE /posts/<post_id>
-@events.route('/<event_id>/posts/<post_id>', methods=["DELETE"])
+@EventBlueprint.route('/<event_id>/posts/<post_id>', methods=["DELETE"])
 def delete_post(event_id, post_id):
-    user_id = app.auth.check_token( request.headers.get('session') )
+    user_id = auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
 

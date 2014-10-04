@@ -1,24 +1,24 @@
 print("top of auth")
-from flask import Flask, Blueprint, request, redirect, session
-import app
+from flask import Flask, request, redirect, session
 import sys
 import json
 from uuid import uuid4 as random_uuid
 import bcrypt
 
+from backend import sessions, AuthBlueprint
+
 print("Trying to import users")
 try:
-    from app.models.users import User ## CURRENTLY PRODUCES ERROR
+    from backend.models.users import User ## CURRENTLY PRODUCES ERROR
 except ImportError:
     print(sys.exc_info())
-    print("app", dir(app))
-    print('app.models', dir(app.models))
+    print("backend", dir(backend))
+    print('backend.models', dir(backend.models))
 
 
 print("users imported")
 jsonType = {'Content-Type': 'application/json'}
 
-auth = Blueprint('auth', __name__)
 
 # Can be used to ensure that user is logged in. Returns the user_id if the user is logged in, otherwise returns False
 def check_token(token):
@@ -26,7 +26,7 @@ def check_token(token):
     if not token:
         return False
 
-    user_id = app.sessions.get('session:'+token)
+    user_id = sessions.get('session:'+token)
     if not user_id:
         return False
     
@@ -34,10 +34,10 @@ def check_token(token):
 
 def create_token(user_id):
     token = random_uuid().hex
-    app.sessions.set('session:'+token, user_id)
+    sessions.set('session:'+token, user_id)
     return token
 
-@auth.route('/login', methods=["POST"])
+@AuthBlueprint.route('/login', methods=["POST"])
 def login():
     form_email = request.get_json().get('email')
     form_password = request.get_json().get('password').encode('utf-8')
@@ -56,19 +56,19 @@ def login():
     else:
         return 'Incorrect password', 401
 
-@auth.route('/check_session', methods=["GET"])
+@AuthBlueprint.route('/check_session', methods=["GET"])
 def check_session():
     token = request.headers.get('session')
-    if app.sessions.get('session:'+token):
+    if sessions.get('session:'+token):
         return "true"
     else:
         return "false"
 
-@auth.route('/retrieve_user', methods=["GET"])
+@AuthBlueprint.route('/retrieve_user', methods=["GET"])
 def retrieve_user():
     token = request.headers.get('session')
 
-    user_id = app.sessions.get('session:'+token)
+    user_id = sessions.get('session:'+token)
     
     if not user_id:
         return "Session invalid", 401

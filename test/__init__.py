@@ -2,7 +2,7 @@ import redis
 import pymongo
 import urlparse
 
-import app as backend
+import backend
 
 backend.app.config['MONGO_DB'] = 'backend_test'
 backend.app.config['REDIS_DB'] = 15

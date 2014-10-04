@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, json
+from flask import Flask, request, render_template, json, Blueprint
 import os
 import sys
 import pymongo
@@ -25,20 +25,25 @@ def start():
 	print("Connected to mongo")
 	sessions = redis.from_url(app.config['REDIS_URL'])
 	print("Connected to Redis")
-	from auth import auth as AuthBlueprint
+
+	global AuthBlueprint
+	AuthBlueprint = Blueprint('auth', __name__)
+	global EventBlueprint
+	EventBlueprint = Blueprint('events', __name__)
+	global ProjectBlueprint
+	ProjectBlueprint = Blueprint('projects', __name__)
+	global UserBlueprint
+	UserBlueprint = Blueprint('users', __name__)
+
+	from backend.controllers import auth, users, events, registration, posts, projects, users
+
 	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
-	print("Auth")
-	from users import users as UserBlueprint
-	app.register_blueprint(UserBlueprint, url_prefix="/users")
-	print("users")
-	from events import events as EventBlueprint
-	from events import registration
-	from events import posts
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
-	print("events")
-	from projects import projects as ProjectBlueprint
 	app.register_blueprint(ProjectBlueprint, url_prefix="/projects")
-	print("projects")
+	app.register_blueprint(UserBlueprint, url_prefix="/users")
+	
+	# print(app.url_map)
+
 	@app.route('/')
 	def index():
 		return render_template("index.html")

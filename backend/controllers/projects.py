@@ -1,5 +1,4 @@
-from flask import Flask, Blueprint, request
-import app
+from flask import Flask, request
 
 from dateutil import parser as dateParser
 from datetime import datetime
@@ -8,16 +7,20 @@ import json
 from bson.objectid import ObjectId
 import bcrypt
 
-from app.models.users import User, Student, Mentor, Organizer, DeletedUser
-from app.models.events import Event
-from app.models.projects import Project
+from backend import ProjectBlueprint
+from . import auth
 
-projects = Blueprint('projects', __name__)
+from backend.models.users import User, Student, Mentor, Organizer, DeletedUser
+from backend.models.events import Event
+from backend.models.projects import Project
+
+jsonType = {'Content-Type': 'application/json'}
+
 
 # POST /projects
-@projects.route('', methods=["POST"])
+@ProjectBlueprint.route('', methods=["POST"])
 def create_project():
-    user_id = app.auth.check_token( request.headers.get('session') )
+    user_id = auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -49,7 +52,7 @@ def create_project():
     return project.to_json()
 
 # GET /projects
-@projects.route('', methods=["GET"])
+@ProjectBlueprint.route('', methods=["GET"])
 def get_all():
     projects = []
     query = {}
@@ -62,7 +65,7 @@ def get_all():
     return json.dumps( projects )
 
 # GET /projects/<project_id>
-@projects.route('/<project_id>', methods=['GET'])
+@ProjectBlueprint.route('/<project_id>', methods=['GET'])
 def find_project(project_id):
     project = Project.find_id( project_id )
     if not project:
@@ -71,9 +74,9 @@ def find_project(project_id):
     return project.to_json()
 
 # PUT /projects/<project_id>
-@projects.route('/<project_id>', methods=['PUT'])
+@ProjectBlueprint.route('/<project_id>', methods=['PUT'])
 def update_project(project_id):
-    session_id = app.auth.check_token( request.headers.get('session') )
+    session_id = auth.check_token( request.headers.get('session') )
     if not session_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -94,9 +97,9 @@ def update_project(project_id):
     return project.to_json()
 
 # DELETE /users/<project_id>
-@projects.route('/<project_id>', methods=["DELETE"])
+@ProjectBlueprint.route('/<project_id>', methods=["DELETE"])
 def remove_project(project_id):
-    session_id = app.auth.check_token( request.headers.get('session') )
+    session_id = auth.check_token( request.headers.get('session') )
     if not session_id:
         return "Unauthorized request: Bad session token", 401
 

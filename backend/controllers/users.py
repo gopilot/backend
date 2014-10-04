@@ -1,21 +1,20 @@
-from flask import Flask, Blueprint, request
-import app
-
+from flask import Flask, request
 from dateutil import parser as dateParser
 from datetime import datetime
 import json
 import bcrypt
 
-from app.models.users import User, Student, Mentor, Organizer, DeletedUser
-from app.models.events import Event
-from app.models.projects import Project
+from backend import UserBlueprint
+from . import auth
+
+from backend.models.users import User, Student, Mentor, Organizer, DeletedUser
+from backend.models.events import Event
+from backend.models.projects import Project
 
 jsonType = {'Content-Type': 'application/json'}
 
-users = Blueprint('users', __name__)
-
 # POST /users
-@users.route('', methods=["POST"])
+@UserBlueprint.route('', methods=["POST"])
 def signup():
     form_name = request.json['name']
     form_email = request.json['email']
@@ -47,14 +46,14 @@ def signup():
         return 'Error creating account', 500
     
     return json.dumps({
-            'session': app.auth.create_token( user.id ),
+            'session': auth.create_token( user.id ),
             'user': user.to_dict()
         }), 200, jsonType
 
 # GET /users
-@users.route('', methods=["GET"])
+@UserBlueprint.route('', methods=["GET"])
 def get_all():
-    user_id = app.auth.check_token( request.headers.get('session') )
+    user_id = auth.check_token( request.headers.get('session') )
 
     if not user_id:
         return "Unauthorized request: Bad session token", 401
@@ -71,7 +70,7 @@ def get_all():
     return json.dumps( users ), 200, jsonType
 
 # GET /users/<user_id>
-@users.route('/<user_id>', methods=['GET'])
+@UserBlueprint.route('/<user_id>', methods=['GET'])
 def find_user(user_id):
     user = User.find_id( user_id )
     if not user:
@@ -80,9 +79,9 @@ def find_user(user_id):
     return user.to_json()
 
 # PUT /users/<user_id>
-@users.route('/<user_id>', methods=['PUT'])
+@UserBlueprint.route('/<user_id>', methods=['PUT'])
 def update_user(user_id):
-    session_id = app.auth.check_token( request.headers.get('session') )
+    session_id = auth.check_token( request.headers.get('session') )
     if not session_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -106,9 +105,9 @@ def update_user(user_id):
     return user.to_json()
 
 # DELETE /users/<user_id>
-@users.route('/<user_id>', methods=["DELETE"])
+@UserBlueprint.route('/<user_id>', methods=["DELETE"])
 def remove_user(user_id):
-    session_id = app.auth.check_token( request.headers.get('session') )
+    session_id = auth.check_token( request.headers.get('session') )
     if not session_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -131,7 +130,7 @@ def remove_user(user_id):
     return 'User deleted'
 
 # GET /users/<user_id>
-@users.route('/<user_id>/events', methods=['GET'])
+@UserBlueprint.route('/<user_id>/events', methods=['GET'])
 def find_user_events(user_id):
     user = User.find_id( user_id )
     if not user:

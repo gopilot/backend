@@ -1,18 +1,19 @@
-from flask import Flask, Blueprint, request
-import app
+from flask import Flask, request
 
 from dateutil import parser as dateParser
 from datetime import datetime
 
-from app.models.users import User, Student, Mentor, Organizer
-from app.models.events import Event, DeletedEvent
+from backend import EventBlueprint
+from . import auth
+
+from backend.models.users import User, Student, Mentor, Organizer
+from backend.models.events import Event, DeletedEvent
 
 import json
-
-from . import events, jsonType
+jsonType = {'Content-Type': 'application/json'}
 
 ## These endpoints need any security?
-@events.route('/<event_id>/<attendee_type>', methods=['GET'])
+@EventBlueprint.route('/<event_id>/<attendee_type>', methods=['GET'])
 def get_attendees(event_id, attendee_type):
     if not event_id:
         return "Event ID required", 400
@@ -56,9 +57,9 @@ def get_attendees(event_id, attendee_type):
 
     return json.dumps( attendees ), 200, jsonType
 
-@events.route('/<event_id>/register', methods=['POST'])
+@EventBlueprint.route('/<event_id>/register', methods=['POST'])
 def register(event_id):
-    user_id = app.auth.check_token( request.headers.get('session') )
+    user_id = auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
 
@@ -88,9 +89,9 @@ def register(event_id):
 
     return json.dumps({"status": "registered"}), 200, jsonType
 
-@events.route('/<event_id>/register', methods=['DELETE'])
+@EventBlueprint.route('/<event_id>/register', methods=['DELETE'])
 def unregister(event_id):
-    user_id = app.auth.check_token( request.headers.get('session') )
+    user_id = auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
 

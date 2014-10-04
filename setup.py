@@ -1,4 +1,4 @@
-import app as backend
+import backend
 
 import sys
 
