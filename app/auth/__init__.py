@@ -4,7 +4,7 @@ import app
 import json
 from uuid import uuid4 as random_uuid
 import bcrypt
-from app.models.users import User
+from app.models.users import User ## CURRENTLY PRODUCES ERROR
 
 jsonType = {'Content-Type': 'application/json'}
 

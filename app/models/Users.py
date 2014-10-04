@@ -1,9 +1,8 @@
 import mongoengine as orm
 
-from document import Document
-import events
+from . import document, events
 
-class User(Document):
+class User(document.Document):
     meta = {
         'allow_inheritance': True
     }

@@ -1,8 +1,8 @@
 import mongoengine as orm
 
-from document import Document
+from . import document
 
-class Event(Document):
+class Event(document.Document):
     meta = {
         'allow_inheritance': True
     }

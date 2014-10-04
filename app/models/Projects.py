@@ -1,10 +1,8 @@
 import mongoengine as orm
 
-from document import Document
-import users
-import events
+from . import document, users, events
 
-class Project(Document):
+class Project(document.Document):
     name = orm.StringField(required=True)
     event = orm.ReferenceField(events.Event)
     creators = orm.ListField( orm.ReferenceField(users.Student), default=[] )

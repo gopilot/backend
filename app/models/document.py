@@ -24,7 +24,7 @@ class Document(orm.Document):
     def to_dict(self, debug=False):
         data = {}
         if debug:
-            print self._data
+            print(self._data)
 
         for key, obj in self._data.iteritems():
             if not key in self._hidden and not key.startswith('_'):
