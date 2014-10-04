@@ -3,7 +3,6 @@ import os
 import pymongo
 import redis
 import mongoengine
-from urlparse import urlparse
 from bson.objectid import ObjectId
 
 app = Flask(__name__)
@@ -21,8 +20,7 @@ def start():
 	print "STARTING", app.config['MONGO_DB'], app.config['MONGO_URL'], app.config['REDIS_DB'], app.config['REDIS_URL']
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 	print "Connected to mongo"
-	redis_url = urlparse( app.config['REDIS_URL'] )
-	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
+	sessions = redis.from_url(app.config['REDIS_URL'])
 	print "Connected to Redis"
 	from auth import auth as AuthBlueprint
 	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
