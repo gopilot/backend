@@ -5,8 +5,23 @@ import pymongo
 import redis
 import mongoengine
 from bson.objectid import ObjectId
+import logging
 
 app = Flask(__name__)
+app.debug = True
+
+# Configure logging.
+app.logger.setLevel(logging.DEBUG)
+del app.logger.handlers[:]
+
+handler = logging.StreamHandler(stream=sys.stdout)
+handler.setLevel(logging.DEBUG)
+handler.formatter = logging.Formatter(
+    fmt=u"%(asctime)s level=%(levelname)s %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%SZ",
+)
+app.logger.addHandler(handler)
+
 
 app.config['MONGO_URL'] = os.getenv('MONGO_URL',	'mongodb://localhost:27017')
 app.config['MONGO_DB']	= os.getenv('MONGO_DB',		'backend')
@@ -18,10 +33,13 @@ app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 
 
 def start():
-	global sessions
-	print("STARTING", app.config['MONGO_DB'], app.config['MONGO_URL'], app.config['REDIS_DB'], app.config['REDIS_URL'])
+	print("Booting up...")
+	
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 	print("Connected to mongo")
+
+
+	global sessions
 	sessions = redis.from_url(app.config['REDIS_URL'])
 	print("Connected to Redis")
 
