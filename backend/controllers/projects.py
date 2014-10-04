@@ -10,9 +10,8 @@ import bcrypt
 from backend import ProjectBlueprint
 from . import auth
 
-from backend.models.users import User, Student, Mentor, Organizer, DeletedUser
-from backend.models.events import Event
-from backend.models.projects import Project
+from backend.models import User, Student, Mentor, Organizer, DeletedUser, Event, Project
+
 
 jsonType = {'Content-Type': 'application/json'}
 

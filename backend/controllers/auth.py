@@ -1,4 +1,3 @@
-print("top of auth")
 from flask import Flask, request, redirect, session
 import sys
 import json
@@ -7,22 +6,10 @@ import bcrypt
 
 from backend import sessions, AuthBlueprint
 
-print("Trying to import users")
-try:
-    from backend.models import User ## CURRENTLY PRODUCES ERROR
-    print("Tried to import?")
-except ImportError:
-    print(sys.exc_info())
-    print("backend", dir(backend))
-    print('backend.models', dir(backend.models))
+from backend.models import User
 
-
-print("users imported", User)
 jsonType = {'Content-Type': 'application/json'}
 
-User = UserModels.User
-Student = UserModels.Student
-Organizer = UserModels.Organizer
 
 # Can be used to ensure that user is logged in. Returns the user_id if the user is logged in, otherwise returns False
 def check_token(token):

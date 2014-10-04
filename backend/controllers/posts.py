@@ -6,9 +6,7 @@ from datetime import datetime
 from backend import EventBlueprint
 from . import auth
 
-from backend.models.users import User, Student, Mentor, Organizer
-from backend.models.events import Event
-from backend.models.posts import Post
+from backend.models import User, Student, Mentor, Organizer, Event, Post
 
 import json
 jsonType = {'Content-Type': 'application/json'}
