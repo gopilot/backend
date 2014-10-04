@@ -21,9 +21,10 @@ try:
     from app.models.users import User ## CURRENTLY PRODUCES ERROR
 except ImportError:
     print(sys.exc_info())
-    list_modules('app')
-    list_modules('app.models')
-    list_modules('app.events')
+    print("Global", dir())
+    print("app", dir(app))
+    print('app.models', dir(app.models))
+    print('models', dir(models))
 
 print("users imported")
 jsonType = {'Content-Type': 'application/json'}
