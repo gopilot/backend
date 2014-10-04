@@ -1,4 +1,4 @@
-from models.users import User, Student, Mentor, Organizer
-from models.projects import Project
-from models.events import Event
-from models.posts import Post
+from users import User, Student, Mentor, Organizer
+from projects import Project
+from events import Event
+from posts import Post
