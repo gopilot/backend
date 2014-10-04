@@ -10,10 +10,6 @@ import logging
 app = Flask(__name__)
 app.debug = True
 
-# Configure logging.
-app.logger.setLevel(logging.DEBUG)
-del app.logger.handlers[:]
-
 app.config['MONGO_URL'] = os.getenv('MONGO_URL',	'mongodb://localhost:27017')
 app.config['MONGO_DB']	= os.getenv('MONGO_DB',		'backend')
 app.config['REDIS_URL'] = os.getenv('REDIS_URL',	'redis://localhost:6379')
@@ -25,10 +21,10 @@ app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 
 def start():
 	print("Booting up...")
+
 	# Configure logging.
 	app.logger.setLevel(logging.DEBUG)
 	del app.logger.handlers[:]
-
 	handler = logging.StreamHandler(stream=sys.stdout)
 	handler.setLevel(logging.DEBUG)
 	handler.formatter = logging.Formatter(
@@ -38,7 +34,7 @@ def start():
 	app.logger.addHandler(handler)
 
 
-	
+
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 	print("Connected to mongo")
 
