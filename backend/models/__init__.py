@@ -1,4 +1,4 @@
-from users import User, Student, Mentor, Organizer
-from projects import Project
-from events import Event
-from posts import Post
+from users import *
+from projects import *
+from events import *
+from posts import *
