@@ -5,8 +5,8 @@ import sys
 import json
 from uuid import uuid4 as random_uuid
 import bcrypt
-import types
 
+print("Trying to import users")
 try:
     from app.models.users import User ## CURRENTLY PRODUCES ERROR
 except ImportError:
