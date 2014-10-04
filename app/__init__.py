@@ -18,26 +18,27 @@ app.config['TESTING']		= bool(os.getenv('TESTING', False))
 
 def start():
 	global sessions
-	print "STARTING", app.config['MONGO_DB'], app.config['MONGO_URL']
+	print "STARTING", app.config['MONGO_DB'], app.config['MONGO_URL'], app.config['REDIS_DB'], app.config['REDIS_URL']
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
-
+	print "Connected to mongo"
 	redis_url = urlparse( app.config['REDIS_URL'] )
 	sessions = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password, db=app.config['REDIS_DB'])
-
+	print "Connected to Redis"
 	from auth import auth as AuthBlueprint
 	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
-
+	print "Auth"
 	from users import users as UserBlueprint
 	app.register_blueprint(UserBlueprint, url_prefix="/users")
-
+	print "users"
 	from events import events as EventBlueprint
 	from events import registration
 	from events import posts
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
-
+	print "events"
 	from projects import projects as ProjectBlueprint
 	app.register_blueprint(ProjectBlueprint, url_prefix="/projects")
-
+	print "projects"
 	@app.route('/')
 	def index():
 		return render_template("index.html")
+	print "Done!"
