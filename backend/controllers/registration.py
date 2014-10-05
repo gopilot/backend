@@ -2,6 +2,7 @@ from flask import Flask, request
 
 from dateutil import parser as dateParser
 from datetime import datetime
+from uuid import uuid4 as random_uuid
 
 from backend import EventBlueprint
 from . import auth
@@ -58,35 +59,52 @@ def get_attendees(event_id, attendee_type):
 
 @EventBlueprint.route('/<event_id>/register', methods=['POST'])
 def register(event_id):
-    user_id = auth.check_token( request.headers.get('session') )
-    if not user_id:
-        return "Unauthorized request: Bad session token", 401
-
-    user = User.find_id( user_id )
-    if not user:
-        return "Unauthorized request: User doesn't have permission", 401
+    user = None
 
     event = Event.find_id( event_id )
     if not event:
         return "Event not found", 404
 
-    user.events.append( event )
-    user.save()
+    if 'user' in request.json:
+        user = User()
+        user.name = request.json['user']['name']
+        user.email = request.json['user']['email']
+        user.complete = False
+        user.completion_token = random_uuid().hex
 
-    if user.type == 'student' or user.type == 'mentor':
-        ## Send confirmation email
-        pass;
+        ## Something with stripe token as well
+        user.save()
+    else:
+        user_id = auth.check_token( request.headers.get('session') )
+        if not user_id:
+            return "Unauthorized request: Bad session token", 401
 
-    ## Check waitlist
-    
+        user = User.find_id( user_id ) or request.body.user
+        if not user:
+            return "Unauthorized request: User doesn't have permission", 401
+        if user.type == "organizers":
+            return "Organizers can't register for an event", 400
+
     if(event.registration_end < datetime.now()):
         return json.dumps({
             "status": "failed",
              "reason": "Registration has closed"
         }), 200, jsonType
 
+    user.events.append( event )
+    user.save()
 
-    return json.dumps({"status": "registered"}), 200, jsonType
+    if user.complete:
+        pass; ## Send confirmation email
+        return json.dumps({"status": "registered"}), 200, jsonType
+    else:
+        ## Send confirmation/complete profile email
+        jsonResponse = user.to_json()
+        return user.to_json()
+
+    ## Check waitlist
+
+    
 
 @EventBlueprint.route('/<event_id>/register', methods=['DELETE'])
 def unregister(event_id):

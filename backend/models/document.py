@@ -28,7 +28,7 @@ class Document(orm.Document):
 
         for key, obj in self._data.iteritems():
             if not key in self._hidden and not key.startswith('_'):
-                if type(obj) == list and len(obj) > 0:
+                if isinstance(obj, list) and len(obj) > 0:
                     if isinstance(obj[0], Document):
                         data[key] = [o.to_dict() for o in obj]
                     elif isinstance(obj[0], ObjectId) or isinstance(obj[0], datetime):
@@ -38,7 +38,7 @@ class Document(orm.Document):
                     else:
                         data[key] = obj
                 else:
-                    if isinstance(obj, orm.Document):
+                    if isinstance(obj, Document):
                         data[key] = obj.to_dict()
                     elif isinstance(obj, ObjectId) or isinstance(obj, datetime):
                         data[key] = str(obj)
@@ -49,7 +49,7 @@ class Document(orm.Document):
         return data
 
     def to_json(self, debug=False):
-        return json.dumps(self.to_dict(debug=debug)), 200, {'Content-Type': 'application/json'}
+        return json.dumps(self.to_dict(debug=True)), 200, {'Content-Type': 'application/json'}
 
 def remove_hidden(obj, hidden):
     d = {}

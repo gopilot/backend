@@ -18,7 +18,7 @@ app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
 app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 
-if app.config['PRODUCTION']: ## For some reason, Heroku's URL is incorrect
+if app.config['PRODUCTION']: ## For some reason, Heroku's REDIS_URL is incorrect
 	app.config['REDIS_HOST'] = 'pub-redis-14097.us-east-1-3.1.ec2.garantiadata.com'
 	app.config['REDIS_PORT'] = 14097
 	app.config['REDIS_PW'] = 'sqlcpo3ei9tnejze'
@@ -29,19 +29,6 @@ else:
 
 def start():
 	print("Booting up...")
-
-	# Configure logging.
-	app.logger.setLevel(logging.DEBUG)
-	del app.logger.handlers[:]
-	handler = logging.StreamHandler(stream=sys.stdout)
-	handler.setLevel(logging.DEBUG)
-	handler.formatter = logging.Formatter(
-	    fmt=u"%(asctime)s level=%(levelname)s %(message)s",
-	    datefmt="%Y-%m-%dT%H:%M:%SZ",
-	)
-	app.logger.addHandler(handler)
-
-
 
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 	print("Connected to mongo")
