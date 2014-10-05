@@ -40,6 +40,7 @@ def start():
 
 
 	global sessions
+	print(app.config['REDIS_URL'])
 	sessions = redis.from_url(app.config['REDIS_URL'], app.config['REDIS_DB'])
 	
 	sessions.set('testing-redis', 'test')
