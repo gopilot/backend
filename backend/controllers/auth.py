@@ -24,8 +24,11 @@ def check_token(token):
     return user_id
 
 def create_token(user_id):
+    print("creating token...")
     token = random_uuid().hex
+    print("found random")
     sessions.set('session:'+token, user_id)
+    print("set session")
     return token
 
 @AuthBlueprint.route('/login', methods=["POST"])
@@ -40,7 +43,7 @@ def login():
     hashed = user.password.encode('utf-8')
     print("hashed pw")
     if bcrypt.hashpw(form_password, hashed) == hashed:
-        print("Success!")
+        print("Correct password")
         sessionToken = create_token( user.id )
         print('created token')
         userdict = user.to_dict()
