@@ -48,7 +48,6 @@ def start():
 
 
 	global sessions
-	print(app.config['REDIS_URL'])
 	sessions = redis.Redis(host=app.config['REDIS_HOST'],port=app.config['REDIS_PORT'],password=app.config['REDIS_PW'])
 	sessions.set('testing-redis', 'test')
 	test = sessions.get('testing-redis')

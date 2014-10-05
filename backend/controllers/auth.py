@@ -24,11 +24,8 @@ def check_token(token):
     return user_id
 
 def create_token(user_id):
-    print("creating token...")
     token = random_uuid().hex
-    print("found random")
     sessions.set('session:'+token, user_id)
-    print("set session")
     return token
 
 @AuthBlueprint.route('/login', methods=["POST"])
@@ -39,22 +36,12 @@ def login():
     user = User.objects(email=form_email).first()
     if not user or not user.email:
         return 'Email not found', 404
-    print("found user")
     hashed = user.password.encode('utf-8')
-    print("hashed pw")
     if bcrypt.hashpw(form_password, hashed) == hashed:
-        print("Correct password")
-        sessionToken = create_token( user.id )
-        print('created token')
-        userdict = user.to_dict()
-        print('created userdict')
-        sendInfo = {
-            'session': sessionToken,
-            'user': userdict
-        }
-        jsonInfo = json.dumps(sendInfo)
-        print("json dumped, sending...")
-        return jsonInfo, 200, jsonType
+        return json.dumps({
+            'session': create_token( user.id ),
+            'user': user.to_dict()
+        }), 200, jsonType
     else:
         print("failure")
         return 'Incorrect password', 401
