@@ -100,6 +100,17 @@ class RegistrationTests(unittest.TestCase):
         response = self.app.post('/events/'+self.event+"/register", headers=h(session=self.student_token))
         assert json.loads(response.data)['status'] == "registered"
 
+    def test_register_no_user(self):
+        data = json.dumps({
+            'user': {
+                'name': 'Test Student',
+                'email': 'student-tester@gopilot.org'
+            }
+        })
+        response = self.app.post('/events/'+self.event+"/register", headers=h(), data=data)
+        assert json.loads(response.data)['status'] == "registered"
+
+
     def test_register_old(self):
         response = self.app.post('/events/'+self.old_event+"/register", headers=h(session=self.student_token))
         assert json.loads(response.data)['status'] == "failed"

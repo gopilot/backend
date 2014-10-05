@@ -60,17 +60,19 @@ def get_attendees(event_id, attendee_type):
 @EventBlueprint.route('/<event_id>/register', methods=['POST'])
 def register(event_id):
     user = None
-
     event = Event.find_id( event_id )
     if not event:
         return "Event not found", 404
 
-    if 'user' in request.json:
+    if hasattr(request, 'json') and 'user' in request.json:
         user = User()
         user.name = request.json['user']['name']
         user.email = request.json['user']['email']
         user.complete = False
         user.completion_token = random_uuid().hex
+
+        if User.objects(email=user.email).first():
+            return "Email already exists", 400 
 
         ## Something with stripe token as well
         user.save()
@@ -91,20 +93,17 @@ def register(event_id):
              "reason": "Registration has closed"
         }), 200, jsonType
 
+    ## Check waitlist
+
     user.events.append( event )
     user.save()
 
     if user.complete:
-        pass; ## Send confirmation email
+        ## Send confirmation email
         return json.dumps({"status": "registered"}), 200, jsonType
     else:
         ## Send confirmation/complete profile email
-        jsonResponse = user.to_json()
-        return user.to_json()
-
-    ## Check waitlist
-
-    
+        return json.dumps({"status": "registered"}), 200, jsonType
 
 @EventBlueprint.route('/<event_id>/register', methods=['DELETE'])
 def unregister(event_id):

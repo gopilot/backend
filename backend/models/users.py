@@ -12,7 +12,7 @@ class User(document.Document):
     image = orm.URLField()
     email = orm.EmailField(required=True)
     password = orm.StringField()
-    complete = orm.BooleanField(default=False)
+    complete = orm.BooleanField(default=True)
     completion_token = orm.StringField()
     # Different based on context of user - whether events attended, mentored, or organized
     events = orm.ListField( orm.ReferenceField(events.Event) )

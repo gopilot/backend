@@ -49,7 +49,7 @@ class Document(orm.Document):
         return data
 
     def to_json(self, debug=False):
-        return json.dumps(self.to_dict(debug=True)), 200, {'Content-Type': 'application/json'}
+        return json.dumps(self.to_dict(debug=debug)), 200, {'Content-Type': 'application/json'}
 
 def remove_hidden(obj, hidden):
     d = {}

@@ -43,7 +43,6 @@ def login():
             'user': user.to_dict()
         }), 200, jsonType
     else:
-        print("failure")
         return 'Incorrect password', 401
 
 @AuthBlueprint.route('/check_session', methods=["GET"])

@@ -26,9 +26,7 @@ class UserTests(unittest.TestCase):
             'password': 'test-test',
             'type': 'student'
         })
-        user_create_response = self.app.post('/users', headers=h(), data=data).data
-        print(user_create_response)
-        self.test_token = json.loads( user_create_response )['session']
+        self.test_token = json.loads( self.app.post('/users', headers=h(), data=data).data )['session']
         self.test_user = json.loads( self.app.get('/auth/retrieve_user', headers=h(session=self.test_token)).data )['id']
         
         ## Create test organizer
