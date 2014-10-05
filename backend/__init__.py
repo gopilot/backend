@@ -42,6 +42,10 @@ def start():
 	global sessions
 	sessions = redis.from_url(app.config['REDIS_URL'])
 	print("Connected to Redis")
+	sessions.set('testing-redis', 'test')
+	test = sessions.get('testing-redis')
+	if test != 'test':
+		print("ERROR: REDIS NOT WORKING!!")
 
 	global AuthBlueprint
 	AuthBlueprint = Blueprint('auth', __name__)
