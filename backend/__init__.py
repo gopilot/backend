@@ -65,6 +65,14 @@ def start():
 	def index():
 		return "OK"
 
+	@app.errorhandler(404)
+	def pageNotFound(error):
+	    return "Page not found :("
+
+	@app.errorhandler(500)
+	def serverError(error):
+		return error
+
 	print("App Booted!")
 
 if app.config['PRODUCTION']:
