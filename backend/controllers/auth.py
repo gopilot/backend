@@ -41,11 +41,14 @@ def login():
     print("hashed pw")
     if bcrypt.hashpw(form_password, hashed) == hashed:
         print("Success!")
+        sessionToken = create_token( user.id )
+        print('created token')
+        userdict = user.to_dict()
+        print('created userdict')
         sendInfo = {
-            'session': create_token( user.id ),
-            'user': user.to_dict()
+            'session': sessionToken,
+            'user': userdict
         }
-        print("made info")
         jsonInfo = json.dumps(sendInfo)
         print("json dumped, sending...")
         return jsonInfo, 200, jsonType
