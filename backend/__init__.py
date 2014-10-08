@@ -18,14 +18,15 @@ app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
 app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 
-if app.config['PRODUCTION']: ## For some reason, Heroku's REDIS_URL is incorrect
-	app.config['REDIS_HOST'] = 'pub-redis-14097.us-east-1-3.1.ec2.garantiadata.com'
-	app.config['REDIS_PORT'] = 14097
-	app.config['REDIS_PW'] = 'sqlcpo3ei9tnejze'
-else:
-	app.config['REDIS_HOST'] = 'localhost'
-	app.config['REDIS_PORT'] = 6379
-	app.config['REDIS_PW'] = None
+# if app.config['PRODUCTION']: ## For some reason, Heroku's REDIS_URL is incorrect
+# 	app.config['REDIS_HOST'] = 'pub-redis-14097.us-east-1-3.1.ec2.garantiadata.com'
+# 								redis://rediscloud:sqlcpo3ei9tnejze@pub-redis-14097.us-east-1-3.1.ec2.garantiadata.com:14097
+# 	app.config['REDIS_PORT'] = 14097
+# 	app.config['REDIS_PW'] = 'sqlcpo3ei9tnejze'
+# else:
+# 	app.config['REDIS_HOST'] = 'localhost'
+# 	app.config['REDIS_PORT'] = 6379
+# 	app.config['REDIS_PW'] = None
 
 def start():
 	print("Booting up...")
@@ -35,7 +36,7 @@ def start():
 
 
 	global sessions
-	sessions = redis.Redis(host=app.config['REDIS_HOST'],port=app.config['REDIS_PORT'],password=app.config['REDIS_PW'])
+	sessions = redis.from_url(app.config['REDIS_URL'], db=app.config['REDIS_DB'])
 	sessions.set('testing-redis', 'test')
 	test = sessions.get('testing-redis')
 	if test != 'test':
