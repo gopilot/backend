@@ -18,31 +18,19 @@ app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
 app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 
-# if app.config['PRODUCTION']: ## For some reason, Heroku's REDIS_URL is incorrect
-# 	app.config['REDIS_HOST'] = 'pub-redis-14097.us-east-1-3.1.ec2.garantiadata.com'
-# 								redis://rediscloud:sqlcpo3ei9tnejze@pub-redis-14097.us-east-1-3.1.ec2.garantiadata.com:14097
-# 	app.config['REDIS_PORT'] = 14097
-# 	app.config['REDIS_PW'] = 'sqlcpo3ei9tnejze'
-# else:
-# 	app.config['REDIS_HOST'] = 'localhost'
-# 	app.config['REDIS_PORT'] = 6379
-# 	app.config['REDIS_PW'] = None
-
 def start():
 	print("Booting up...")
 
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
-	print("Connected to mongo")
+	print("Connected to Mongo")
 
 
 	global sessions
 	sessions = redis.from_url(app.config['REDIS_URL'], db=app.config['REDIS_DB'])
 	sessions.set('testing-redis', 'test')
 	test = sessions.get('testing-redis')
-	if test != 'test':
-		print("ERROR: REDIS NOT WORKING!!")
-	else:
-		print("Connected to Redis")
+	assert test != 'test', "ERROR: Redis not working!"
+	print("Connected to Redis")
 
 	global AuthBlueprint
 	AuthBlueprint = Blueprint('auth', __name__)
