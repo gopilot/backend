@@ -87,7 +87,8 @@ def register(event_id):
             try:
                 customer = stripe.Customer.create(
                     card = request.json['stripe_token'],
-                    description = user.email
+                    description = user.name,
+                    email = user.email
                 )
             except stripe.CardError, e:
                 print("Customer Card Error", e)
