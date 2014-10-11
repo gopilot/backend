@@ -138,18 +138,18 @@ def option_autoreply():
 
         return resp
 
-# @app.after_request
-# def set_allow_origin(resp):
-#     """ Set origin for GET, POST, PUT, DELETE requests """
+@app.after_request
+def set_allow_origin(resp):
+    """ Set origin for GET, POST, PUT, DELETE requests """
 
-#     h = resp.headers
+    h = resp.headers
 
-#     # Allow crossdomain for other HTTP Verbs
-#     if request.method != 'OPTIONS' and 'Origin' in request.headers:
-#         h['Access-Control-Allow-Origin'] = request.headers['Origin']
+    # Allow crossdomain for other HTTP Verbs
+    if request.method != 'OPTIONS' and 'Origin' in request.headers:
+        h['Access-Control-Allow-Origin'] = request.headers['Origin']
 
 
-#     return resp
+    return resp
 
 
 if app.config['PRODUCTION']:
