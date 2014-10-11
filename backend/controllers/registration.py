@@ -75,20 +75,36 @@ def register(event_id):
         user.completion_token = random_uuid().hex
 
         if User.objects(email=user.email).first():
-            return "Email already exists", 400 
+            return json.dumps({
+                "status": "failed",
+                "reason": "email",
+                "message": "Your email already has a Pilot account."
+            }), 400, jsonType
 
-        print('stripe_token' in request.json)
         if 'stripe_token' in request.json:
             stripe.api_key = app.config['STRIPE_KEY']
 
-            customer = stripe.Customer.create(
-                card = request.json['stripe_token'],
-                description = user.email
-            )
+            try:
+                customer = stripe.Customer.create(
+                    card = request.json['stripe_token'],
+                    description = user.email
+                )
+            except stripe.CardError, e:
+                print("Customer Card Error", e)
+                err = e.json_body['error']
+                return json.dumps({
+                    "status": "failed",
+                    "reason": err['param'] if ('param' in err) else 'customer',
+                    "message": err['message']
+                }), 400, jsonType
+            except:
+                return json.dumps({
+                    "status": "failed",
+                    "reason": "error",
+                    "message": "Uh oh, something went wrong..."
+                }), 500, jsonType  
 
             user.stripe_id = customer.id
-            user.save()
-            print("Built user", user, user.stripe_id);
 
             try:
                 stripe.Charge.create(
@@ -97,45 +113,61 @@ def register(event_id):
                     customer = customer.id, 
                     description = "Registration for "+event.name
                 )
-                print("Created Charge")
-            except stripe.CardError, err:
-                print("Charge Error", err)
+            except stripe.CardError, e:
+                print("Charge Card Error", e)
+                err = e.json_body['error']
                 return json.dumps({
                     "status": "failed",
-                    "reason": "Card declined",
-                    "message": err
+                    "reason": err['param'] if ('param' in err) else 'charge',
+                    "message": err['message']
                 }), 400, jsonType
+            except:
+                return json.dumps({
+                    "status": "failed",
+                    "reason": "error",
+                    "message": "Uh oh, something went wrong..."
+                }), 500, jsonType
+
         elif event.price > 0:
             return json.dumps({
                 "status": "failed",
-                "reason": "Stripe token required"
+                "reason": "payment",
+                "message": "This event costs $"+event.price+"."
             }), 400, jsonType
     else:
         user_id = auth.check_token( request.headers.get('session') )
         if not user_id:
             return "Unauthorized request: Bad session token", 401
 
-        user = User.find_id( user_id ) or request.body.user
+        user = User.find_id( user_id )
         if not user:
             return "Unauthorized request: User doesn't have permission", 401
         if user.type == "organizers":
             return "Organizers can't register for an event", 400
 
-    print("Out of if-else")
     if(event.registration_end < datetime.now()):
         return json.dumps({
             "status": "failed",
-             "reason": "Registration has closed"
+            "reason": "closed",
+            "message": "Registration for this event has ended."
         }), 200, jsonType
 
-    ## Check waitlist, add to event list
 
+    
+    if event in user.events:
+        return json.dumps({
+            "status": "failed",
+            "reason": "name",
+            "message": "You've already registered for this event."
+        }), 400, jsonType
+
+
+    ## Check waitlist, add to event list
     user.events.append( event )
     user.save()
-    print('saved user')
+
     if user.complete:
         ## Send confirmation email
-        print("Done!")
         return json.dumps({"status": "registered"}), 200, jsonType
     else:
         ## Send confirmation/complete profile email

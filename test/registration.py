@@ -64,6 +64,13 @@ class RegistrationTests(unittest.TestCase):
         self.student_token = student_result['session']
         self.app.post('/events/'+self.event+'/register', headers=h(session=self.student_token))
 
+        data = json.dumps({
+            'name': 'Main Student2',
+            'email': 'student2@gopilot.org',
+            'password': 'test-test',
+            'type': 'student'
+        })
+        self.student_token2 = json.loads( self.app.post('/users', headers=h(), data=data).data )['session']
 
 
         data = json.dumps({
@@ -97,7 +104,7 @@ class RegistrationTests(unittest.TestCase):
         assert self.student['id'] == json.loads(response.data)[0]['id']
 
     def test_register(self):
-        response = self.app.post('/events/'+self.event+"/register", headers=h(session=self.student_token))
+        response = self.app.post('/events/'+self.event+"/register", headers=h(session=self.student_token2))
         assert json.loads(response.data)['status'] == "registered"
 
     def test_register_no_user(self):
@@ -114,7 +121,7 @@ class RegistrationTests(unittest.TestCase):
     def test_register_old(self):
         response = self.app.post('/events/'+self.old_event+"/register", headers=h(session=self.student_token))
         assert json.loads(response.data)['status'] == "failed"
-        assert json.loads(response.data)['reason'] == "Registration has closed"
+        assert json.loads(response.data)['reason'] == "closed"
 
     def test_unregister(self):
         response = self.app.delete('/events/'+self.event+"/register", headers=h(session=self.student_token))
