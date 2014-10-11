@@ -4,12 +4,14 @@ from dateutil import parser as dateParser
 from datetime import datetime
 from uuid import uuid4 as random_uuid
 
-from backend import EventBlueprint
+from backend import EventBlueprint, app, crossdomain
 from . import auth
 
 from backend.models import User, Student, Mentor, Organizer, Event, DeletedEvent
 
 import json
+import stripe
+
 jsonType = {'Content-Type': 'application/json'}
 
 ## These endpoints need any security?
@@ -57,7 +59,8 @@ def get_attendees(event_id, attendee_type):
 
     return json.dumps( attendees ), 200, jsonType
 
-@EventBlueprint.route('/<event_id>/register', methods=['POST'])
+@EventBlueprint.route('/<event_id>/register', methods=['POST', 'OPTIONS'])
+@crossdomain(origin='*') # Later, update this to *.gopilot.org
 def register(event_id):
     user = None
     event = Event.find_id( event_id )
@@ -65,7 +68,7 @@ def register(event_id):
         return "Event not found", 404
 
     if hasattr(request, 'json') and 'user' in request.json:
-        user = User()
+        user = Student()
         user.name = request.json['user']['name']
         user.email = request.json['user']['email']
         user.complete = False
@@ -74,8 +77,39 @@ def register(event_id):
         if User.objects(email=user.email).first():
             return "Email already exists", 400 
 
-        ## Something with stripe token as well
-        user.save()
+        print('stripe_token' in request.json)
+        if 'stripe_token' in request.json:
+            stripe.api_key = app.config['STRIPE_KEY']
+
+            customer = stripe.Customer.create(
+                card = request.json['stripe_token'],
+                description = user.email
+            )
+
+            user.stripe_id = customer.id
+            user.save()
+            print("Built user", user, user.stripe_id);
+
+            try:
+                stripe.Charge.create(
+                    amount = (event.price * 100), ## Cents
+                    currency = "usd",
+                    customer = customer.id, 
+                    description = "Registration for "+event.name
+                )
+                print("Created Charge")
+            except stripe.CardError, err:
+                print("Charge Error", err)
+                return json.dumps({
+                    "status": "failed",
+                    "reason": "Card declined",
+                    "message": err
+                }), 400, jsonType
+        elif event.price > 0:
+            return json.dumps({
+                "status": "failed",
+                "reason": "Stripe token required"
+            }), 400, jsonType
     else:
         user_id = auth.check_token( request.headers.get('session') )
         if not user_id:
@@ -87,19 +121,21 @@ def register(event_id):
         if user.type == "organizers":
             return "Organizers can't register for an event", 400
 
+    print("Out of if-else")
     if(event.registration_end < datetime.now()):
         return json.dumps({
             "status": "failed",
              "reason": "Registration has closed"
         }), 200, jsonType
 
-    ## Check waitlist
+    ## Check waitlist, add to event list
 
     user.events.append( event )
     user.save()
-
+    print('saved user')
     if user.complete:
         ## Send confirmation email
+        print("Done!")
         return json.dumps({"status": "registered"}), 200, jsonType
     else:
         ## Send confirmation/complete profile email

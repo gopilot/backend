@@ -17,6 +17,8 @@ class User(document.Document):
     # Different based on context of user - whether events attended, mentored, or organized
     events = orm.ListField( orm.ReferenceField(events.Event) )
 
+    stripe_id = orm.StringField()
+
 class Student(User):
    type = orm.StringField(default="student")
 

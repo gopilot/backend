@@ -15,5 +15,7 @@ class Event(document.Document):
     end_date = orm.DateTimeField(required=True)
     registration_end = orm.DateTimeField(required=True)
 
+    price = orm.IntField(default=0)
+
 class DeletedEvent(Event):
     deleted_on = orm.DateTimeField(required=True)

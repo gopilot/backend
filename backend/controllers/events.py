@@ -35,6 +35,7 @@ def create_event():
     event.location = body.get('location')
     event.address = body.get('address')
     event.image = body.get('image')
+    event.price = int(body.get('price'))
 
     event.save()
 
