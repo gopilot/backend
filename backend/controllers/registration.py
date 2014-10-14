@@ -11,6 +11,7 @@ from backend.models import User, Student, Mentor, Organizer, Event, DeletedEvent
 
 import json
 import stripe
+import sendgrid
 
 jsonType = {'Content-Type': 'application/json'}
 
@@ -63,6 +64,8 @@ def get_attendees(event_id, attendee_type):
 @crossdomain(origin='*') # Later, update this to *.gopilot.org
 def register(event_id):
     user = None
+    sg = sendgrid.SendGridClient('gopilot', app.config["SENDGRID_PASS"])
+
     event = Event.find_id( event_id )
     if not event:
         return "Event not found", 404
@@ -166,13 +169,24 @@ def register(event_id):
     ## Check waitlist, add to event list
     user.events.append( event )
     user.save()
-
+    message = sendgrid.Mail();
+    message.add_to(user.name+"<"+user.email+">")
+    message.set_from("Pilot <fly@gopilot.org>")
     if user.complete:
-        ## Send confirmation email
-        return json.dumps({"status": "registered"}), 200, jsonType
+        message.set_subject("Your "+event.name+" registration.")
+        message.set_html("Thanks for registering!")
+        message.set_text("Thanks for registering!")
     else:
-        ## Send confirmation/complete profile email
-        return json.dumps({"status": "registered"}), 200, jsonType
+        message.set_subject("Complete your "+event.name+" registration")
+        message.set_html("Thanks for registering! Click here to finish the process.")
+        message.set_text("Thanks for registering! Click here to finish the process.")
+
+    if not app.config['TESTING']:
+        status, msg = sg.send(message)
+        print(status, msg)
+    else:
+        print("Sending message", message)
+    return json.dumps({"status": "registered"}), 200, jsonType
 
 @EventBlueprint.route('/<event_id>/register', methods=['DELETE'])
 def unregister(event_id):

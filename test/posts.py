@@ -20,7 +20,6 @@ class PostTests(unittest.TestCase):
 
         self.start_time = time.clock()
         self.app = test_client
-
         ## Create test organizer
         organizer_data = json.dumps({
             'name': 'Main Organizer',

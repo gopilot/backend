@@ -20,7 +20,6 @@ class EventTests(unittest.TestCase):
 
         self.start_time = time.clock()
         self.app = test_client
-
         ## Create test organizer
         student_data = json.dumps({
             'name': 'Main Student',
