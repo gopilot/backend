@@ -23,6 +23,9 @@ app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 app.config['STRIPE_KEY']	= os.getenv('STRIPE_KEY', '')
 app.config['SENDGRID_PASS'] = os.getenv('SENDGRID_PASS', '')
 
+if app.config['PRODUCTION']:
+	app.config['TESTING'] = False
+
 def start():
 	print("Booting up...")
 	print("Testing:    %s" % app.config['TESTING'])
