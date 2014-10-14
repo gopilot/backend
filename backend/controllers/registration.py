@@ -186,7 +186,12 @@ def register(event_id):
         print(status, msg)
     else:
         print("Sending message", message)
-    return json.dumps({"status": "registered"}), 200, jsonType
+
+    if user.complete:
+        return json.dumps({"status": "registered"}), 200, jsonType
+    else:
+        return json.dumps({"status": "registered", "token": user.completion_token}), 200, jsonType
+    
 
 @EventBlueprint.route('/<event_id>/register', methods=['DELETE'])
 def unregister(event_id):
