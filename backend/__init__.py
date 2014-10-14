@@ -25,8 +25,8 @@ app.config['SENDGRID_PASS'] = os.getenv('SENDGRID_PASS', '')
 
 def start():
 	print("Booting up...")
-	print("Testing:    "+app.config['TESTING'])
-	print("Production: "+app.config['PRODUCTION'])
+	print("Testing:    %s" % app.config['TESTING'])
+	print("Production: %s" % app.config['PRODUCTION'])
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 	print("Connected to Mongo")
 
