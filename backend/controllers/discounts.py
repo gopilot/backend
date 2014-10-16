@@ -3,7 +3,7 @@ from flask import Flask, request
 from dateutil import parser as dateParser
 from datetime import datetime
 
-from backend import EventBlueprint
+from backend import EventBlueprint, crossdomain
 from . import auth
 
 from backend.models import User, Student, Mentor, Organizer, Event, Discount
