@@ -116,7 +116,7 @@ def update_user(user_id):
     for key, value in request.get_json().items():
         if key == "password":
             setattr(user, key, bcrypt.hashpw( value.encode('utf-8'), bcrypt.gensalt() ) )
-        elif not key.startswith('_') and not key == "id": # Some security
+        elif not key.startswith('_') and not key == "id" and not key=="type": # Some security
             setattr(user, key, value)
 
     user.save()
