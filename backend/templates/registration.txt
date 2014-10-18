@@ -1,0 +1,9 @@
+Hey {{first_name}}, 
+
+Thanks for signing up for {{event_name}}! 
+
+You're all set! Stay on the lookout for more emails from us later, as we'll be sending out important instructions once we get closer to the event. 
+
+
+We can't wait to see you at {{event_name}}!
+The Pilot Team

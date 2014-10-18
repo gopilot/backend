@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 from dateutil import parser as dateParser
 from datetime import datetime
@@ -172,14 +172,37 @@ def register(event_id):
     message = sendgrid.Mail();
     message.add_to(user.name+"<"+user.email+">")
     message.set_from("Pilot <fly@gopilot.org>")
+    
     if user.complete:
         message.set_subject("Your "+event.name+" registration.")
-        message.set_html("Thanks for registering!")
-        message.set_text("Thanks for registering!")
+        email_html = render_template('registration.html',
+            event_name=event.name,
+            first_name=user.name.split(' ')[0], 
+            subject="Your "+event.name+" registration."
+        )
+        message.set_html(email_html)
+        email_text = render_template('registration.txt',
+            event_name=event.name,
+            first_name=user.name.split(' ')[0], 
+            subject="Your "+event.name+" registration."
+        )
+        message.set_text(email_text)
     else:
         message.set_subject("Complete your "+event.name+" registration")
-        message.set_html("Thanks for registering! Click here to finish the process.")
-        message.set_text("Thanks for registering! Click here to finish the process.")
+        email_html = render_template('complete_registration.html',
+            event_name=event.name,
+            first_name=user.name.split(' ')[0], 
+            subject="Complete your "+event.name+" registration.",
+            registration_link="http://epa.gopilot.org/complete.html?token="+user.completion_token
+        )
+        message.set_html(email_html)
+        email_text = render_template('complete_registration.txt',
+            event_name=event.name,
+            first_name=user.name.split(' ')[0], 
+            subject="Complete your "+event.name+" registration.",
+            registration_link="http://epa.gopilot.org/complete.html?token="+user.completion_token
+        )
+        message.set_text(email_text)
 
     if not app.config['TESTING']:
         status, msg = sg.send(message)
