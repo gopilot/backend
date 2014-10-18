@@ -82,12 +82,6 @@ def find_incomplete(token):
     user = User.objects(completion_token=token)
     if not user or len(user) < 1:
         return "Token invalid", 404
-    user = user[0]
-    print("completing...", user);
-
-    user.completion_token = None;
-    user.complete = True;
-    user.save()
 
     return json.dumps({
             'session': auth.create_token( user.id ),
@@ -118,6 +112,10 @@ def update_user(user_id):
             setattr(user, key, bcrypt.hashpw( value.encode('utf-8'), bcrypt.gensalt() ) )
         elif not key.startswith('_') and not key == "id" and not key=="type": # Some security
             setattr(user, key, value)
+
+    if not user.complete:   
+        user.completion_token = None;
+        user.complete = True;
 
     user.save()
 
