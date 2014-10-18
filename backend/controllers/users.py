@@ -95,7 +95,7 @@ def find_incomplete(token):
         }), 200, jsonType
 
 # PUT /users/<user_id>
-@UserBlueprint.route('/<user_id>', methods=['PUT'])
+@UserBlueprint.route('/<user_id>', methods=['PUT', 'OPTIONS'])
 @crossdomain(origin='*') # Later, update this to *.gopilot.org
 def update_user(user_id):
     session_id = auth.check_token( request.headers.get('session') )

@@ -10,6 +10,7 @@ from . import auth
 from backend.models import User, Student, Mentor, Organizer, Event, DeletedEvent
 
 import json
+import bcrypt
 import stripe
 import sendgrid
 
