@@ -84,8 +84,8 @@ def find_incomplete(token):
         return "Token invalid", 404
 
     return json.dumps({
-            'session': auth.create_token( user.id ),
-            'user': user.to_dict()
+            'session': auth.create_token( user[0].id ),
+            'user': user[0].to_dict()
         }), 200, jsonType
 
 # PUT /users/<user_id>
