@@ -60,6 +60,52 @@ def get_attendees(event_id, attendee_type):
 
     return json.dumps( attendees ), 200, jsonType
 
+@EventBlueprint.route('/<event_id>/register/mentor', methods=['POST', 'OPTIONS'])
+@crossdomain(origin='*') # Later, update this to *.gopilot.org
+def register_mentor(event_id):
+    sg = sendgrid.SendGridClient('gopilot', app.config["SENDGRID_PASS"])
+
+    event = Event.find_id( event_id )
+    if not event:
+        return "Event not found", 404
+
+    user = Mentor()
+
+    for key, value in request.get_json().items():
+        if key == "password":
+            setattr(user, key, bcrypt.hashpw( value.encode('utf-8'), bcrypt.gensalt() ) )
+        elif not key.startswith('_') and not key == "id": # Some security
+            setattr(user, key, value)
+
+    user.events.append( event )
+    user.save()
+
+    message = sendgrid.Mail();
+    message.add_to(user.name+"<"+user.email+">")
+    message.set_from("Pilot <fly@gopilot.org>")
+    message.set_subject("Thanks for signing up to mentor at "+event.name+"!")
+    email_html = render_template('mentor_registration.html',
+        event_name=event.name,
+        first_name=user.name.split(' ')[0], 
+        subject="Thanks for signing up to mentor at for "+event.name+"!"
+    )
+    message.set_html(email_html)
+    email_text = render_template('mentor_registration.txt',
+        event_name=event.name,
+        first_name=user.name.split(' ')[0], 
+        subject="Thanks for signing up to mentor at "+event.name+"!"
+    )
+    message.set_text(email_text)
+
+    if not app.config['TESTING']:
+        status, msg = sg.send(message)
+        print(status, msg)
+    else:
+        print("Sending message to "+user.email, message)
+
+    return user.to_json()
+
+
 @EventBlueprint.route('/<event_id>/register', methods=['POST', 'OPTIONS'])
 @crossdomain(origin='*') # Later, update this to *.gopilot.org
 def register(event_id):
