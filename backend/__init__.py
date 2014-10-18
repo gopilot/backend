@@ -22,7 +22,6 @@ app.config['TESTING']		= bool(os.getenv('TESTING', False))
 app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 app.config['STRIPE_KEY']	= os.getenv('STRIPE_KEY', '')
 app.config['SENDGRID_PASS'] = os.getenv('SENDGRID_PASS', '')
-app.config['PROPAGATE_EXCEPTIONS'] = True
 
 
 if app.config['PRODUCTION']:
