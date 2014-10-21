@@ -1,0 +1,16 @@
+../sendgrid/__init__.py
+../sendgrid/exceptions.py
+../sendgrid/message.py
+../sendgrid/sendgrid.py
+../sendgrid/version.py
+../sendgrid/__init__.pyc
+../sendgrid/exceptions.pyc
+../sendgrid/message.pyc
+../sendgrid/sendgrid.pyc
+../sendgrid/version.pyc
+./
+dependency_links.txt
+PKG-INFO
+requires.txt
+SOURCES.txt
+top_level.txt

@@ -1,0 +1,10 @@
+Hey {{first_name}}, 
+
+Thanks for signing up for {{event_name}}! 
+
+You're almost done. If you haven't already, fill the following form to complete your registration, and then we'll see you at {{event_name}}! 
+
+{{registration_link}}
+
+Thanks! 
+The Pilot Team
