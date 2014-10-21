@@ -1,3 +1,7 @@
 **/*.pyc
 node_modules
 dump.rdb
+test
+test.py
+setup.py
+
