@@ -158,7 +158,6 @@ def set_allow_origin(resp):
 
 	return resp
 
-
 if app.config['PRODUCTION']:
 	start()
 elif __name__ == '__main__':
