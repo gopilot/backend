@@ -14,11 +14,11 @@ from pprint import pprint
 app = Flask(__name__)
 app.debug = True
 
-app.config['MONGO_USER']	= os.getenv('MONGODB_USERNAME', '')
-app.config['MONGO_PASS']	= os.getenv('MONGODB_PASSWORD', '')
+app.config['MONGO_URL']	= os.getenv('MONGO_URL', 'mongodb://localhost:27017')
 app.config['MONGO_DB']		= os.getenv('MONGODB_DATABASE', 'backend')
 
-app.config['REDIS_DB']		= int(os.getenv('REDIS_DB',		0))
+app.config['REDIS_URL']		= os.getenv('REDIS_URL', 'redis://localhost:6379')
+app.config['REDIS_DB']		= int(os.getenv('REDIS_DB',		"0"))
 
 app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
@@ -42,9 +42,9 @@ def start():
 	
 	global sessions
 	try:
-		sessions = redis.StrictRedis(host='localhost', port=6379, db=app.config['REDIS_DB'])
+		sessions = redis.from_url(app.config['REDIS_URL'], db=app.config['REDIS_DB'])
 	except Exception as e:
-		    print("Unexpected redis error: %s" % e)
+		print("Unexpected redis error: %s" % e)
 
 	sessions.set('testing-redis', 'test')
 	test = sessions.get('testing-redis')
@@ -52,9 +52,9 @@ def start():
 	print("Connected to Redis")
 
 	try:
-		mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
-	except e:
-	    print("Unexpected mongo error: %s" % e)
+		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
+	except Exception as e:
+		print("Unexpected mongo error: %s" % e)
 
 	print("Connected to Mongo")
 
@@ -136,42 +136,42 @@ def crossdomain(origin=None, methods=None, headers=None,
 
 @app.before_request
 def option_autoreply():
-    """ Always reply 200 on OPTIONS request """
+	""" Always reply 200 on OPTIONS request """
 
-    if request.method == 'OPTIONS':
-        resp = app.make_default_options_response()
+	if request.method == 'OPTIONS':
+		resp = app.make_default_options_response()
 
-        headers = None
-        if 'ACCESS_CONTROL_REQUEST_HEADERS' in request.headers:
-            headers = request.headers['ACCESS_CONTROL_REQUEST_HEADERS']
+		headers = None
+		if 'ACCESS_CONTROL_REQUEST_HEADERS' in request.headers:
+			headers = request.headers['ACCESS_CONTROL_REQUEST_HEADERS']
 
-        h = resp.headers
+		h = resp.headers
 
-        # Allow the origin which made the XHR
-        h['Access-Control-Allow-Origin'] = request.headers['Origin']
-        # Allow the actual method
-        h['Access-Control-Allow-Methods'] = request.headers['Access-Control-Request-Method']
-        # Allow for 10 seconds
-        h['Access-Control-Max-Age'] = "10"
+		# Allow the origin which made the XHR
+		h['Access-Control-Allow-Origin'] = request.headers['Origin']
+		# Allow the actual method
+		h['Access-Control-Allow-Methods'] = request.headers['Access-Control-Request-Method']
+		# Allow for 10 seconds
+		h['Access-Control-Max-Age'] = "10"
 
-        # We also keep current headers
-        if headers is not None:
-            h['Access-Control-Allow-Headers'] = headers
+		# We also keep current headers
+		if headers is not None:
+			h['Access-Control-Allow-Headers'] = headers
 
-        return resp
+		return resp
 
 @app.after_request
 def set_allow_origin(resp):
-    """ Set origin for GET, POST, PUT, DELETE requests """
+	""" Set origin for GET, POST, PUT, DELETE requests """
 
-    h = resp.headers
+	h = resp.headers
 
-    # Allow crossdomain for other HTTP Verbs
-    if request.method != 'OPTIONS' and 'Origin' in request.headers:
-        h['Access-Control-Allow-Origin'] = request.headers['Origin']
+	# Allow crossdomain for other HTTP Verbs
+	if request.method != 'OPTIONS' and 'Origin' in request.headers:
+		h['Access-Control-Allow-Origin'] = request.headers['Origin']
 
 
-    return resp
+	return resp
 
 
 if app.config['PRODUCTION']:
