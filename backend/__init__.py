@@ -56,10 +56,9 @@ def start():
 
 	try:
 		mongoengine.connect(app.config['MONGO_DB'],
-			host="localhost",
+			host=app.config['MONGO_URL'],
 			username=app.config['MONGO_USER'],
-			password=app.config["MONGO_PASS"],
-			port=49156
+			password=app.config["MONGO_PASS"]
 		)
 	except Exception as e:
 		print("Unexpected mongo error: %s" % e)
