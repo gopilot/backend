@@ -38,12 +38,20 @@ def start():
 	print("Testing:    %s" % app.config['TESTING'])
 	print("Production: %s" % app.config['PRODUCTION'])
 	pprint(app.config)
-	# mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
+	try:
+		mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
+	except:
+	    print "Unexpected mongo error:", sys.exc_info()[0]
+
 	print("Connected to Mongo")
 
 
 	global sessions
-	sessions = redis.StrictRedis(host='localhost', port=6379, db=app.config['REDIS_DB'])
+	try:
+		sessions = redis.StrictRedis(host='localhost', port=6379, db=app.config['REDIS_DB'])
+	except:
+	    print "Unexpected redis error:", sys.exc_info()[0]
+
 	sessions.set('testing-redis', 'test')
 	test = sessions.get('testing-redis')
 	assert test == 'test', "ERROR: Redis not working!"
