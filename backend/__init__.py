@@ -32,7 +32,7 @@ def start():
 	print("Booting up...")
 	print("Testing:    %s" % app.config['TESTING'])
 	print("Production: %s" % app.config['PRODUCTION'])
-	print("Config: %s", % app.config)
+	print(app.config)
 	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 	print("Connected to Mongo")
 
