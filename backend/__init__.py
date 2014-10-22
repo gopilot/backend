@@ -59,7 +59,7 @@ def start():
 			host="localhost",
 			username=app.config['MONGO_USER'],
 			password=app.config["MONGO_PASS"],
-			port=app.config['MONGO_PORT']
+			port=49156
 		)
 	except Exception as e:
 		print("Unexpected mongo error: %s" % e)
