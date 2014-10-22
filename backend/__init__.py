@@ -16,7 +16,7 @@ app.debug = True
 app.config['MONGO_URL'] 	= os.getenv('MONGO_URL',	'mongodb://localhost:27017')
 app.config['MONGO_DB']		= os.getenv('MONGO_DB',		'backend')
 app.config['REDIS_URL'] 	= os.getenv('REDIS_URL',	'redis://localhost:6379')
-app.config['REDIS_DB']		= int(os.getenv('REDIS_DB',		'0'))
+app.config['REDIS_DB']		= int(os.getenv('REDIS_DB',		0))
 app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
 app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
@@ -37,7 +37,7 @@ def start():
 
 
 	global sessions
-	sessions = redis.from_url(app.config['REDIS_URL'], db=app.config['REDIS_DB'])
+	sessions = redis.StrictRedis(host='localhost', port=6379, db=app.config['REDIS_DB'])
 	sessions.set('testing-redis', 'test')
 	test = sessions.get('testing-redis')
 	assert test == 'test', "ERROR: Redis not working!"
