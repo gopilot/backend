@@ -40,8 +40,8 @@ def start():
 	pprint(app.config)
 	try:
 		mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
-	except:
-	    print "Unexpected mongo error:", sys.exc_info()[0]
+	except e:
+	    print "Unexpected mongo error:", str(e)
 
 	print("Connected to Mongo")
 
@@ -49,8 +49,8 @@ def start():
 	global sessions
 	try:
 		sessions = redis.StrictRedis(host='localhost', port=6379, db=app.config['REDIS_DB'])
-	except:
-	    print "Unexpected redis error:", sys.exc_info()[0]
+	except e:
+		    print "Unexpected redis error:", str(e)
 
 	sessions.set('testing-redis', 'test')
 	test = sessions.get('testing-redis')
