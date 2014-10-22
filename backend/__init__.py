@@ -14,8 +14,8 @@ from pprint import pprint
 app = Flask(__name__)
 app.debug = True
 
-app.config['MONGO_USER']	= os.getenv('MONGODB_PASSWORD', '')
-app.config['MONGO_PASS']	= os.getenv('MONGODB_USERNAME', '')
+app.config['MONGO_USER']	= os.getenv('MONGODB_USERNAME', '')
+app.config['MONGO_PASS']	= os.getenv('MONGODB_PASSWORD', '')
 app.config['MONGO_DB']		= os.getenv('MONGODB_DATABASE', 'backend')
 
 app.config['REDIS_DB']		= int(os.getenv('REDIS_DB',		0))
