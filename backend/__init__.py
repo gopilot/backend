@@ -32,6 +32,7 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 
 if app.config['PRODUCTION']:
 	app.config['TESTING'] = False
+	app.config['DEBUG'] = False
 
 def start():
 	print("Booting up...")
