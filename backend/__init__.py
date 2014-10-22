@@ -49,7 +49,7 @@ def start():
 	global sessions
 	try:
 		sessions = redis.StrictRedis(host='localhost', port=6379, db=app.config['REDIS_DB'])
-	except e:
+	except Exception as e:
 		    print "Unexpected redis error:", str(e)
 
 	sessions.set('testing-redis', 'test')
