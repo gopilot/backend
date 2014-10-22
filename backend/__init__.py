@@ -38,7 +38,7 @@ def start():
 	print("Testing:    %s" % app.config['TESTING'])
 	print("Production: %s" % app.config['PRODUCTION'])
 	pprint(app.config)
-	mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
+	# mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
 	print("Connected to Mongo")
 
 
