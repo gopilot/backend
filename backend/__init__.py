@@ -58,7 +58,9 @@ def start():
 
 	try:
 		mongoengine.connect(app.config['MONGO_DB'],
-			host=app.config['MONGO_URL'],
+			host=app.config['MONGO_HOST'],
+			port=app.config['MONGO_PORT'],
+			db=app.config['MONGO_DB'],
 			username=app.config['MONGO_USER'],
 			password=app.config["MONGO_PASS"]
 		)
