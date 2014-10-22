@@ -38,14 +38,7 @@ def start():
 	print("Testing:    %s" % app.config['TESTING'])
 	print("Production: %s" % app.config['PRODUCTION'])
 	pprint(app.config)
-	try:
-		mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
-	except e:
-	    print("Unexpected mongo error: %s" % e)
-
-	print("Connected to Mongo")
-
-
+	
 	global sessions
 	try:
 		sessions = redis.StrictRedis(host='localhost', port=6379, db=app.config['REDIS_DB'])
@@ -56,6 +49,13 @@ def start():
 	test = sessions.get('testing-redis')
 	assert test == 'test', "ERROR: Redis not working!"
 	print("Connected to Redis")
+
+	try:
+		mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
+	except e:
+	    print("Unexpected mongo error: %s" % e)
+
+	print("Connected to Mongo")
 
 	global AuthBlueprint
 	AuthBlueprint = Blueprint('auth', __name__)
