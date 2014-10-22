@@ -13,15 +13,19 @@ from functools import update_wrapper
 app = Flask(__name__)
 app.debug = True
 
-app.config['MONGO_URL'] 	= os.getenv('MONGO_URL',	'mongodb://localhost:27017')
-app.config['MONGO_DB']		= os.getenv('MONGO_DB',		'backend')
-app.config['REDIS_URL'] 	= os.getenv('REDIS_URL',	'redis://localhost:6379')
+app.config['MONGO_USER']	= os.getenv('MONGODB_PASSWORD', '')
+app.config['MONGO_PASS']	= os.getenv('MONGODB_USERNAME', '')
+app.config['MONGO_DB']		= os.getenv('MONGODB_DATABASE', 'backend')
+
 app.config['REDIS_DB']		= int(os.getenv('REDIS_DB',		0))
+
 app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
 app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
+
 app.config['STRIPE_KEY']	= os.getenv('STRIPE_KEY', '')
 app.config['SENDGRID_PASS'] = os.getenv('SENDGRID_PASS', '')
+
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
 
@@ -33,7 +37,7 @@ def start():
 	print("Testing:    %s" % app.config['TESTING'])
 	print("Production: %s" % app.config['PRODUCTION'])
 	print(app.config)
-	mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
+	mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
 	print("Connected to Mongo")
 
 
