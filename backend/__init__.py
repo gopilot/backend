@@ -9,6 +9,7 @@ import logging
 
 from datetime import timedelta
 from functools import update_wrapper
+from pprint import pprint
 
 app = Flask(__name__)
 app.debug = True
@@ -36,7 +37,7 @@ def start():
 	print("Booting up...")
 	print("Testing:    %s" % app.config['TESTING'])
 	print("Production: %s" % app.config['PRODUCTION'])
-	print(app.config)
+	pprint(app.config)
 	mongoengine.connect(app.config['MONGO_DB'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
 	print("Connected to Mongo")
 
