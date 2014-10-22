@@ -16,6 +16,9 @@ app.debug = True
 
 app.config['MONGO_URL']	= os.getenv('MONGO_URL', 'mongodb://localhost:27017')
 app.config['MONGO_DB']		= os.getenv('MONGODB_DATABASE', 'backend')
+app.config['MONGO_USER']	= os.getenv('MONGODB_USERNAME', "")
+app.config['MONGO_PASS']	= os.getenv('MONGODB_PASSWORD', "")
+app.config['MONGO_PORT']	= int(os.getenv('MONGODB_PORT', 27017))
 
 app.config['REDIS_URL']		= os.getenv('REDIS_URL', 'redis://localhost:6379')
 app.config['REDIS_DB']		= int(os.getenv('REDIS_DB',		"0"))
@@ -52,7 +55,12 @@ def start():
 	print("Connected to Redis")
 
 	try:
-		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
+		mongoengine.connect(app.config['MONGO_DB'],
+			host="localhost",
+			username=app.config['MONGO_USER'],
+			password=app.config["MONGO_PASS"],
+			port=app.config['MONGO_PORT']
+		)
 	except Exception as e:
 		print("Unexpected mongo error: %s" % e)
 
