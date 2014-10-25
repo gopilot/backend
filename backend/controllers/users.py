@@ -123,7 +123,7 @@ def update_user(user_id):
                 print("ERROR SETTING USER", key, value, e)
                 hadError = True;
 
-    if not user.complete && not hadError:   
+    if not user.complete and not hadError:   
         user.completion_token = None;
         user.complete = True;
 
