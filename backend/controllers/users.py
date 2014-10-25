@@ -111,17 +111,9 @@ def update_user(user_id):
     hadError = False;
     for key, value in request.get_json().items():
         if key == "password":
-            try:
-                setattr(user, key, bcrypt.hashpw( value.encode('utf-8'), bcrypt.gensalt() ) )
-            except Exception as e:
-                print("ERROR SETTING PASSWORD", e)
-                hadError = True;
+            setattr(user, key, bcrypt.hashpw( value.encode('utf-8'), bcrypt.gensalt() ) )
         elif not key.startswith('_') and not key == "id" and not key=="type": # Some security
-            try:
-                setattr(user, key, value)
-            except Exception as e:
-                print("ERROR SETTING USER", key, value, e)
-                hadError = True;
+            setattr(user, key, value)
 
     if not user.complete and not hadError:   
         user.completion_token = None;
@@ -132,6 +124,10 @@ def update_user(user_id):
     except Exception as e:
         print("ERROR SAVING USER OBJECT", str(e))
         print(user.to_dict())
+        return json.dumps({
+            'error': True,
+            'message': "Validation error: "+str(e)
+        }), 400, jsonType
 
     return user.to_json()
 
