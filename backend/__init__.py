@@ -38,12 +38,22 @@ if app.config['PRODUCTION']:
 	app.config['TESTING'] = False
 	app.config['DEBUG'] = False
 
+app.debug = False
+
+ADMINS = ['peter@gopilot.org']
+
+@app.before_first_request
+def setup_logging():
+    if not app.debug:
+        # In production mode, add log handler to sys.stderr.
+        app.logger.addHandler(logging.StreamHandler())
+        app.logger.setLevel(logging.INFO)
+
 def start():
 	print("Booting up...")
 	print("Testing:    %s" % app.config['TESTING'])
 	print("Production: %s" % app.config['PRODUCTION'])
 	print("Mongo: %s" % app.config['MONGO_URL'])
-	pprint(app.config)
 	
 	global sessions
 	try:
@@ -91,6 +101,7 @@ def start():
 
 	@app.errorhandler(500)
 	def serverError(error):
+		print(error)
 		return error
 
 	print("App Booted!")
