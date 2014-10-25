@@ -130,7 +130,7 @@ def update_user(user_id):
     try:
         user.save()
     except Exception as e:
-        print("ERROR SAVING USER OBJECT")
+        print("ERROR SAVING USER OBJECT", str(e))
         print(user.to_dict())
 
     return user.to_json()
