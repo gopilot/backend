@@ -127,7 +127,11 @@ def update_user(user_id):
         user.completion_token = None;
         user.complete = True;
 
-    user.save()
+    try:
+        user.save()
+    except Exception as e:
+        print("ERROR SAVING USER OBJECT")
+        print(user.to_dict())
 
     return user.to_json()
 
