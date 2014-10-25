@@ -108,13 +108,22 @@ def update_user(user_id):
     if not user:
         return "User not found", 404
 
+    hadError = False;
     for key, value in request.get_json().items():
         if key == "password":
-            setattr(user, key, bcrypt.hashpw( value.encode('utf-8'), bcrypt.gensalt() ) )
+            try:
+                setattr(user, key, bcrypt.hashpw( value.encode('utf-8'), bcrypt.gensalt() ) )
+            except Exception as e:
+                print("ERROR SETTING PASSWORD", e)
+                hadError = True;
         elif not key.startswith('_') and not key == "id" and not key=="type": # Some security
-            setattr(user, key, value)
+            try:
+                setattr(user, key, value)
+            except Exception as e:
+                print("ERROR SETTING USER", key, value, e)
+                hadError = True;
 
-    if not user.complete:   
+    if not user.complete && not hadError:   
         user.completion_token = None;
         user.complete = True;
 
