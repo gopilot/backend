@@ -134,7 +134,7 @@ def register(event_id):
                 "message": "Your email already has a Pilot account."
             }), 400, jsonType
 
-        if 'discount' in request.json && request.json['discount'] != False:
+        if 'discount' in request.json and request.json['discount'] != False:
             user.save()
             discount = redeemDiscount(user, request.json['discount'])
             if discount:
