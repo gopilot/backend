@@ -166,7 +166,7 @@ def register(event_id):
                 }), 500, jsonType  
 
             user.stripe_id = customer.id
-            print("Created customer")
+            
             try:
                 stripe.Charge.create(
                     amount = (price * 100), ## Cents
@@ -189,7 +189,7 @@ def register(event_id):
                     "message": "Uh oh, something went wrong..."
                 }), 500, jsonType
 
-            print("Charged customer")
+            
         elif price > 0:
             return json.dumps({
                 "status": "failed",
@@ -223,7 +223,7 @@ def register(event_id):
             "message": "You've already registered for this event."
         }), 400, jsonType
 
-    print("Saving user")
+    
     ## Check waitlist, add to event list
     user.events.append( event )
     user.save()
@@ -269,7 +269,7 @@ def register(event_id):
     else:
         print("Sending message", message)
 
-    print("done!")
+    
     if user.complete:
         return json.dumps({"status": "registered"}), 200, jsonType
     else:
