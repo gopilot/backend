@@ -231,7 +231,6 @@ def register(event_id):
     message.add_to(user.name+"<"+user.email+">")
     message.set_from("Pilot <fly@gopilot.org>")
     
-    print("sending message")
     if user.complete:
         message.set_subject("Your "+event.name+" registration.")
         email_html = render_template('registration.html',
