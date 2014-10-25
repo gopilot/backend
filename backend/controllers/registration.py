@@ -8,6 +8,7 @@ from backend import EventBlueprint, app, crossdomain
 from . import auth
 
 from backend.models import User, Student, Mentor, Organizer, Event, DeletedEvent
+from backend.controllers.discounts import redeemDiscount
 
 import json
 import bcrypt
@@ -117,6 +118,8 @@ def register(event_id):
     if not event:
         return "Event not found", 404
 
+    price = event.price
+
     if hasattr(request, 'json') and 'user' in request.json:
         user = Student()
         user.name = request.json['user']['name']
@@ -131,6 +134,13 @@ def register(event_id):
                 "message": "Your email already has a Pilot account."
             }), 400, jsonType
 
+        if 'discount' in request.json:
+            user.save()
+            discount = redeemDiscount(user, request.json['discount'])
+            if discount:
+                price -= discount
+
+        print("Charging user %s" % price)
         if 'stripe_token' in request.json:
             stripe.api_key = app.config['STRIPE_KEY']
 
@@ -159,7 +169,7 @@ def register(event_id):
 
             try:
                 stripe.Charge.create(
-                    amount = (event.price * 100), ## Cents
+                    amount = (price * 100), ## Cents
                     currency = "usd",
                     customer = customer.id, 
                     description = "Registration for "+event.name
@@ -178,12 +188,11 @@ def register(event_id):
                     "reason": "error",
                     "message": "Uh oh, something went wrong..."
                 }), 500, jsonType
-
-        elif event.price > 0:
+        elif price > 0:
             return json.dumps({
                 "status": "failed",
                 "reason": "payment",
-                "message": "This event costs $"+event.price+"."
+                "message": "This event costs $%s." % price
             }), 400, jsonType
     else:
         user_id = auth.check_token( request.headers.get('session') )

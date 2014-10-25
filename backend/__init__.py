@@ -88,7 +88,7 @@ def start():
 	global UserBlueprint
 	UserBlueprint = Blueprint('users', __name__)
 
-	from backend.controllers import auth, users, events, registration, posts, projects, users
+	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users
 
 	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
@@ -183,9 +183,15 @@ def set_allow_origin(resp):
 	if request.method != 'OPTIONS' and 'Origin' in request.headers:
 		h['Access-Control-Allow-Origin'] = request.headers['Origin']
 
-
 	return resp
 
+
+def send_error(msg, status):
+	return json.dumps({
+		"error": True,
+		"status": status,
+		"message": msg
+	}), status, {'Content-Type': 'application/json'}
 
 if app.config['PRODUCTION']:
 	start()
