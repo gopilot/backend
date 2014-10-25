@@ -46,6 +46,15 @@ import logging, sys
 logging.basicConfig(stream=sys.stderr)
 app.logger.addHandler(logging.StreamHandler(stream=sys.stderr))
 
+@app.errorhandler(404)
+def pageNotFound(error):
+	return "Page not found..."
+
+@app.errorhandler(500)
+def serverError(error):
+	print(error)
+	return "ERROR!"
+
 def start():
 	print("Booting up...")
 	print("Testing:    %s" % app.config['TESTING'])
@@ -91,15 +100,6 @@ def start():
 	@app.route('/')
 	def index():
 		return "OK"
-
-	@app.errorhandler(404)
-	def pageNotFound(error):
-		return "Page not found :("
-
-	@app.errorhandler(500)
-	def serverError(error):
-		print(error)
-		return error
 
 	print("App Booted!")
 
