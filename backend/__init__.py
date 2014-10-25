@@ -48,7 +48,7 @@ app.logger.addHandler(logging.StreamHandler(stream=sys.stderr))
 
 @app.errorhandler(404)
 def pageNotFound(error):
-	return "Page not found..."
+	return "Page not found...", 404
 
 @app.errorhandler(500)
 def serverError(error):
