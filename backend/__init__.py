@@ -14,7 +14,7 @@ from pprint import pprint
 app = Flask(__name__)
 app.debug = True
 
-app.config['MONGO_URL']	= os.getenv('MONGO_URL', 'mongodb://localhost:27017')
+app.config['MONGO_URL'] 	= os.getenv('MONGO_URL',	'mongodb://localhost:27017')
 app.config['MONGO_DB']		= os.getenv('MONGODB_DATABASE', 'backend')
 app.config['MONGO_USER']	= os.getenv('MONGODB_USERNAME', "")
 app.config['MONGO_PASS']	= os.getenv('MONGODB_PASSWORD', "")
@@ -57,12 +57,7 @@ def start():
 	print("Connected to Redis")
 
 	try:
-		mongoengine.connect(app.config['MONGO_DB'],
-			host=app.config['MONGO_HOST'],
-			port=app.config['MONGO_PORT'],
-			username=app.config['MONGO_USER'],
-			password=app.config["MONGO_PASS"]
-		)
+		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
 	except Exception as e:
 		print("Unexpected mongo error: %s" % e)
 
