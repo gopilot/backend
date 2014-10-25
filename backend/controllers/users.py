@@ -79,10 +79,11 @@ def find_user(user_id):
 @UserBlueprint.route('/find_incomplete/<token>', methods=['GET'])
 @crossdomain(origin='*') # Later, update this to *.gopilot.org
 def find_incomplete(token):
+    print("line 1", token)
     user = User.objects(completion_token=token)
-    if not user or len(user) < 1:
-        return "Token invalid", 404
-
+    print("line 2", user)
+    if not user or len(user) < 1: return "Token invalid", 404
+    print("line 3")
     return json.dumps({
             'session': auth.create_token( user[0].id ),
             'user': user[0].to_dict()
