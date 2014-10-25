@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 import bcrypt
 
-from backend import UserBlueprint, crossdomain
+from backend import UserBlueprint, crossdomain, app
 from . import auth
 
 from backend.models import User, Student, Mentor, Organizer, DeletedUser, Event, Project
@@ -32,6 +32,8 @@ def signup():
     elif form_type == 'mentor':
         user = Mentor()
     elif form_type == 'organizer':
+        if app.config['PRODUCTION']:
+            return "Error: User doesn't have permission", 401
         user = Organizer()
 
     user.name = form_name

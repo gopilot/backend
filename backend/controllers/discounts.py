@@ -95,12 +95,12 @@ def get_discount(event_id, discount_code):
 
     discount = Discount.find_id( discount_code )
     if not discount:
-        discount = Discount.objects(code=discount_code)[0]
+        discount = Discount.objects(code=discount_code)
     
     if not discount:
         return send_error("Discount not found", 404)
 
-    return discount.to_json()
+    return discount[0].to_json()
 
 # PUT /discounts/<discount_id>
 @EventBlueprint.route('/<event_id>/discounts/<discount_id>', methods=['PUT'])

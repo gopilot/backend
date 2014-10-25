@@ -6,7 +6,7 @@ class User(document.Document):
     meta = {
         'allow_inheritance': True
     }
-    _hidden = ['password']
+    _hidden = ['password', 'completion_token']
     type = orm.StringField()
 
     name = orm.StringField(required=True)
