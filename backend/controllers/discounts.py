@@ -12,7 +12,7 @@ import json
 jsonType = {'Content-Type': 'application/json'}
 
 def redeemDiscount(user, discount_code):
-    discount = Discount.objects(code=discount_code)[0]
+    discount = Discount.objects(code=discount_code.lower())[0]
     if not (discount and discount.active):
         return False
 
@@ -45,7 +45,7 @@ def create_discount(event_id):
 
     body = request.get_json()
 
-    if Discount.objects(code=body.get('code')):
+    if Discount.objects(code=body.get('code').lower()):
         return send_error("Code already exists", 400)
 
     discount = Discount()
@@ -53,7 +53,7 @@ def create_discount(event_id):
 
     discount.title = body.get('title')
     discount.amount = body.get('amount')
-    discount.code = body.get('code')
+    discount.code = body.get('code').lower()
 
     if body.get('limit'):
         discount.limit = body.get('limit')
@@ -95,7 +95,7 @@ def get_discount(event_id, discount_code):
 
     discount = Discount.find_id( discount_code )
     if not discount:
-        discount = Discount.objects(code=discount_code)
+        discount = Discount.objects(code=discount_code.lower())
     
     if not discount:
         return send_error("Discount not found", 404)

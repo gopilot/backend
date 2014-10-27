@@ -40,7 +40,7 @@ class Student(User):
    emergency_email = orm.EmailField()
    emergency_phone = orm.StringField()
    has_experience = orm.BooleanField()
-   experience_years = orm.IntField()
+   experience_years = orm.StringField()
    
 
 
