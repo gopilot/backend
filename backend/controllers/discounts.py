@@ -11,8 +11,8 @@ from backend.models import User, Student, Mentor, Organizer, Event, Discount
 import json
 jsonType = {'Content-Type': 'application/json'}
 
-def redeemDiscount(user, discount_code):
-    discount = Discount.objects(code=discount_code.lower())[0]
+def redeemDiscount(user, event, discount_code):
+    discount = Discount.objects(code=discount_code.lower(), event=event)[0]
     if not (discount and discount.active):
         return False
 
@@ -45,7 +45,7 @@ def create_discount(event_id):
 
     body = request.get_json()
 
-    if Discount.objects(code=body.get('code').lower()):
+    if Discount.objects(code=body.get('code').lower(), event=event):
         return send_error("Code already exists", 400)
 
     discount = Discount()
@@ -95,7 +95,7 @@ def get_discount(event_id, discount_code):
 
     discount = Discount.find_id( discount_code )
     if not discount:
-        discount = Discount.objects(code=discount_code.lower())
+        discount = Discount.objects(code=discount_code.lower(), event=event)
     
     if not discount:
         return send_error("Discount not found", 404)
