@@ -66,7 +66,7 @@ def start():
 		sessions = redis.from_url(app.config['REDIS_URL'], db=app.config['REDIS_DB'])
 	except Exception as e:
 		print("Unexpected redis error: %s" % e)
-
+	print("Testing Redis...")
 	sessions.set('testing-redis', 'test')
 	test = sessions.get('testing-redis')
 	assert test == 'test', "ERROR: Redis not working!"
