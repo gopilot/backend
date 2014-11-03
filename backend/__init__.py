@@ -61,6 +61,7 @@ def start():
 	print("Production: %s" % app.config['PRODUCTION'])
 	print("Mongo: %s" % app.config['MONGO_URL'])
 	print("Config:")
+	print(app.config)
 	pprint(app.config)
 
 	global sessions
