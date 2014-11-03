@@ -61,6 +61,8 @@ def start():
 	print("Production: %s" % app.config['PRODUCTION'])
 	print("Mongo: %s" % app.config['MONGO_URL'])
 	
+	pprint(app.config)
+
 	global sessions
 	try:
 		sessions = redis.from_url(app.config['REDIS_URL'], db=app.config['REDIS_DB'])
