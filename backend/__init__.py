@@ -60,7 +60,7 @@ def start():
 	print("Testing:    %s" % app.config['TESTING'])
 	print("Production: %s" % app.config['PRODUCTION'])
 	print("Mongo: %s" % app.config['MONGO_URL'])
-	
+	print("Config:")
 	pprint(app.config)
 
 	global sessions
