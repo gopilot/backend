@@ -61,7 +61,6 @@ def start():
 	print("Production: %s" % app.config['PRODUCTION'])
 	print("Mongo: %s" % app.config['MONGO_URL'])
 	print("Config:")
-	print(app.config)
 	pprint(app.config)
 
 	global sessions
@@ -76,7 +75,7 @@ def start():
 	print("Connected to Redis")
 
 	try:
-		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
+		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
 	except Exception as e:
 		print("Unexpected mongo error: %s" % e)
 
