@@ -75,7 +75,7 @@ def start():
 	print("Connected to Redis")
 
 	try:
-		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
+		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_HOST'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
 	except Exception as e:
 		print("Unexpected mongo error: %s" % e)
 
