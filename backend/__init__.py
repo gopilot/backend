@@ -70,7 +70,9 @@ def start():
 	print("Testing Redis...")
 	
 	sessions.set('testing-redis', 'test')
+	print('session get')
 	test = sessions.get('testing-redis')
+	print('session set')
 	assert test == 'test', "ERROR: Redis not working!"
 	
 	print("Connected to Redis")
