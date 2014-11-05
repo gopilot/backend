@@ -46,7 +46,7 @@ ADMINS = ['peter@gopilot.org']
 
 def init_logging(app):
 	papertrail = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
-	formatter = logging.Formatter('%(asctime)s : %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+	formatter = logging.Formatter('%(asctime)s %(filename)s %(funcName)s:%(lineno)s - %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
 	papertrail.setFormatter(formatter)
 	app.logger.addHandler(papertrail)
 	app.logger.setLevel(logging.INFO)
