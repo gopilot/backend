@@ -136,7 +136,7 @@ def register(event_id):
 
         if 'discount' in request.json and request.json['discount'] != False:
             user.save()
-            discount = redeemDiscount(user, request.json['discount'])
+            discount = redeemDiscount(user, event, request.json['discount'])
             if discount:
                 price -= discount
 
