@@ -42,6 +42,22 @@ def create_project():
     project.event = event
     project.creators = [user];
 
+    description = request.json.get('description')
+    if(description):
+        project.description = description
+
+    link_github = request.json.get('link_github')
+    if(link_github):
+        project.link_github = link_github
+
+    link_use = request.json.get('link_use')
+    if(link_use):
+        project.link_use = link_use
+
+    link_view = request.json.get('link_view')
+    if(link_view):
+        project.link_view = link_view
+
     project.save()
 
     if not project.id:
@@ -60,6 +76,20 @@ def get_all():
 
     for project in Project.objects(**query):
         projects.append( project.to_dict() )
+
+    return json.dumps( projects )
+
+# GET /projects/<event_id>
+@ProjectBlueprint.route('/<event_id>', methods=["GET"])
+def get_event_projects(event_id):
+    projects = []
+
+    event = Event.find_id( event_id )
+    if not event:
+        return "Event not found", 404
+
+    for p in Project.objects(event=event):
+        projects.append( p.to_dict() )
 
     return json.dumps( projects )
 
@@ -92,6 +122,12 @@ def update_project(project_id):
             setattr(project, key, value)
 
     project.save()
+
+    return project.to_json()
+
+# GET /projects/<user_id>
+@ProjectBlueprint.route('/<event_id>', methods=["GET"])
+def get_event_projects(event_id):
 
     return project.to_json()
 
