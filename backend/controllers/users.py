@@ -145,14 +145,11 @@ def remove_user(user_id):
         return "Session token not found", 404
 
     if (not session_id == user_id) and (not user_sess.type == "organizer"):
-            return "Unauthorized request: You don't have permission for this action", 401
+        return "Unauthorized request: You don't have permission for this action", 401
 
     user = User.find_id( user_id )
     if not user:
         return "User not found", 404
-    deleted_user = DeletedUser( **user._data )
-    deleted_user.deleted_on = datetime.today()
-    deleted_user.save()
 
     user.delete()
     

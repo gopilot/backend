@@ -56,11 +56,4 @@ class Mentor(User):
 class Organizer(User):
     type = orm.StringField(default="organizer")
 
-class DeletedUser(User):
-    meta = {
-        'collection': 'deleted_user',
-        'allow_inheritance': False
-    }
-    deleted_on = orm.DateTimeField(required=True)
-
 

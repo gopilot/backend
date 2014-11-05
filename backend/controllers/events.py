@@ -106,10 +106,6 @@ def remove_event(event_id):
     if not event:
         return "Event not found", 404
 
-    deleted_event = DeletedEvent(**event._data)
-    deleted_event.deleted_on = datetime.today()
-    deleted_event.save()
-
     event.delete()
     
     return 'Event deleted'
