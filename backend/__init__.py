@@ -112,7 +112,7 @@ def start():
 
 	@app.errorhandler(Exception)
 	def defaultHandler(e):
-		app.logger.error('Exception caught', e)
+		app.logger.error('Exception caught %s' % e)
 		app.logger.error(traceback.format_exc())
 		return 'error handler there', 500
 
