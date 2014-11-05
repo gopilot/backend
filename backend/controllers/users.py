@@ -7,7 +7,7 @@ import bcrypt
 from backend import UserBlueprint, crossdomain, app
 from . import auth
 
-from backend.models import User, Student, Mentor, Organizer, DeletedUser, Event, Project
+from backend.models import User, Student, Mentor, Organizer, Event, Project
 
 jsonType = {'Content-Type': 'application/json'}
 

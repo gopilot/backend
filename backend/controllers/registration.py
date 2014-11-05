@@ -7,7 +7,7 @@ from uuid import uuid4 as random_uuid
 from backend import EventBlueprint, app, crossdomain
 from . import auth
 
-from backend.models import User, Student, Mentor, Organizer, Event, DeletedEvent
+from backend.models import User, Student, Mentor, Organizer, Event
 from backend.controllers.discounts import redeemDiscount
 
 import json
