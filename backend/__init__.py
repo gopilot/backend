@@ -46,7 +46,7 @@ ADMINS = ['peter@gopilot.org']
 
 def init_logging(app):
 	papertrail = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
-	formatter = logging.Formatter('%(asctime)s %(filename)s%(lineno)s - %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+	formatter = logging.Formatter('%(asctime)s api.gopilot.org %(filename)s:%(lineno)s - %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
 	papertrail.setFormatter(formatter)
 	app.logger.addHandler(papertrail)
 	app.logger.setLevel(logging.INFO)
@@ -108,6 +108,11 @@ def start():
 	def serverError(error):
 		print(error)
 		return "ERROR!"
+
+	@app.errorhandler(Exception)
+	def defaultHandler(e):
+		app.logger.error(e)
+		return 'error handler there', 500
 
 	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users
 	
