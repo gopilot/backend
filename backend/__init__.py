@@ -52,7 +52,7 @@ def init_logging():
 	formatter = logging.Formatter('%(asctime)s %(hostname)s Backend %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
 	syslog.setFormatter(formatter)
 	logger.addHandler(syslog)
-	logger.info("This is a message")
+	logger.info("App Rebooted")
 	print("Initializing logging...")
 
 @app.errorhandler(404)
@@ -121,9 +121,10 @@ def start():
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
 	app.register_blueprint(ProjectBlueprint, url_prefix="/projects")
 	app.register_blueprint(UserBlueprint, url_prefix="/users")
+	init_logging()
 	print("blueprints registered")
 	print(app.url_map)
-	init_logging()
+	print("Logs made")
 	print("App Booted!!")
 
 
