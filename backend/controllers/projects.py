@@ -80,7 +80,7 @@ def get_all():
     return json.dumps( projects )
 
 # GET /projects/<event_id>
-@ProjectBlueprint.route('/<event_id>', methods=["GET"])
+@ProjectBlueprint.route('/event/<event_id>', methods=["GET"])
 def get_event_projects(event_id):
     projects = []
 
@@ -126,10 +126,17 @@ def update_project(project_id):
     return project.to_json()
 
 # GET /projects/<user_id>
-@ProjectBlueprint.route('/<event_id>', methods=["GET"])
-def get_event_projects(event_id):
+@ProjectBlueprint.route('/user/<user_id>', methods=["GET"])
+def get_user_projects(user_id):
+    projects = []
 
-    return project.to_json()
+    user = User.find_id( user_id )
+    if not user:
+        return "User not found", 404
+
+    
+
+    return json.dumps(projects)
 
 # DELETE /users/<project_id>
 @ProjectBlueprint.route('/<project_id>', methods=["DELETE"])
