@@ -6,6 +6,8 @@ import redis
 import mongoengine
 from bson.objectid import ObjectId
 import logging
+import socket
+from logging.handlers import SysLogHandler
 
 from datetime import timedelta
 from functools import update_wrapper
@@ -42,26 +44,15 @@ app.debug = False
 
 ADMINS = ['peter@gopilot.org']
 
-class ContextFilter(logging.Filter):
-  hostname = socket.gethostname()
-
-  def filter(self, record):
-    record.hostname = ContextFilter.hostname
-    return True
-
 def init_logging():
-	print('1')
-	import logging
 	print('2')
 	logger = logging.getLogger()
 	print('3')
 	logger.setLevel(logging.INFO)
-	print('4')
-	logger.addFilter( ContextFilter() )
 	print('5')
 	syslog = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
 	print('6')
-	formatter = logging.Formatter('%(asctime)s %(hostname)s Backend %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+	formatter = logging.Formatter('%(asctime)s api.gopilot.org: %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
 	print('7')
 	syslog.setFormatter(formatter)
 	print('8')
