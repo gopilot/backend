@@ -58,7 +58,7 @@ class Organizer(User):
 
 class DeletedUser(User):
     meta = {
-        'collection': 'deleted_user'
+        'collection': 'deleted_user',
         'allow_inheritance': False
     }
     deleted_on = orm.DateTimeField(required=True)

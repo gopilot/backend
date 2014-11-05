@@ -19,7 +19,7 @@ class Event(document.Document):
 
 class DeletedEvent(Event):
     meta = {
-        'collection': 'deleted_event'
+        'collection': 'deleted_event',
         'allow_inheritance': False
     }
     deleted_on = orm.DateTimeField(required=True)
