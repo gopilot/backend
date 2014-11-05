@@ -43,15 +43,23 @@ app.debug = False
 ADMINS = ['peter@gopilot.org']
 
 def init_logging():
+	print('1')
 	import logging
+	print('2')
 	logger = logging.getLogger()
+	print('3')
 	logger.setLevel(logging.INFO)
-	f = ContextFilter()
-	logger.addFilter(f)
+	print('4')
+	logger.addFilter( ContextFilter() )
+	print('5')
 	syslog = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
+	print('6')
 	formatter = logging.Formatter('%(asctime)s %(hostname)s Backend %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+	print('7')
 	syslog.setFormatter(formatter)
+	print('8')
 	logger.addHandler(syslog)
+	print('9')
 	logger.info("App Rebooted")
 	print("Initializing logging...")
 
@@ -123,7 +131,7 @@ def start():
 	app.register_blueprint(UserBlueprint, url_prefix="/users")
 	init_logging()
 	print("blueprints registered")
-	print(app.url_map)
+
 	print("Logs made")
 	print("App Booted!!")
 
