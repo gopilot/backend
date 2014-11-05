@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 import logging
 import socket
 from logging.handlers import SysLogHandler
+import traceback
 
 from datetime import timedelta
 from functools import update_wrapper
@@ -83,7 +84,7 @@ def start():
 	try:
 		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_HOST'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
 	except Exception as e:
-		print("Unexpected mongo error: %s" % e)
+		app.logger.error("Unexpected mongo error: %s" % e)
 
 	print("Connected to Mongo")
 
@@ -111,7 +112,8 @@ def start():
 
 	@app.errorhandler(Exception)
 	def defaultHandler(e):
-		app.logger.error(e)
+		app.logger.error('Exception caught', e)
+		app.logger.error(traceback.format_exc())
 		return 'error handler there', 500
 
 	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users
