@@ -125,7 +125,7 @@ def update_project(project_id):
 
     return project.to_json()
 
-# GET /projects/<user_id>
+# GET /projects/user/<user_id>
 @ProjectBlueprint.route('/user/<user_id>', methods=["GET"])
 def get_user_projects(user_id):
     projects = []
@@ -134,7 +134,26 @@ def get_user_projects(user_id):
     if not user:
         return "User not found", 404
 
-    
+    for p in Project.objects(creators = user):
+        projects.append( p.to_dict() )
+
+    return json.dumps(projects)
+
+# GET /projects/user/<user_id>/events/<event_id>
+@ProjectBlueprint.route('/user/<user_id>/events/<event_id>', methods=["GET"])
+def get_user_project_for_event(user_id, event_id):
+    projects = []
+
+    user = User.find_id( user_id )
+    if not user:
+        return "User not found", 404
+
+    event = Event.find_id( event_id )
+    if not event:
+        return "Event not found", 404
+
+    for p in Project.objects(creators = user, event = event):
+        projects.append( p.to_dict() )
 
     return json.dumps(projects)
 
