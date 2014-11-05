@@ -112,9 +112,8 @@ def start():
 
 	@app.errorhandler(Exception)
 	def defaultHandler(e):
-		app.logger.error('Exception caught %s' % e)
-		app.logger.error(traceback.format_exc())
-		return 'error handler there', 500
+		app.logger.error(traceback.format_exc().replace('\t', '\n'))
+		return 'Internal Server Error', 500
 
 	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users
 	
