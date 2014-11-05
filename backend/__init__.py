@@ -42,6 +42,13 @@ app.debug = False
 
 ADMINS = ['peter@gopilot.org']
 
+class ContextFilter(logging.Filter):
+  hostname = socket.gethostname()
+
+  def filter(self, record):
+    record.hostname = ContextFilter.hostname
+    return True
+
 def init_logging():
 	print('1')
 	import logging
