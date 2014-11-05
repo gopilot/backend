@@ -18,5 +18,8 @@ class Event(document.Document):
     price = orm.IntField(default=0)
 
 class DeletedEvent(Event):
-    meta = {'collection': 'deleted_event'}
+    meta = {
+        'collection': 'deleted_event'
+        'allow_inheritance': False
+    }
     deleted_on = orm.DateTimeField(required=True)
