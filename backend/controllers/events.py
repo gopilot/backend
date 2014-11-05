@@ -6,7 +6,7 @@ from datetime import datetime
 from backend import EventBlueprint
 from . import auth
 
-from backend.models import User, Student, Mentor, Organizer, Event, DeletedEvent
+from backend.models import User, Student, Mentor, Organizer, Event
 
 import json
 
