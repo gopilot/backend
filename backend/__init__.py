@@ -44,31 +44,14 @@ app.debug = False
 
 ADMINS = ['peter@gopilot.org']
 
-def init_logging():
-	print('2')
+def init_logging(app):
 	logger = logging.getLogger()
-	print('3')
 	logger.setLevel(logging.INFO)
-	print('5')
 	syslog = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
-	print('6')
-	formatter = logging.Formatter('%(asctime)s api.gopilot.org: %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
-	print('7')
+	formatter = logging.Formatter('%(asctime)s : %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
 	syslog.setFormatter(formatter)
-	print('8')
 	logger.addHandler(syslog)
-	print('9')
-	logger.info("App Rebooted")
-	print("Initializing logging...")
-
-@app.errorhandler(404)
-def pageNotFound(error):
-	return "Page not found...", 404
-
-@app.errorhandler(500)
-def serverError(error):
-	print(error)
-	return "ERROR!"
+	logger.info(10*"-" + " App Booted " + 10*"-")
 
 def start():
 	print("Booting up...")
@@ -114,23 +97,30 @@ def start():
 	ProjectBlueprint = Blueprint('projects', __name__)
 	global UserBlueprint
 	UserBlueprint = Blueprint('users', __name__)
-	print("blueprints made")
 
 	@app.route('/')
 	def index():
 		return "OK"
 
+	@app.errorhandler(404)
+	def pageNotFound(error):
+		return "Page not found...", 404
+
+	@app.errorhandler(500)
+	def serverError(error):
+		print(error)
+		return "ERROR!"
+
 	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users
-	print("controllers imported")
 	
 	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
 	app.register_blueprint(ProjectBlueprint, url_prefix="/projects")
 	app.register_blueprint(UserBlueprint, url_prefix="/users")
-	init_logging()
-	print("blueprints registered")
+	
+	if app.config['PRODUCTION']:
+		init_logging(app)
 
-	print("Logs made")
 	print("App Booted!!")
 
 
