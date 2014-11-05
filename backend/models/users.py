@@ -32,16 +32,16 @@ class User(document.Document):
     stripe_id = orm.StringField()
 
 class Student(User):
-   type = orm.StringField(default="student")
+    type = orm.StringField(default="student")
 
-   grade = orm.StringField()
-   birth_date = orm.DateTimeField()
-   emergency_name = orm.StringField()
-   emergency_email = orm.EmailField()
-   emergency_phone = orm.StringField()
-   has_experience = orm.BooleanField()
-   experience_years = orm.StringField()
-   
+    grade = orm.StringField()
+    birth_date = orm.DateTimeField()
+    emergency_name = orm.StringField()
+    emergency_email = orm.EmailField()
+    emergency_phone = orm.StringField()
+    has_experience = orm.BooleanField()
+    experience_years = orm.StringField()
+     
 
 
 class Mentor(User):
@@ -57,6 +57,7 @@ class Organizer(User):
     type = orm.StringField(default="organizer")
 
 class DeletedUser(User):
+    meta = {'collection': 'deleted_user'}
     deleted_on = orm.DateTimeField(required=True)
 
 
