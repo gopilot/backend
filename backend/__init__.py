@@ -42,17 +42,18 @@ app.debug = False
 
 ADMINS = ['peter@gopilot.org']
 
-import logging
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-f = ContextFilter()
-logger.addFilter(f)
-syslog = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
-formatter = logging.Formatter('%(asctime)s %(hostname)s Backend %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
-syslog.setFormatter(formatter)
-logger.addHandler(syslog)
-logger.info("This is a message")
+def init_logging():
+	import logging
+	logger = logging.getLogger()
+	logger.setLevel(logging.INFO)
+	f = ContextFilter()
+	logger.addFilter(f)
+	syslog = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
+	formatter = logging.Formatter('%(asctime)s %(hostname)s Backend %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+	syslog.setFormatter(formatter)
+	logger.addHandler(syslog)
+	logger.info("This is a message")
+	print("Initializing logging...")
 
 @app.errorhandler(404)
 def pageNotFound(error):
@@ -121,6 +122,7 @@ def start():
 	def index():
 		return "OK"
 
+	init_logging()
 	print("App Booted!")
 
 ## CORS stuff
