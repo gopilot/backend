@@ -122,12 +122,10 @@ def start():
 	app.register_blueprint(ProjectBlueprint, url_prefix="/projects")
 	app.register_blueprint(UserBlueprint, url_prefix="/users")
 	print("blueprints registered")
-	# print(app.url_map)
-
+	print(app.url_map)
 	init_logging()
-	print("App Booted!")
+	print("App Booted!!")
 
-## CORS stuff
 
 def crossdomain(origin=None, methods=None, headers=None,
 				max_age=21600, attach_to_all=True,
