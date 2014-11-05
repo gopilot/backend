@@ -62,25 +62,29 @@ def start():
 	
 
 	global sessions
+	print("Trying to connect to redis:")
+	print('\t URL: %s' % app.config['REDIS_URL'])
+	print('\t DB: %s' % app.config['REDIS_DB'])
 	try:
-		print("Trying to connect to redis:")
-		print('\t URL: %s' % app.config['REDIS_URL'])
-		print('\t DB: %s' % app.config['REDIS_DB'])
 		sessions = redis.from_url(app.config['REDIS_URL'], db=app.config['REDIS_DB'])
 	except Exception as e:
 		print("Unexpected redis error: %s" % e)
+	
 	print("Testing Redis...")
+	
 	sessions.set('testing-redis', 'test')
 	test = sessions.get('testing-redis')
 	assert test == 'test', "ERROR: Redis not working!"
+	
 	print("Connected to Redis")
 
+	print("Trying to connect to mongo:")
+	print('\t DB: %s' % app.config['MONGO_DB'])
+	print('\t Host: %s' % app.config['MONGO_HOST'])
+	print('\t Username: %s' % app.config['MONGO_USER'])
+	print('\t Password: %s' % app.config['MONGO_PASS'])
+	
 	try:
-		print("Trying to connect to mongo:")
-		print('\t DB: %s' % app.config['MONGO_DB'])
-		print('\t Host: %s' % app.config['MONGO_HOST'])
-		print('\t Username: %s' % app.config['MONGO_USER'])
-		print('\t Password: %s' % app.config['MONGO_PASS'])
 		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_HOST'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
 	except Exception as e:
 		print("Unexpected mongo error: %s" % e)
