@@ -42,9 +42,17 @@ app.debug = False
 
 ADMINS = ['peter@gopilot.org']
 
-import logging, sys
-logging.basicConfig(stream=sys.stderr)
-app.logger.addHandler(logging.StreamHandler(stream=sys.stderr))
+import logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+f = ContextFilter()
+logger.addFilter(f)
+syslog = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
+formatter = logging.Formatter('%(asctime)s %(hostname)s Backend %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+syslog.setFormatter(formatter)
+logger.addHandler(syslog)
+logger.info("This is a message")
 
 @app.errorhandler(404)
 def pageNotFound(error):
