@@ -62,7 +62,7 @@ def start():
 	
 
 	global sessions
-	print("Trying to connect to redis:")
+	print("Trying to connect to Redis:")
 	print('\t URL: %s' % app.config['REDIS_URL'])
 	print('\t DB: %s' % app.config['REDIS_DB'])
 	try:
@@ -78,7 +78,7 @@ def start():
 	
 	print("Connected to Redis")
 
-	print("Trying to connect to mongo:")
+	print("Trying to connect to Mongo:")
 	print('\t DB: %s' % app.config['MONGO_DB'])
 	print('\t Host: %s' % app.config['MONGO_HOST'])
 	print('\t Username: %s' % app.config['MONGO_USER'])
