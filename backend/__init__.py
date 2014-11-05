@@ -45,12 +45,11 @@ app.debug = False
 ADMINS = ['peter@gopilot.org']
 
 def init_logging(app):
-	syslog = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
-	formatter = logging.Formatter('%(asctime)s api.gopilot.org %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
-	syslog.setFormatter(formatter)
-	app.logger.addHandler(syslog)
+	papertrail = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
+	formatter = logging.Formatter('%(asctime)s : %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+	papertrail.setFormatter(formatter)
+	app.logger.addHandler(papertrail)
 	app.logger.setLevel(logging.INFO)
-	app.logger.info(20*"-" + " App Booted " + 20*"-")
 
 def start():
 	print("Booting up...")
@@ -119,6 +118,7 @@ def start():
 	
 	if app.config['PRODUCTION']:
 		init_logging(app)
+		app.logger.info(20*"-" + " App Booted " + 20*"-")
 
 	print("App Booted!!")
 
