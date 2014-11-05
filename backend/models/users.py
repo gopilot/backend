@@ -56,7 +56,3 @@ class Mentor(User):
 class Organizer(User):
     type = orm.StringField(default="organizer")
 
-class DeletedUser(User):
-    deleted_on = orm.DateTimeField(required=True)
-
-

@@ -17,5 +17,3 @@ class Event(document.Document):
 
     price = orm.IntField(default=0)
 
-class DeletedEvent(Event):
-    deleted_on = orm.DateTimeField(required=True)
