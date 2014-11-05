@@ -108,14 +108,14 @@ def start():
 	ProjectBlueprint = Blueprint('projects', __name__)
 	global UserBlueprint
 	UserBlueprint = Blueprint('users', __name__)
-
+	print("blueprints made")
 	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users
-
+	print("controllers imported")
 	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
 	app.register_blueprint(ProjectBlueprint, url_prefix="/projects")
 	app.register_blueprint(UserBlueprint, url_prefix="/users")
-	
+	print("blueprints registered")
 	# print(app.url_map)
 
 	@app.route('/')
