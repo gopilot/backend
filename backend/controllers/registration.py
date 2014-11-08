@@ -229,9 +229,9 @@ def register(event_id):
     ## Check waitlist, add to event list
     print("user saving event")
     user.events.append( event )
-    print(user, event)
+    print(user.events, event)
     user.save()
-    print(user, event)
+    print(user.events, event)
     message = sendgrid.Mail();
     message.add_to(user.name+"<"+user.email+">")
     message.set_from("Pilot <fly@gopilot.org>")
@@ -273,7 +273,13 @@ def register(event_id):
     else:
         print("Sending message", message)
 
-    
+    if not user.events:
+        print("USER MISSING EVENTS")
+        print(user.to_dict())
+        user.events.append( event )
+        user.save()
+        print("saved user")
+
     if user.complete:
         return json.dumps({"status": "registered"}), 200, jsonType
     else:
