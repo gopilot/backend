@@ -4,6 +4,7 @@ MarkupSafe==0.23
 Werkzeug==0.9.6
 argparse==1.2.1
 bcrypt==1.0.2
+bson==0.3.3
 cffi==0.8.6
 itsdangerous==0.24
 pycparser==2.10

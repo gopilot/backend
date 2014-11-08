@@ -4,11 +4,6 @@ print("import 1")
 import os
 print("import 2")
 import sys
-print("import 3")
-try:
-	import pymongo
-except Exception as e:
-	print("errror: %s", e)
 print("import 4")
 import redis
 print("import 5")
