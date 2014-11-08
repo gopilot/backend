@@ -84,7 +84,7 @@ def start():
 	print('\t Password: %s' % app.config['MONGO_PASS'])
 	
 	try:
-		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_HOST'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
+		mongoengine.reginster_connection("default",name=app.config['MONGO_DB'],host=app.config['MONGO_HOST'],username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'], authentication_source="admin")
 	except Exception as e:
 		app.logger.error("Unexpected mongo error: %s" % e)
 
