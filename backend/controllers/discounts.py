@@ -25,7 +25,7 @@ def redeemDiscount(user, discount_code):
     
     return discount.amount
 
-def checkDiscount(user, discount_code):
+def checkDiscount(discount_code):
     discount = Discount.objects(code=discount_code.lower())[0]
     if not (discount and discount.active):
         return False
