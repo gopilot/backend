@@ -7,7 +7,10 @@ import sys
 print("import 4")
 import redis
 print("import 5")
-import mongoengine
+try:
+	import mongoengine
+except Exception as e:
+	print("mongoengine error: %s", e)
 print("import 6")
 from bson.objectid import ObjectId
 print("import 7")
