@@ -8,7 +8,7 @@ from backend import EventBlueprint, app, crossdomain
 from . import auth
 
 from backend.models import User, Student, Mentor, Organizer, Event
-from backend.controllers.discounts import redeemDiscount
+from backend.controllers.discounts import redeemDiscount, checkDiscount
 
 import json
 import bcrypt
