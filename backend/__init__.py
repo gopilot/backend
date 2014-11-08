@@ -7,6 +7,7 @@ import sys
 print("import 4")
 import redis
 print("import 5")
+import traceback
 try:
 	import mongoengine
 except Exception as e:
@@ -21,8 +22,6 @@ import socket
 print("import 9")
 from logging.handlers import SysLogHandler
 print("import 10")
-import traceback
-print("import 11")
 
 from datetime import timedelta
 print("import 12")
