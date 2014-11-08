@@ -68,11 +68,10 @@ def start():
 		print("Unexpected redis error: %s" % e)
 	
 	print("Testing Redis...")
-	
+	print("session set")
 	sessions.set('testing-redis', 'test')
 	print('session get')
 	test = sessions.get('testing-redis')
-	print('session set')
 	assert test == 'test', "ERROR: Redis not working!"
 	
 	print("Connected to Redis")
