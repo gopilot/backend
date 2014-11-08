@@ -11,6 +11,7 @@ try:
 	import mongoengine
 except Exception as e:
 	print("mongoengine error: %s", e)
+	print(traceback.format_exc())
 print("import 6")
 from bson.objectid import ObjectId
 print("import 7")
