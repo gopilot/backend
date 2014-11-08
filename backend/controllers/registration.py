@@ -112,6 +112,7 @@ def register_mentor(event_id):
 @crossdomain(origin='*') # Later, update this to *.gopilot.org
 def register(event_id):
     user = None
+    discount = False
     sg = sendgrid.SendGridClient('gopilot', app.config["SENDGRID_PASS"])
 
     event = Event.find_id( event_id )
@@ -138,7 +139,7 @@ def register(event_id):
         if 'discount' in request.json and request.json['discount'] != False:
             print("has discount")
             # user.save()
-            discount = redeemDiscount(user, request.json['discount'])
+            discount = checkDiscount(request.json['discount'])
             if discount:
                 price -= discount
 
@@ -229,9 +230,13 @@ def register(event_id):
     ## Check waitlist, add to event list
     print("user saving event")
     user.events.append( event )
-    print(user.events, event)
+
     user.save()
-    print(user.events, event)
+
+    if discount:
+        print("redeeming discount")
+        redeemDiscount(user, request.json['discount'])
+
     message = sendgrid.Mail();
     message.add_to(user.name+"<"+user.email+">")
     message.set_from("Pilot <fly@gopilot.org>")
