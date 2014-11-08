@@ -1,3 +1,4 @@
+print("Starting app...")
 from flask import Flask, request, render_template, json, Blueprint, make_response
 import os
 import sys
