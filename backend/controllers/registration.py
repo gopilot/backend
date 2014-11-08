@@ -121,6 +121,7 @@ def register(event_id):
     price = event.price
 
     if hasattr(request, 'json') and 'user' in request.json:
+        print("has user")
         user = Student()
         user.name = request.json['user']['name']
         user.email = request.json['user']['email']
@@ -135,6 +136,7 @@ def register(event_id):
             }), 400, jsonType
 
         if 'discount' in request.json and request.json['discount'] != False:
+            print("has discount")
             user.save()
             discount = redeemDiscount(user, request.json['discount'])
             if discount:
@@ -142,6 +144,7 @@ def register(event_id):
 
         print("Charging user %s" % price)
         if 'stripe_token' in request.json:
+            print("has stripe")
             stripe.api_key = app.config['STRIPE_KEY']
 
             try:
@@ -166,7 +169,6 @@ def register(event_id):
                 }), 500, jsonType  
 
             user.stripe_id = customer.id
-            
             try:
                 stripe.Charge.create(
                     amount = (price * 100), ## Cents
@@ -188,15 +190,15 @@ def register(event_id):
                     "reason": "error",
                     "message": "Uh oh, something went wrong..."
                 }), 500, jsonType
-
-            
         elif price > 0:
+            print("price > 0")
             return json.dumps({
                 "status": "failed",
                 "reason": "payment",
                 "message": "This event costs $%s." % price
             }), 400, jsonType
     else:
+        print("user account exists")
         user_id = auth.check_token( request.headers.get('session') )
         if not user_id:
             return "Unauthorized request: Bad session token", 401
@@ -225,8 +227,11 @@ def register(event_id):
 
     
     ## Check waitlist, add to event list
+    print("user saving event")
     user.events.append( event )
+    print(user, event)
     user.save()
+    print(user, event)
     message = sendgrid.Mail();
     message.add_to(user.name+"<"+user.email+">")
     message.set_from("Pilot <fly@gopilot.org>")
