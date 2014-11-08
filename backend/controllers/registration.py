@@ -279,6 +279,7 @@ def register(event_id):
         user.events.append( event )
         user.save()
         print("saved user")
+    user.save()
 
     if user.complete:
         return json.dumps({"status": "registered"}), 200, jsonType
