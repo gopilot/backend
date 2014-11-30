@@ -75,12 +75,13 @@ def start():
 		print("Redis error while setting %s" % e)
 	
 	print('Testing session get')
+	test = None
 	try:
 		test = sessions.get('testing-redis')
 	except Exception as e:
 		print("Redis error while setting %s" % e)
 	
-	if(test != 'test')
+	if(test != 'test'):
 		print("ERROR: Redis not working!")
 	
 	print("Connected to Redis")
