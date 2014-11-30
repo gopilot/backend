@@ -68,11 +68,20 @@ def start():
 		print("Unexpected redis error: %s" % e)
 	
 	print("Testing Redis...")
-	print("session set")
-	sessions.set('testing-redis', 'test')
-	print('session get')
-	test = sessions.get('testing-redis')
-	assert test == 'test', "ERROR: Redis not working!"
+	print("Testing session set")
+	try:
+		sessions.set('testing-redis', 'test')
+	except Exception as e:
+		print("Redis error while setting %s" % e)
+	
+	print('Testing session get')
+	try:
+		test = sessions.get('testing-redis')
+	except Exception as e:
+		print("Redis error while setting %s" % e)
+	
+	if(test != 'test')
+		print("ERROR: Redis not working!")
 	
 	print("Connected to Redis")
 
@@ -85,6 +94,7 @@ def start():
 	try:
 		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_HOST'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
 	except Exception as e:
+		print("Mongo error %s" % e)
 		app.logger.error("Unexpected mongo error: %s" % e)
 
 	print("Connected to Mongo")
