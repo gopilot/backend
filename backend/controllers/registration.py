@@ -8,11 +8,8 @@ from backend import EventBlueprint, app, crossdomain
 from . import auth
 
 from backend.models import User, Student, Mentor, Organizer, Event
-<<<<<<< HEAD
-from backend.controllers.discounts import redeemDiscount
-=======
+
 from backend.controllers.discounts import redeemDiscount, checkDiscount
->>>>>>> eebffdb9bab3178ac59c1e373af6631ec6d457d5
 
 import json
 import bcrypt
@@ -141,14 +138,9 @@ def register(event_id):
             }), 400, jsonType
 
         if 'discount' in request.json and request.json['discount'] != False:
-<<<<<<< HEAD
-            user.save()
-            discount = redeemDiscount(user, event, request.json['discount'])
-=======
             print("has discount")
             # user.save()
             discount = checkDiscount(request.json['discount'])
->>>>>>> eebffdb9bab3178ac59c1e373af6631ec6d457d5
             if discount:
                 price -= discount
 
