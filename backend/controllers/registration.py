@@ -8,7 +8,11 @@ from backend import EventBlueprint, app, crossdomain
 from . import auth
 
 from backend.models import User, Student, Mentor, Organizer, Event
+<<<<<<< HEAD
 from backend.controllers.discounts import redeemDiscount
+=======
+from backend.controllers.discounts import redeemDiscount, checkDiscount
+>>>>>>> eebffdb9bab3178ac59c1e373af6631ec6d457d5
 
 import json
 import bcrypt
@@ -112,6 +116,7 @@ def register_mentor(event_id):
 @crossdomain(origin='*') # Later, update this to *.gopilot.org
 def register(event_id):
     user = None
+    discount = False
     sg = sendgrid.SendGridClient('gopilot', app.config["SENDGRID_PASS"])
 
     event = Event.find_id( event_id )
@@ -121,6 +126,7 @@ def register(event_id):
     price = event.price
 
     if hasattr(request, 'json') and 'user' in request.json:
+        print("has user")
         user = Student()
         user.name = request.json['user']['name']
         user.email = request.json['user']['email']
@@ -135,13 +141,20 @@ def register(event_id):
             }), 400, jsonType
 
         if 'discount' in request.json and request.json['discount'] != False:
+<<<<<<< HEAD
             user.save()
             discount = redeemDiscount(user, event, request.json['discount'])
+=======
+            print("has discount")
+            # user.save()
+            discount = checkDiscount(request.json['discount'])
+>>>>>>> eebffdb9bab3178ac59c1e373af6631ec6d457d5
             if discount:
                 price -= discount
 
         print("Charging user %s" % price)
         if 'stripe_token' in request.json:
+            print("has stripe")
             stripe.api_key = app.config['STRIPE_KEY']
 
             try:
@@ -166,7 +179,6 @@ def register(event_id):
                 }), 500, jsonType  
 
             user.stripe_id = customer.id
-            
             try:
                 stripe.Charge.create(
                     amount = (price * 100), ## Cents
@@ -188,15 +200,15 @@ def register(event_id):
                     "reason": "error",
                     "message": "Uh oh, something went wrong..."
                 }), 500, jsonType
-
-            
         elif price > 0:
+            print("price > 0")
             return json.dumps({
                 "status": "failed",
                 "reason": "payment",
                 "message": "This event costs $%s." % price
             }), 400, jsonType
     else:
+        print("user account exists")
         user_id = auth.check_token( request.headers.get('session') )
         if not user_id:
             return "Unauthorized request: Bad session token", 401
@@ -225,8 +237,15 @@ def register(event_id):
 
     
     ## Check waitlist, add to event list
+    print("user saving event")
     user.events.append( event )
+
     user.save()
+
+    if discount:
+        print("redeeming discount")
+        redeemDiscount(user, request.json['discount'])
+
     message = sendgrid.Mail();
     message.add_to(user.name+"<"+user.email+">")
     message.set_from("Pilot <fly@gopilot.org>")
@@ -268,7 +287,16 @@ def register(event_id):
     else:
         print("Sending message", message)
 
-    
+    if not user.events:
+        print("USER MISSING EVENTS")
+        print(user.to_dict())
+        user.events.append( event )
+        user.save()
+        print("saved user")
+    result = user.save()
+    print(user.to_dict())
+    print("SAVE RESULT", result)
+
     if user.complete:
         return json.dumps({"status": "registered"}), 200, jsonType
     else:

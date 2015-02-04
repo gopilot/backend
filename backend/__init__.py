@@ -1,11 +1,14 @@
+print("Starting app...")
 from flask import Flask, request, render_template, json, Blueprint, make_response
 import os
 import sys
-import pymongo
 import redis
+import traceback
 import mongoengine
 from bson.objectid import ObjectId
 import logging
+import socket
+from logging.handlers import SysLogHandler
 
 from datetime import timedelta
 from functools import update_wrapper
@@ -42,40 +45,58 @@ app.debug = False
 
 ADMINS = ['peter@gopilot.org']
 
-import logging, sys
-logging.basicConfig(stream=sys.stderr)
-app.logger.addHandler(logging.StreamHandler(stream=sys.stderr))
-
-@app.errorhandler(404)
-def pageNotFound(error):
-	return "Page not found...", 404
-
-@app.errorhandler(500)
-def serverError(error):
-	print(error)
-	return "ERROR!"
+def init_logging(app):
+	papertrail = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
+	formatter = logging.Formatter('%(asctime)s api.gopilot.org %(filename)s%(lineno)s %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+	papertrail.setFormatter(formatter)
+	app.logger.addHandler(papertrail)
+	app.logger.setLevel(logging.INFO)
 
 def start():
 	print("Booting up...")
 	print("Testing:    %s" % app.config['TESTING'])
 	print("Production: %s" % app.config['PRODUCTION'])
-	print("Mongo: %s" % app.config['MONGO_URL'])
 	
+
 	global sessions
+	print("Trying to connect to Redis:")
+	print('\t URL: %s' % app.config['REDIS_URL'])
+	print('\t DB: %s' % app.config['REDIS_DB'])
 	try:
 		sessions = redis.from_url(app.config['REDIS_URL'], db=app.config['REDIS_DB'])
 	except Exception as e:
 		print("Unexpected redis error: %s" % e)
-
-	sessions.set('testing-redis', 'test')
-	test = sessions.get('testing-redis')
-	assert test == 'test', "ERROR: Redis not working!"
+	
+	print("Testing Redis...")
+	print("Testing session set")
+	try:
+		sessions.set('testing-redis', 'test')
+	except Exception as e:
+		print("Redis error while setting %s" % e)
+	
+	print('Testing session get')
+	test = None
+	try:
+		test = sessions.get('testing-redis')
+	except Exception as e:
+		print("Redis error while setting %s" % e)
+	
+	if(test != 'test'):
+		print("ERROR: Redis not working!")
+	
 	print("Connected to Redis")
 
+	print("Trying to connect to Mongo:")
+	print('\t DB: %s' % app.config['MONGO_DB'])
+	print('\t Host: %s' % app.config['MONGO_HOST'])
+	print('\t Username: %s' % app.config['MONGO_USER'])
+	print('\t Password: %s' % app.config['MONGO_PASS'])
+	
 	try:
-		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_URL'])
+		mongoengine.connect(app.config['MONGO_DB'], host=app.config['MONGO_HOST'], username=app.config['MONGO_USER'], password=app.config['MONGO_PASS'])
 	except Exception as e:
-		print("Unexpected mongo error: %s" % e)
+		print("Mongo error %s" % e)
+		app.logger.error("Unexpected mongo error: %s" % e)
 
 	print("Connected to Mongo")
 
@@ -88,22 +109,38 @@ def start():
 	global UserBlueprint
 	UserBlueprint = Blueprint('users', __name__)
 
-	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users
+	@app.route('/')
+	def index():
+		return "OK"
 
+	@app.errorhandler(404)
+	def pageNotFound(error):
+		return "Page not found...", 404
+
+	@app.errorhandler(500)
+	def serverError(error):
+		print(error)
+		return "ERROR!"
+
+	@app.errorhandler(Exception)
+	def defaultHandler(e):
+		app.logger.error("Exception: %s", e)
+		print(traceback.format_exc())
+		return 'Internal Server Error', 500
+
+	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users
+	
 	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
 	app.register_blueprint(EventBlueprint, url_prefix="/events")
 	app.register_blueprint(ProjectBlueprint, url_prefix="/projects")
 	app.register_blueprint(UserBlueprint, url_prefix="/users")
 	
-	# print(app.url_map)
+	if app.config['PRODUCTION']:
+		init_logging(app)
+		app.logger.info(20*"-" + " App Booted " + 20*"-")
 
-	@app.route('/')
-	def index():
-		return "OK"
+	print("App Booted!!")
 
-	print("App Booted!")
-
-## CORS stuff
 
 def crossdomain(origin=None, methods=None, headers=None,
 				max_age=21600, attach_to_all=True,

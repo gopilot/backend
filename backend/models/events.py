@@ -18,4 +18,3 @@ class Event(document.Document):
     registration_end = orm.DateTimeField(required=True)
 
     price = orm.IntField(default=0)
-

@@ -25,6 +25,12 @@ def redeemDiscount(user, event, discount_code):
     
     return discount.amount
 
+def checkDiscount(discount_code):
+    discount = Discount.objects(code=discount_code.lower())[0]
+    if not (discount and discount.active):
+        return False
+    return discount.amount
+
 
 # POST /discounts
 @EventBlueprint.route('/<event_id>/discounts', methods=['POST'])
