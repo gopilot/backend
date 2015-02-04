@@ -46,6 +46,8 @@ class PostTests(unittest.TestCase):
             'start_date': str(datetime.datetime.today() + datetime.timedelta(days=9)),
             'end_date': str(datetime.datetime.today() + datetime.timedelta(days=10)),
             'registration_end': str(datetime.datetime.today() + datetime.timedelta(days=6)),
+            'city': 'San Francisco',
+            'slug': 'sf-4',
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })

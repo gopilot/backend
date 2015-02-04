@@ -7,6 +7,8 @@ class Event(document.Document):
         'allow_inheritance': True
     }
     name = orm.StringField(required=True)
+    city = orm.StringField(required=True)
+    slug = orm.StringField(required=True, unique=True)
     location = orm.StringField(required=True)
     address = orm.StringField(required=True)
     image = orm.URLField()

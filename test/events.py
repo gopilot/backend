@@ -37,6 +37,8 @@ class EventTests(unittest.TestCase):
             'end_date': str(datetime.datetime.today() + datetime.timedelta(days=10)),
             'registration_end': str(datetime.datetime.today() + datetime.timedelta(days=6)),
             'location': 'Tech Inc. HQ',
+            'city': 'San Francisco',
+            'slug': 'sf',
             'address': '1111 Random Way, Townville, CA'
         })
         self.test_event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=data).data)['id']
@@ -48,6 +50,8 @@ class EventTests(unittest.TestCase):
             'end_date': str(datetime.datetime.today() + datetime.timedelta(days=10)),
             'registration_end': str(datetime.datetime.today() + datetime.timedelta(days=6)),
             'location': 'Tech Inc. HQ',
+            'city': 'San Francisco',
+            'slug': 'sf-2',
             'address': '1111 Random Way, Townville, CA',
             'image': 'http://placekitten.com/400/400'
         })

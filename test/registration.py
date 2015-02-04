@@ -36,6 +36,8 @@ class RegistrationTests(unittest.TestCase):
             'start_date': str(datetime.datetime.today()+ datetime.timedelta(days=12)),
             'end_date': str(datetime.datetime.today() + datetime.timedelta(days=13)),
             'registration_end': str(datetime.datetime.today() + datetime.timedelta(days=6)),
+            'city': 'San Francisco',
+            'slug': 'sf-6',
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         })
@@ -46,6 +48,8 @@ class RegistrationTests(unittest.TestCase):
             'start_date': str(datetime.datetime.today()+ datetime.timedelta(days=5)),
             'end_date': str(datetime.datetime.today() + datetime.timedelta(days=6)),
             'registration_end': str(datetime.datetime.now()),
+            'city': 'San Francisco',
+            'slug': 'sf-7',
             'location': 'Tech Inc. HQ',
             'address': '1111 Random Way, Townville, CA'
         });

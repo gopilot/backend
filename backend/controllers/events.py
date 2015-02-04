@@ -35,6 +35,9 @@ def create_event():
     event.location = body.get('location')
     event.address = body.get('address')
     event.image = body.get('image')
+    event.city = body.get('city')
+    event.slug = body.get('slug')
+
     if body.get('price'):
         event.price = int(body.get('price'))
 
