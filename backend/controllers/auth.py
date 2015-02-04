@@ -31,13 +31,13 @@ def create_token(user_id):
 @AuthBlueprint.route('/login', methods=["POST"])
 def login():
     form_email = request.get_json().get('email')
-    form_password = request.get_json().get('password').encode('utf-8')
+    form_password = request.get_json().get('password')
 
     user = User.objects(email=form_email).first()
     if not user or not user.email:
         return 'Email not found', 404
     hashed = user.password.encode('utf-8')
-    if bcrypt.hashpw(form_password, hashed) == hashed:
+    if bcrypt.hashpw(form_password.encode('utf-8'), hashed) == hashed:
         return json.dumps({
             'session': create_token( user.id ),
             'user': user.to_dict()
