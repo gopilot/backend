@@ -94,7 +94,7 @@ def get_post(event_id, post_id):
 
     attended_ids = [ evt.id for evt in user.events ]
 
-    if not event.id in attended_ids:
+    if not (event.id in attended_ids or user.type == "organizer"):
         return "Unauthorized request: User doesn't have permission"
 
     post = Post.find_id( post_id )
