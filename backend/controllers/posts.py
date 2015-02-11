@@ -41,8 +41,9 @@ def create_post(event_id):
         post.notif = body.get('notif')
     else:
         post.notif = post.title
-
+    print("Saving post", post)
     post.save()
+    print("Post saved, id", post.id)
 
     if not post.id:
         return "Error creating post", 500
