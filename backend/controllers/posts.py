@@ -32,6 +32,7 @@ def create_post(event_id):
     post = Post()
     post.event = event
     post.author = organizer
+    post.time = datetime.utcnow()
 
     post.image = body.get('image')
     post.title = body.get('title')
