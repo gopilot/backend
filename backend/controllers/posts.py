@@ -55,6 +55,7 @@ def create_post(event_id):
 # GET /posts
 @EventBlueprint.route('/<event_id>/posts', methods=['GET'])
 def all_posts(event_id):
+    print("Getting all posts")
     user_id = auth.check_token( request.headers.get('session') )
     if not user_id:
         return "Unauthorized request: Bad session token", 401
