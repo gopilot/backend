@@ -53,31 +53,31 @@ def create_post(event_id):
     return post.to_json()
 
 # GET /posts
-@EventBlueprint.route('/<event_id>/posts', methods=['GET'])
-def all_posts(event_id):
-    print("Getting all posts")
-    user_id = auth.check_token( request.headers.get('session') )
-    if not user_id:
-        return "Unauthorized request: Bad session token", 401
+# @EventBlueprint.route('/<event_id>/posts', methods=['GET'])
+# def all_posts(event_id):
+#     print("Getting all posts")
+#     user_id = auth.check_token( request.headers.get('session') )
+#     if not user_id:
+#         return "Unauthorized request: Bad session token", 401
 
-    user = User.find_id( user_id )
-    if not user:
-        return "User not found", 404
+#     user = User.find_id( user_id )
+#     if not user:
+#         return "User not found", 404
 
-    event = Event.find_id( event_id )
-    if not event:
-        return "Event not found", 404
+#     event = Event.find_id( event_id )
+#     if not event:
+#         return "Event not found", 404
 
-    attended_ids = [ evt.id for evt in user.events ]
+#     attended_ids = [ evt.id for evt in user.events ]
 
-    if not (event.id in attended_ids or user.type == "organizer"):
-        return "Unauthorized request: User doesn't have permission"
+#     if not (event.id in attended_ids or user.type == "organizer"):
+#         return "Unauthorized request: User doesn't have permission"
 
-    posts = []
-    for p in Post.objects(event=event):
-        posts.append( p.to_dict() )
+#     posts = []
+#     for p in Post.objects(event=event):
+#         posts.append( p.to_dict() )
 
-    return json.dumps( posts ), 200, jsonType
+#     return json.dumps( posts ), 200, jsonType
 
 # GET /posts/<post_id>
 @EventBlueprint.route('/<event_id>/posts/<post_id>', methods=['GET'])
