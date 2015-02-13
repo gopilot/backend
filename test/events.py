@@ -67,7 +67,13 @@ class EventTests(unittest.TestCase):
 
     def test_get_event(self):
         response = self.app.get('/events/'+self.test_event, headers=h(session=self.organizer_token))
+        print(response.data)
         assert json.loads(response.data)['name'] == 'Test Event'
+
+    def test_get_event_by_slug(self):
+        response = self.app.get('/events/sf', headers=h(session=self.organizer_token))
+        assert json.loads(response.data)['name'] == 'Test Event'
+
 
     def test_get_all_events(self):
         response = self.app.get('/events')

@@ -64,7 +64,7 @@ def all_events():
 # GET /events/<event_id>
 @EventBlueprint.route('/<event_id>', methods=['GET'])
 def find_event(event_id):
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
@@ -81,7 +81,7 @@ def update_event(event_id):
     if not user:
         return "Unauthorized request: User doesn't have permission", 401
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
@@ -105,7 +105,7 @@ def remove_event(event_id):
     if not user:
         return "Unauthorized request: User doesn't have permission", 401
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 

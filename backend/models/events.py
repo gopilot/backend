@@ -1,5 +1,5 @@
 import mongoengine as orm
-
+from bson.objectid import ObjectId
 from . import document
 
 class Event(document.Document):
@@ -18,3 +18,12 @@ class Event(document.Document):
     registration_end = orm.DateTimeField(required=True)
 
     price = orm.IntField(default=0)
+
+    @classmethod
+    def find_event(cls, id):
+        try:
+            oid = ObjectId(id)
+        except:
+            return Event.objects(slug=id).first()
+
+        return Event.objects(id=oid).first()
