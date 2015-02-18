@@ -24,7 +24,7 @@ def create_post(event_id):
         return "Unauthorized request: User doesn't have permission", 401
 
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
@@ -62,7 +62,7 @@ def all_posts(event_id):
     if not user:
         return "User not found", 404
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
@@ -88,7 +88,7 @@ def get_post(event_id, post_id):
     if not user:
         return "User not found", 404
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
@@ -114,7 +114,7 @@ def update_post(event_id, post_id):
     if not user:
         return "Unauthorized request: User doesn't have permission", 401
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
@@ -141,7 +141,7 @@ def delete_post(event_id, post_id):
     if not user:
         return "Unauthorized request: User doesn't have permission", 401
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
