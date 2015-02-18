@@ -123,12 +123,16 @@ def find_tweets(event_id):
 
     twitter = Twitter(auth=OAuth2(bearer_token=app.config['TWITTER_TOKEN']))
 
+    tweets = twitter.search.tweets(q='#'+event.name, result_type="recent"):
+    print(tweets)
+    
     data = []
-    for tweet in twitter.search.tweets(q='#'+event.name, result_type="recent"):
+    for tweet in tweets:
+        print(tweet)
         data.append({
             'time': tweet['created_at'],
             'text': tweet['text'],
             'user': tweet['user']['screen_name']
         })
 
-    return data
+    return json.dumps(data), 200, jsonType
