@@ -3,7 +3,7 @@ from flask import Flask, request
 from dateutil import parser as dateParser
 from datetime import datetime
 
-from backend import EventBlueprint
+from backend import EventBlueprint, app
 from . import auth
 
 from backend.models import User, Student, Mentor, Organizer, Event
@@ -130,5 +130,5 @@ def find_tweets(event_id):
             'text': tweet.text,
             'user': tweet.user.screen_name
         })
-        
+
     return data
