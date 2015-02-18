@@ -126,9 +126,9 @@ def find_tweets(event_id):
     data = []
     for tweet in twitter.search.tweets(q='#'+event.name, result_type="recent"):
         data.append({
-            'time': tweet.created_at,
-            'text': tweet.text,
-            'user': tweet.user.screen_name
+            'time': tweet['created_at'],
+            'text': tweet['text'],
+            'user': tweet['user']['screen_name']
         })
 
     return data
