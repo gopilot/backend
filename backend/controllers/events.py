@@ -9,6 +9,7 @@ from . import auth
 from backend.models import User, Student, Mentor, Organizer, Event
 
 import json
+from twitter import *
 
 jsonType = {'Content-Type': 'application/json'}
 
@@ -112,3 +113,22 @@ def remove_event(event_id):
     event.delete()
     
     return 'Event deleted'
+
+# GET /events/<event_id>/tweets
+@EventBlueprint.route('/<event_id>/tweets', methods=['GET'])
+def find_tweets(event_id):
+    event = Event.find_event( event_id )
+    if not event:
+        return "Event not found", 404
+
+    twitter = Twitter(auth=OAuth2(bearer_token=app.config['TWITTER_TOKEN']))
+
+    data = []
+    for tweet in twitter.search.tweets(q='#'+event.name, result_type="recent"):
+        data.append({
+            'time': tweet.created_at,
+            'text': tweet.text,
+            'user': tweet.user.screen_name
+        })
+        
+    return data

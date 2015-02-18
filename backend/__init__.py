@@ -33,6 +33,7 @@ app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 
 app.config['STRIPE_KEY']	= os.getenv('STRIPE_KEY', '')
 app.config['SENDGRID_PASS'] = os.getenv('SENDGRID_PASS', '')
+app.config['TWITTER_TOKEN'] = os.getenv('TWITTER_TOKEN', '')
 
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
