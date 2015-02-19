@@ -132,7 +132,8 @@ def find_tweets(event_id):
             data.append({
                 'time': tweet['created_at'],
                 'text': tweet['text'],
-                'user': tweet['user']['screen_name']
+                'user': tweet['user']['screen_name'],
+                'url': 'https://twitter.com/'+tweet['user']['screen_name']+"/status/"+tweet['id']
             })
     else: ## Fallback - use Topsy API which returns older tweets
         r = requests.get('http://otter.topsy.com/search.json?apikey='+app.config['TOPSY_KEY']+'&perpage=20&q=%23'+event.name)
@@ -142,7 +143,8 @@ def find_tweets(event_id):
                 data.append({
                     'time': datetime.utcfromtimestamp(tweet['firstpost_date']).strftime("%Y-%m-%d %H:%M:%S"),
                     'text': tweet['content'],
-                    'user': tweet['trackback_author_nick']
+                    'user': tweet['trackback_author_nick'],
+                    'url': tweet['url']
                 })
 
     return json.dumps(data), 200, jsonType
