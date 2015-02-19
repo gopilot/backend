@@ -133,7 +133,7 @@ def find_tweets(event_id):
                 'time': tweet['created_at'],
                 'text': tweet['text'],
                 'user': tweet['user']['screen_name'],
-                'url': 'https://twitter.com/'+tweet['user']['screen_name']+"/status/"+tweet['id']
+                'url': 'https://twitter.com/'+tweet['user']['screen_name']+"/status/"+str(tweet['id'])
             })
     else: ## Fallback - use Topsy API which returns older tweets
         r = requests.get('http://otter.topsy.com/search.json?apikey='+app.config['TOPSY_KEY']+'&perpage=20&q=%23'+event.name)
