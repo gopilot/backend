@@ -10,6 +10,7 @@ from backend.models import User, Student, Mentor, Organizer, Event
 
 import json
 from twitter import *
+import requests
 
 jsonType = {'Content-Type': 'application/json'}
 
@@ -126,11 +127,21 @@ def find_tweets(event_id):
     tweets = twitter.search.tweets(q='#'+event.name, result_type="recent")['statuses']
     
     data = []
-    for tweet in tweets:
-        data.append({
-            'time': tweet['created_at'],
-            'text': tweet['text'],
-            'user': tweet['user']['screen_name']
-        })
+    if tweets:
+        for tweet in tweets:
+            data.append({
+                'time': tweet['created_at'],
+                'text': tweet['text'],
+                'user': tweet['user']['screen_name']
+            })
+    else: ## Fallback - use Topsy API which returns older tweets
+        r = requests.get('http://otter.topsy.com/search.json?apikey='+app.config['TOPSY_KEY']+'&perpage=20&q=%23'+event.name)
+        tweets = json.parse(r.text)['response']['list']
+        for tweet in tweets:
+            data.append({
+                'time': tweet['firstpost_date'],
+                'text': tweet['content'],
+                'user': tweet['trackback_author_nick']
+            })
 
     return json.dumps(data), 200, jsonType
