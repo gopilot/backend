@@ -136,7 +136,7 @@ def find_tweets(event_id):
             })
     else: ## Fallback - use Topsy API which returns older tweets
         r = requests.get('http://otter.topsy.com/search.json?apikey='+app.config['TOPSY_KEY']+'&perpage=20&q=%23'+event.name)
-        tweets = json.parse(r.text)['response']['list']
+        tweets = json.loads(r.text)['response']['list']
         for tweet in tweets:
             data.append({
                 'time': tweet['firstpost_date'],
