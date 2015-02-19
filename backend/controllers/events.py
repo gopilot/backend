@@ -138,7 +138,7 @@ def find_tweets(event_id):
         r = requests.get('http://otter.topsy.com/search.json?apikey='+app.config['TOPSY_KEY']+'&perpage=20&q=%23'+event.name)
         tweets = json.loads(r.text)['response']['list']
         for tweet in tweets:
-            if not tweet.text.startswith('RT'):
+            if not tweet['content'].startswith('RT'):
                 data.append({
                     'time': datetime.utcfromtimestamp(tweet['firstpost_date']).strftime("%Y-%m-%d %H:%M:%S"),
                     'text': tweet['content'],
