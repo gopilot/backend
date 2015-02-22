@@ -11,7 +11,7 @@ class User(document.Document):
 
     name = orm.StringField(required=True)
     image = orm.URLField()
-    email = orm.EmailField(required=True)
+    email = orm.EmailField(required=True, unique=True)
     password = orm.StringField()
 
     gender = orm.StringField()

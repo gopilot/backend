@@ -78,6 +78,15 @@ def find_user(user_id):
 
     return user.to_json()
 
+# GET /users/email/<email>
+@UserBlueprint.route('/email/<user_email>', methods=['GET'])
+def find_user_email(user_email):
+    user = User.objects(email=user_email).first()
+    if not user:
+        return "User not found", 404
+
+    return user.to_json()
+
 @UserBlueprint.route('/find_incomplete/<token>', methods=['GET'])
 @crossdomain(origin='*') # Later, update this to *.gopilot.org
 def find_incomplete(token):
@@ -155,7 +164,7 @@ def remove_user(user_id):
     
     return 'User deleted'
 
-# GET /users/<user_id>
+# GET /users/<user_id>/events
 @UserBlueprint.route('/<user_id>/events', methods=['GET'])
 def find_user_events(user_id):
     user = User.find_id( user_id )

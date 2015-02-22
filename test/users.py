@@ -68,6 +68,11 @@ class UserTests(unittest.TestCase):
         response = self.app.get('/users/'+self.test_user, headers=h(session=self.test_token))
         assert json.loads(response.data)['name'] == 'Main user'
 
+    def test_get_user_email(self):
+        response = self.app.get('/users/email/test@gopilot.org', headers=h(session=self.test_token))
+        assert json.loads(response.data)['name'] == 'Main user'
+
+
     def test_get_all_user(self):
         response = self.app.get('/users', headers=h(session=self.organizer_token))
         assert len( json.loads(response.data) ) > 0
