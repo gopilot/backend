@@ -60,7 +60,7 @@ def create_project():
         return 'Error creating project', 500
 
     
-    return project.to_json()
+    return project.select_related(max_depth=1).to_json()
 
 # GET /projects
 @ProjectBlueprint.route('', methods=["GET"])
@@ -70,7 +70,7 @@ def get_all():
     for key, obj in request.args.iteritems():
         query[key] = ObjectId(obj)
 
-    for project in Project.objects(**query):
+    for project in Project.objects(**query).select_related(max_depth=1):
         projects.append( project.to_dict() )
 
     return json.dumps( projects ), 200, jsonType
@@ -89,7 +89,7 @@ def get_event_projects(event_id):
 
     query['event'] = event.id
 
-    for project in Project.objects(**query):
+    for project in Project.objects(**query).select_related(max_depth=1):
         projects.append( project.to_dict() )
 
     return json.dumps( projects ), 200, jsonType
@@ -126,7 +126,7 @@ def add_teammate(project_id):
 
     project.save()
 
-    return project.to_json()
+    return project.select_related(max_depth=1).to_json()
 
 # POST /projects/<project_id>/removeTeammate
 @ProjectBlueprint.route('/<project_id>/removeTeammate', methods=['POST'])
