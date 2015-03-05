@@ -76,9 +76,18 @@ def get_all():
 # GET events/<event_id>/projects
 @EventBlueprint.route('/<event_id>/projects', methods=['GET'])
 def get_event_projects(event_id):
-    projects = []
+    event = Event.find_event(event_id)
+    if not event:
+        return "Event not found", 404
 
-    for project in Project.objects(event=event_id):
+    projects = []
+    query = {
+        'event': event.id
+    }
+    for key, obj in request.args.iteritems():
+        query[key] = ObjectId(obj)
+
+    for project in Project.objects(**query):
         projects.append( project.to_dict() )
 
     return json.dumps( projects ), 200, jsonType
