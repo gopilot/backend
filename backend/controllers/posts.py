@@ -37,17 +37,14 @@ def create_post(event_id):
     post.image = body.get('image')
     post.title = body.get('title')
     post.body = body.get('body')
-
-    if body.get('notif'):
-        post.notif = body.get('notif')
-    else:
-        post.notif = post.title
+    post.notif = body.get('notif')
+    
     post.save()
 
     if not post.id:
         return "Error creating post", 500
 
-    # Send push notification through Amazon SNS?
+    # If post.notif, send text message to all attendees
 
     return post.to_json()
 

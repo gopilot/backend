@@ -9,6 +9,6 @@ class Post(document.Document):
 
     title = orm.StringField(required=True)
     notif = orm.StringField(required=True) ## For push notifications
-    image = orm.StringField()
-
-    body = orm.StringField(required=True)
+    
+    image = orm.URLField()
+    body = orm.StringField()
