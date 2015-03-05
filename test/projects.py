@@ -13,7 +13,7 @@ def h(session=None):
         headers['session'] = session    
     return headers
 
-class EventTests(unittest.TestCase):
+class ProjectTests(unittest.TestCase):
     def setUp(self):
         mongo_client.drop_database('backend_test')
         redis_client.flushdb()
@@ -30,6 +30,16 @@ class EventTests(unittest.TestCase):
         self.student = json.loads( self.app.post('/users', headers=h(), data=student_data).data )
         self.student_token = self.student['session']
         self.student = self.student['user']
+
+        teammate_data = json.dumps({
+            'name': "Student's Friend",
+            'email': 'teammate@gopilot.org',
+            'password': 'test-test',
+            'type': 'student'
+        })
+        self.teammate = json.loads( self.app.post('/users', headers=h(), data=teammate_data).data )
+        self.teammate_token = self.teammate['session']
+        self.teammate = self.teammate['user']
 
         organizer_data = json.dumps({
             'name': 'Main Organizer',
@@ -56,7 +66,7 @@ class EventTests(unittest.TestCase):
         project_data = json.dumps({
             'name': 'Test Project',
             'event': self.event['id'],
-            'creator': self.student['id']
+            'teammate': self.teammate['email']
         })
         self.project = json.loads(self.app.post('/projects', headers=h(session=self.student_token), data=project_data).data)
 
@@ -64,12 +74,12 @@ class EventTests(unittest.TestCase):
         data = json.dumps({
             'name': 'Test Project2',
             'event': self.event['id'],
-            'debug': True
+            'teammate': self.teammate['email']
         })
         response = self.app.post('/projects', headers=h(session=self.student_token), data=data)
 
         assert json.loads(response.data)['name'] == 'Test Project2'
-        assert json.loads(response.data)['creators'][0]['name'] == 'Main Student'
+        assert json.loads(response.data)['team'][0]['name'] == 'Main Student'
         assert json.loads(response.data)['event']['name'] == "Test Event"
 
     def test_update_project(self):
@@ -94,6 +104,30 @@ class EventTests(unittest.TestCase):
         response = self.app.get('/projects')
         assert len( json.loads(response.data) ) == 1
 
+    def test_get_all_projects_query(self):
+        event2_data = json.dumps({
+            'name': 'Test Event 2',
+            'start_date': str(datetime.datetime.today() + datetime.timedelta(days=9)),
+            'end_date': str(datetime.datetime.today() + datetime.timedelta(days=10)),
+            'registration_end': str(datetime.datetime.today() + datetime.timedelta(days=6)),
+            'city': 'San Francisco',
+            'slug': 'sf-9',
+            'location': 'Tech Inc. HQ',
+            'address': '1111 Random Way, Townville, CA'
+        })
+        self.event2 = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event2_data).data)
+
+        project2_data = json.dumps({
+            'name': 'Test Project',
+            'event': self.event2['id'],
+            'teammate': self.teammate['email']
+        })
+        self.app.post('/projects', headers=h(session=self.student_token), data=project2_data)
+
+        response = self.app.get('/projects?event='+self.event['id'])
+
+        assert len( json.loads(response.data) ) == 1
+
     def test_get_all_projects_event(self):
         event2_data = json.dumps({
             'name': 'Test Event 2',
@@ -109,11 +143,12 @@ class EventTests(unittest.TestCase):
 
         project2_data = json.dumps({
             'name': 'Test Project',
-            'event': self.event2['id']
+            'event': self.event2['id'],
+            'teammate': self.teammate['email']
         })
         self.app.post('/projects', headers=h(session=self.student_token), data=project2_data)
 
-        response = self.app.get('/projects?event='+self.event['id'])
+        response = self.app.get('/events/'+self.event2['id']+'/projects')
 
         assert len( json.loads(response.data) ) == 1
 
@@ -129,11 +164,12 @@ class EventTests(unittest.TestCase):
 
         project2_data = json.dumps({
             'name': 'Test Project',
-            'event': self.event['id']
+            'event': self.event['id'],
+            'teammate': self.teammate['email']
         })
         self.app.post('/projects', headers=h(session=self.student2_token), data=project2_data)
 
-        response = self.app.get('/projects?creators='+self.student['id'])
+        response = self.app.get('/projects?team='+self.student['id'])
 
         assert len( json.loads(response.data) ) == 1
 

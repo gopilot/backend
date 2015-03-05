@@ -7,7 +7,7 @@ import json
 from bson.objectid import ObjectId
 import bcrypt
 
-from backend import ProjectBlueprint
+from backend import ProjectBlueprint, EventBlueprint
 from . import auth
 
 from backend.models import User, Student, Mentor, Organizer, Event, Project
@@ -34,13 +34,21 @@ def create_project():
     if not event_id:
         return "Event is required"
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
+    teammate_email = request.json.get('teammate') # A team is required
+    if not teammate_email:
+        return "Teammate email is required", 400
+    teammate = User.objects( email=teammate_email ).first()
+    if not teammate:
+        return "Teammate not found", 404
+
+
     project.name = request.json.get('name')
     project.event = event
-    project.creators = [user];
+    project.team = [user, teammate]
 
     project.save()
 
@@ -61,7 +69,17 @@ def get_all():
     for project in Project.objects(**query):
         projects.append( project.to_dict() )
 
-    return json.dumps( projects )
+    return json.dumps( projects ), 200, jsonType
+
+# GET events/<event_id>/projects
+@EventBlueprint.route('/<event_id>/projects', methods=['GET'])
+def get_event_projects(event_id):
+    projects = []
+
+    for project in Project.objects(event=event_id):
+        projects.append( project.to_dict() )
+
+    return json.dumps( projects ), 200, jsonType
 
 # GET /projects/<project_id>
 @ProjectBlueprint.route('/<project_id>', methods=['GET'])
@@ -69,6 +87,51 @@ def find_project(project_id):
     project = Project.find_id( project_id )
     if not project:
         return "Project not found", 404
+
+    return project.to_json()
+
+# POST /projects/<project_id>/addTeammate
+@ProjectBlueprint.route('/<project_id>/addTeammate', methods=['POST'])
+def add_teammate(project_id):
+    project = Project.find_id( project_id )
+    if not project:
+        return "Project not found", 404
+
+    teammate_email = request.json.get('teammate') # A team is required
+    if not teammate_email:
+        return "Teammate email is required", 400
+    teammate = User.objects( email=teammate_email ).first()
+    if not teammate:
+        return "Teammate not found", 404
+
+    if len(project.team) >= 5:
+        return "Your team is full. Max team size is 5 people.", 400
+
+    project.team.append(teammate)
+
+    project.save()
+
+    return project.to_json()
+
+# POST /projects/<project_id>/removeTeammate
+@ProjectBlueprint.route('/<project_id>/removeTeammate', methods=['POST'])
+def remove_teammate(project_id):
+    project = Project.find_id( project_id )
+    if not project:
+        return "Project not found", 404
+
+    teammate_email = request.json.get('teammate') # A team is required
+    if not teammate_email:
+        return "Teammate email is required", 400
+    teammate = User.objects( email=teammate_email ).first()
+    if not teammate:
+        teammate = user.find_id(teammate_email)
+    if not teammate or not teammate in project.team:
+        return "Teammate not found", 404
+
+    project.team.remove(teammate)
+
+    project.save()
 
     return project.to_json()
 
@@ -110,7 +173,7 @@ def remove_project(project_id):
     if not project:
         return "Project not found", 404
 
-    if not (user_sess in project.creators or user_sess.type == "organizer"):
+    if not (user_sess in project.team or user_sess.type == "organizer"):
         return "Unauthorized request: You don't have permission for this action", 401
 
     project.delete()
