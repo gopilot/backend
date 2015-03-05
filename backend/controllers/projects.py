@@ -81,11 +81,11 @@ def get_event_projects(event_id):
         return "Event not found", 404
 
     projects = []
-    query = {
-        'event': event.id
-    }
+    query = {}
     for key, obj in request.args.iteritems():
         query[key] = ObjectId(obj)
+
+    query['event'] = event.id
 
     for project in Project.objects(**query):
         projects.append( project.to_dict() )
