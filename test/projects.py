@@ -63,6 +63,9 @@ class ProjectTests(unittest.TestCase):
         })
         self.event = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event_data).data)
 
+        self.app.post('/events/'+self.event['id']+'/register', headers=h(session=self.student_token))
+        self.app.post('/events/'+self.event['id']+'/register', headers=h(session=self.teammate_token))
+
         project_data = json.dumps({
             'name': 'Test Project',
             'event': self.event['id'],
@@ -117,6 +120,9 @@ class ProjectTests(unittest.TestCase):
         })
         self.event2 = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event2_data).data)
 
+        self.app.post('/events/'+self.event2['id']+'/register', headers=h(session=self.student_token))
+        self.app.post('/events/'+self.event2['id']+'/register', headers=h(session=self.teammate_token))
+
         project2_data = json.dumps({
             'name': 'Test Project',
             'event': self.event2['id'],
@@ -141,6 +147,9 @@ class ProjectTests(unittest.TestCase):
         })
         self.event2 = json.loads(self.app.post('/events', headers=h(session=self.organizer_token), data=event2_data).data)
 
+        self.app.post('/events/'+self.event2['id']+'/register', headers=h(session=self.student_token))
+        self.app.post('/events/'+self.event2['id']+'/register', headers=h(session=self.teammate_token))
+
         project2_data = json.dumps({
             'name': 'Test Project',
             'event': self.event2['id'],
@@ -150,7 +159,7 @@ class ProjectTests(unittest.TestCase):
 
         response = self.app.get('/events/'+self.event2['id']+'/projects')
 
-        assert len( json.loads(response.data) ) == 1
+        assert len( json.loads(response.data) ) >= 1
 
     def test_get_all_projects_creator(self):
         student_data = json.dumps({
@@ -161,6 +170,7 @@ class ProjectTests(unittest.TestCase):
         })
         self.student2_token = json.loads(self.app.post('/users', headers=h(), data=student_data).data )['session']
 
+        self.app.post('/events/'+self.event['id']+'/register', headers=h(session=self.student2_token))
 
         project2_data = json.dumps({
             'name': 'Test Project',
