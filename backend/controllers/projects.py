@@ -36,7 +36,7 @@ def create_project():
     event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
-    if not event in user.events:
+    if not (event in user.events or event.id in user.events):
         return "User not attending event", 400
 
     teammate_email = request.json.get('teammate') # A team is required
@@ -45,12 +45,14 @@ def create_project():
     teammate = User.objects( email=teammate_email ).first()
     if not teammate:
         return "Teammate not found", 404
-    if not event in teammate.events:
+    if not (event in teammate.events or event.id in teammate.events):
         return "Teammate not registered for event", 400
 
     project.name = request.json.get('name')
     project.event = event
-    project.team = [user, teammate]
+    project.team = []
+    project.team.append(user)
+    project.team.append(teammate)
 
     project.save()
 
@@ -114,7 +116,7 @@ def add_teammate(project_id):
     teammate = User.objects( email=teammate_email ).first()
     if not teammate:
         return "Teammate not found", 404
-    if not project.event in teammate.events:
+    if not (event in teammate.events or event.id in teammate.events):
         return "Teammate not registered for event", 400
 
     if len(project.team) >= 5:
