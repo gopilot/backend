@@ -32,7 +32,7 @@ def create_project():
 
     event_id = request.json.get('event')
     if not event_id:
-        return "Event is required"
+        return "Event is required", 400
     event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
