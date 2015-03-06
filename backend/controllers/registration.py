@@ -23,7 +23,8 @@ jsonType = {'Content-Type': 'application/json'}
 def get_attendees(event_id, attendee_type):
     if not event_id:
         return "Event ID required", 400
-    if not Event.find_event( event_id ):
+    event = Event.find_event( event_id )
+    if not event:
         return "Event not found", 404
 
     attendee_type = attendee_type.lower()
@@ -38,7 +39,7 @@ def get_attendees(event_id, attendee_type):
             'organizers': []
         }
         
-        for usr in User.objects(events=event_id):
+        for usr in User.objects(events=event.id):
             if usr.type in ['student', 'mentor', 'organizer']:
                 attendees[ usr.type+'s' ].append( usr.to_dict() )
             else:
@@ -58,7 +59,7 @@ def get_attendees(event_id, attendee_type):
             attendee_cls = User
 
         
-        for usr in attendee_cls.objects(events=event_id):
+        for usr in attendee_cls.objects(events=event.id):
             attendees.append( usr.to_dict() )
 
     return json.dumps( attendees ), 200, jsonType
