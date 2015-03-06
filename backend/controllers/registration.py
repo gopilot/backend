@@ -23,7 +23,7 @@ jsonType = {'Content-Type': 'application/json'}
 def get_attendees(event_id, attendee_type):
     if not event_id:
         return "Event ID required", 400
-    if not Event.find_id( event_id ):
+    if not Event.find_event( event_id ):
         return "Event not found", 404
 
     attendee_type = attendee_type.lower()
@@ -68,7 +68,7 @@ def get_attendees(event_id, attendee_type):
 def register_mentor(event_id):
     sg = sendgrid.SendGridClient('gopilot', app.config["SENDGRID_PASS"])
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
@@ -116,7 +116,7 @@ def register(event_id):
     discount = False
     sg = sendgrid.SendGridClient('gopilot', app.config["SENDGRID_PASS"])
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
@@ -304,7 +304,7 @@ def unregister(event_id):
     if not user:
         return "Unauthorized request: User doesn't have permission", 401
 
-    event = Event.find_id( event_id )
+    event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
 
