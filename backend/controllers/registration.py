@@ -21,6 +21,13 @@ jsonType = {'Content-Type': 'application/json'}
 ## These endpoints need any security?
 @EventBlueprint.route('/<event_id>/<attendee_type>', methods=['GET'])
 def get_attendees(event_id, attendee_type):
+    user_id = auth.check_token( request.headers.get('session') )
+    if not user_id:
+        return "Unauthorized request: Bad session token", 401
+    user = Organizer.find_id( user_id )
+    if not user:
+        return "Unauthorized request: User doesn't have permission", 401
+
     if not event_id:
         return "Event ID required", 400
     event = Event.find_event( event_id )

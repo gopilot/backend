@@ -35,6 +35,7 @@ class Student(User):
     type = orm.StringField(default="student")
 
     grade = orm.StringField()
+    school = orm.StringField()
     birth_date = orm.DateTimeField()
     emergency_name = orm.StringField()
     emergency_email = orm.EmailField()

@@ -89,21 +89,21 @@ class RegistrationTests(unittest.TestCase):
 
 
     def test_get_attendees(self):
-        response = self.app.get('/events/'+self.event+"/attendees", headers=h())
+        response = self.app.get('/events/'+self.event+"/attendees", headers=h(session=self.organizer_token))
         assert self.mentor['id'] == json.loads(response.data)['mentors'][0]['id']
         assert self.student['id'] == json.loads(response.data)['students'][0]['id']
         assert self.organizer['id'] == json.loads(response.data)['organizers'][0]['id']
 
     def test_get_organizers(self):
-        response = self.app.get('/events/'+self.event+"/organizers", headers=h())
+        response = self.app.get('/events/'+self.event+"/organizers", headers=h(session=self.organizer_token))
         assert self.organizer['id'] == json.loads(response.data)[0]['id']
 
     def test_get_mentors(self):
-        response = self.app.get('/events/'+self.event+"/mentors", headers=h())
+        response = self.app.get('/events/'+self.event+"/mentors", headers=h(session=self.organizer_token))
         assert self.mentor['id'] == json.loads(response.data)[0]['id']
 
     def test_get_students(self):
-        response = self.app.get('/events/'+self.event+"/students", headers=h())
+        response = self.app.get('/events/'+self.event+"/students", headers=h(session=self.organizer_token))
         assert self.student['id'] == json.loads(response.data)[0]['id']
 
     def test_register(self):

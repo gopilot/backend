@@ -36,9 +36,11 @@ def signup():
             return "Error: User doesn't have permission", 401
         user = Organizer()
 
-    user.name = form_name
-    user.email = form_email
-    user.password = bcrypt.hashpw( form_password.encode('utf-8'), bcrypt.gensalt() )
+    for key, value in request.get_json().items():
+        if key == "password":
+            setattr(user, key, bcrypt.hashpw( value.encode('utf-8'), bcrypt.gensalt() ) )
+        elif not key.startswith('_') and not key == "id" and not key=="type" and value != "": # Some security
+            setattr(user, key, value)
 
     user.save()
 

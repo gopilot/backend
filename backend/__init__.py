@@ -130,7 +130,7 @@ def start():
 		print(traceback.format_exc())
 		return 'Internal Server Error', 500
 
-	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users
+	from backend.controllers import auth, users, events, registration, discounts, posts, projects, users, scheduleItems
 	
 	app.register_blueprint(AuthBlueprint, url_prefix="/auth")
 	app.register_blueprint(EventBlueprint, url_prefix="/events")

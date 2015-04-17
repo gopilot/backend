@@ -2,6 +2,11 @@ import mongoengine as orm
 from bson.objectid import ObjectId
 from . import document
 
+class ScheduleItem(document.Document):
+    title = orm.StringField(required=True)
+    location = orm.StringField()
+    time = orm.DateTimeField(required=True)
+
 class Event(document.Document):
     meta = {
         'allow_inheritance': True
@@ -18,6 +23,8 @@ class Event(document.Document):
     registration_end = orm.DateTimeField(required=True)
 
     price = orm.IntField(default=0)
+
+    schedule = orm.ListField(orm.ReferenceField(ScheduleItem))
 
     @classmethod
     def find_event(cls, id):
