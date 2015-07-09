@@ -244,7 +244,7 @@ def register(event_id):
 
     if discount:
         print("redeeming discount")
-        redeemDiscount(user, request.json['discount'])
+        redeemDiscount(user, event, request.json['discount'])
 
     message = sendgrid.Mail();
     message.add_to(user.name+"<"+user.email+">")
