@@ -43,16 +43,21 @@ def get_attendees(event_id, attendee_type):
         attendees = {
             'students': [],
             'mentors': [],
-            'organizers': []
+            'organizers': [],
+            'checkins': []
         }
         
-        for usr in User.objects(events=event.id):
+        for usr in User.objects(events=event.id) :
             if usr.type in ['student', 'mentor', 'organizer']:
                 attendees[ usr.type+'s' ].append( usr.to_dict() )
             else:
                 if not attendees['other']:
                     attendees['other'] = []
                 attendees['other'].append( usr.to_dict() )
+
+        for usr in User.objects(checkins=event.id):
+            attendees[ 'checkins' ].append( usr.to_dict() )
+
     else:
         attendees = []
         attendee_cls = None
@@ -318,6 +323,58 @@ def unregister(event_id):
 
     user.events.remove( event )
     user.save()
+
+    return json.dumps({"status": "removed"}), 200, jsonType
+
+@EventBlueprint.route('/<event_id>/checkin', methods=['POST'])
+def checkin(event_id):
+    user_id = auth.check_token( request.headers.get('session') )
+    if not user_id:
+        return "Unauthorized request: Bad session token", 401
+
+    user = Organizer.find_id( user_id )
+    if not user:
+        return "Unauthorized request: User doesn't have permission", 401
+
+    event = Event.find_event( event_id )
+    if not event:
+        return "Event not found", 404
+
+    attendee = User.find_id( request.json['attendee_id'] )
+    if not attendee:
+        return "Attendee not found", 404
+
+    if not event in attendee.events:
+        return "Attendee not registered", 401
+
+    attendee.checkins.append( event )
+    attendee.save()
+
+    return json.dumps({"status": "success"}), 200, jsonType
+
+@EventBlueprint.route('/<event_id>/checkin', methods=['DELETE'])
+def checkout(event_id):
+    user_id = auth.check_token( request.headers.get('session') )
+    if not user_id:
+        return "Unauthorized request: Bad session token", 401
+
+    user = Organizer.find_id( user_id )
+    if not user:
+        return "Unauthorized request: User doesn't have permission", 401
+
+    event = Event.find_event( event_id )
+    if not event:
+        return "Event not found", 404
+
+    attendee = User.find_id( request.json['attendee_id'] )
+    if not attendee:
+        return "Attendee not found", 404
+
+    if not event in attendee.checkins:
+        return "Attendeee not checked in", 401
+
+    attendee.checkins.remove( event )
+    attendee.save()
 
     return json.dumps({"status": "removed"}), 200, jsonType
 

@@ -21,6 +21,7 @@ class User(document.Document):
     completion_token = orm.StringField()
 
     # Different based on context of user - whether events attended, mentored, or organized
+    checkins = orm.ListField( orm.ReferenceField(events.Event) )
     events = orm.ListField( orm.ReferenceField(events.Event) )
 
     shirt_type = orm.StringField()
