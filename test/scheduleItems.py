@@ -64,38 +64,36 @@ class ScheduleItemTests(unittest.TestCase):
         data = json.dumps({
             'title': 'Test Schedule Item 2',
             'location': "Some Room",
-            'time': '08/15/15 5:00 PM'
+            'time': '08/14/15 1:00 PM'
+        })
+        self.app.post('/events/'+ self.event['id'] +'/schedule', headers=h(session=self.organizer_token), data=data)
+        data = json.dumps({
+            'title': 'Test Schedule Item 3',
+            'location': "Some Room",
+            'time': '08/15/15 3:00 PM'
         })
         response = self.app.post('/events/'+ self.event['id'] +'/schedule', headers=h(session=self.organizer_token), data=data)
-
-        assert json.loads(response.data)['title'] == 'Test Schedule Item 2'
+        assert json.loads(response.data)['schedule'][0]['title'] == 'Test Schedule Item 2'
+        assert json.loads(response.data)['schedule'][1]['title'] == 'Test Schedule Item 3'
+        assert json.loads(response.data)['schedule'][2]['title'] == 'Test Schedule Item'
 
     def test_update_scheduleitem(self):
         data = json.dumps({
             'title': 'Re-titled Schedule Item'
         })
-        response = self.app.put('/events/'+ self.event['id'] +'/schedule/'+self.scheduleitem['id'], headers=h(session=self.organizer_token), data=data)
-        assert json.loads(response.data)['title'] == 'Re-titled Schedule Item'
-
-    def test_get_scheduleitem(self):
-        response = self.app.get('/events/'+ self.event['id'] +'/schedule/'+self.scheduleitem['id'], headers=h(session=self.organizer_token))
-        assert json.loads(response.data)['title'] == 'Test Schedule Item'
-
-    def test_get_scheduleitem_unauthorized(self):
-        response = self.app.get('/events/'+ self.event['id'] +'/schedule/'+self.scheduleitem['id'], headers=h(session=self.student_token))
-        assert response.data == "Unauthorized request: User doesn't have permission"
+        response = self.app.put('/events/'+ self.event['id'] +'/schedule/0', headers=h(session=self.organizer_token), data=data)
+        assert json.loads(response.data)['schedule'][0]['title'] == 'Re-titled Schedule Item'
 
     def test_get_all_scheduleitems(self):
         response = self.app.get('/events/'+ self.event['id'] +'/schedule', headers=h(session=self.organizer_token))
         assert len( json.loads(response.data) ) == 1
 
     def test_get_all_scheduleitem_unauthorized(self):
-        response = self.app.get('/events/'+ self.event['id'] +'/schedule/'+self.scheduleitem['id'], headers=h(session=self.student_token))
+        response = self.app.get('/events/'+ self.event['id'] +'/schedule', headers=h(session=self.student_token))
         assert response.data == "Unauthorized request: User doesn't have permission"
 
-
     def test_delete_scheduleitem(self):
-        response = self.app.delete('/events/'+ self.event['id'] +'/schedule/'+self.scheduleitem['id'], headers=h(session=self.organizer_token))
+        response = self.app.delete('/events/'+ self.event['id'] +'/schedule/0', headers=h(session=self.organizer_token))
         assert response.data == 'Schedule item deleted'
 
 if __name__ == '__main__':

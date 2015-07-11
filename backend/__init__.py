@@ -31,10 +31,15 @@ app.config['DEBUG']			= bool(os.getenv('DEBUG', True))
 app.config['TESTING']		= bool(os.getenv('TESTING', False))
 app.config['PRODUCTION']	= bool(os.getenv('PRODUCTION', False))
 
-app.config['STRIPE_KEY']	= os.getenv('STRIPE_KEY', '')
-app.config['SENDGRID_PASS'] = os.getenv('SENDGRID_PASS', '')
-app.config['TWITTER_TOKEN'] = os.getenv('TWITTER_TOKEN', '')
-app.config['TOPSY_KEY']		= os.getenv('TOPSY_KEY', '')
+app.config['STRIPE_KEY']	= os.getenv('STRIPE_KEY', '[ERROR]')
+app.config['SENDGRID_PASS'] = os.getenv('SENDGRID_PASS', '[ERROR]')
+app.config['TWITTER_TOKEN'] = os.getenv('TWITTER_TOKEN', '[ERROR]')
+app.config['TOPSY_KEY']		= os.getenv('TOPSY_KEY', '[ERROR]')
+
+app.config['AZURE_NAME']	= os.getenv('AZURE_NAME', '[ERROR]')
+app.config['AZURE_KEY']		= os.getenv('AZURE_KEY', '[ERROR]')
+
+
 
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
@@ -42,6 +47,9 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 if app.config['PRODUCTION']:
 	app.config['TESTING'] = False
 	app.config['DEBUG'] = False
+	for key, value in app.config:
+		if value == "[ERROR]":
+			print("MISSING CONFIG: "+key)
 
 app.debug = False
 

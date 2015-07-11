@@ -2,7 +2,7 @@ import mongoengine as orm
 from bson.objectid import ObjectId
 from . import document
 
-class ScheduleItem(document.Document):
+class ScheduleItem(document.EmbeddedDocument):
     title = orm.StringField(required=True)
     location = orm.StringField()
     time = orm.DateTimeField(required=True)
@@ -24,8 +24,8 @@ class Event(document.Document):
 
     price = orm.IntField(default=0)
 
-    schedule = orm.ListField(orm.ReferenceField(ScheduleItem))
-
+    schedule = orm.SortedListField(orm.EmbeddedDocumentField(ScheduleItem), ordering='time')
+    
     @classmethod
     def find_event(cls, id):
         try:
