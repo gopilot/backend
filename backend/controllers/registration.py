@@ -135,7 +135,7 @@ def register(event_id):
 
     price = event.price
 
-    if hasattr(request, 'json') and 'user' in request.json:
+    if hasattr(request, 'json') and request.json and 'user' in request.json:
         print("has user")
         user = Student()
         user.name = request.json['user']['name']
