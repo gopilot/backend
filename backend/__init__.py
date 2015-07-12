@@ -1,35 +1,22 @@
 print("Starting app...")
 from flask import Flask, request, render_template, json, Blueprint, make_response
-print("Import 1 done")
 import os
-print("Import 2 done")
 import sys
-print("Import 3 done")
 import redis
-print("Import 4 done")
 import traceback
-print("Import 5 done")
 import mongoengine
-print("Import 6 done")
 from bson.objectid import ObjectId
-print("Import 7 done")
 import logging
-print("Import 8 done")
 import socket
-print("Import 9 done")
+
 from logging.handlers import SysLogHandler
-print("Import 10 done")
 
 from datetime import timedelta
-print("Import 11 done")
 from functools import update_wrapper
-print("Import 12 done")
 from pprint import pprint
-print("Import 13 done")
 
 app = Flask(__name__)
 app.debug = True
-print("App Running")
 
 app.config['MONGO_URL'] 	= os.getenv('MONGO_URL',	'mongodb://localhost:27017')
 app.config['MONGO_DB']		= os.getenv('MONGODB_DATABASE', 'backend')
@@ -56,15 +43,6 @@ app.config['AZURE_KEY']		= os.getenv('AZURE_KEY', '[ERROR]')
 
 
 app.config['PROPAGATE_EXCEPTIONS'] = True
-
-print("Config done");
-
-# if app.config['PRODUCTION']:
-# 	app.config['TESTING'] = False
-# 	app.config['DEBUG'] = False
-# 	for key, value in app.config:
-# 		if value == "[ERROR]":
-# 			print("MISSING CONFIG: "+key)
 
 app.debug = False
 
@@ -258,7 +236,6 @@ def send_error(msg, status):
 	}), status, {'Content-Type': 'application/json'}
 
 if app.config['PRODUCTION']:
-	print("about to START")
 	start()
 elif __name__ == '__main__':
 	start()
