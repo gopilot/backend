@@ -258,6 +258,7 @@ def send_error(msg, status):
 	}), status, {'Content-Type': 'application/json'}
 
 if app.config['PRODUCTION']:
+	print("about to START")
 	start()
 elif __name__ == '__main__':
 	start()
