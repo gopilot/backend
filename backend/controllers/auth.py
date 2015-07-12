@@ -57,6 +57,15 @@ def login():
     else:
         return 'Incorrect password', 401
 
+@AuthBlueprint.route('/logout', methods=["POST"])
+def logout():
+    token = request.headers.get('session')
+    sessions.delete('session:'+token);
+
+    return json.dumps({
+        'status': 'success'
+    }), 200, jsonType
+
 @AuthBlueprint.route('/check_session', methods=["GET"])
 def check_session():
     token = request.headers.get('session')

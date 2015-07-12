@@ -62,6 +62,22 @@ class AuthTests(unittest.TestCase):
         token_debug = self.app.get('/auth/check_session', headers=h(session=response['session']))
         assert token_debug.data == 'true'
 
+    ## Test logout
+    def test_logout(self):
+        data = json.dumps({
+            'email': 'test@gopilot.org',
+            'password': 'test-test'
+        })
+        response = self.app.post('/auth/login', headers=h(), data=data).data
+        response = json.loads(response)
+
+        logout_response = self.app.post('/auth/logout', headers=h(session=response['session']))
+        assert json.loads(logout_response.data)['status'] == "success"
+
+        token_debug = self.app.get('/auth/check_session', headers=h(session=response['session']))
+        assert token_debug.data == 'false'
+
+
     ## Test login, with a bad email
     def test_login_fail_email(self):
         data = json.dumps({
