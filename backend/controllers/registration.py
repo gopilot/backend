@@ -320,8 +320,8 @@ def unregister(event_id):
     event = Event.find_event( event_id )
     if not event:
         return "Event not found", 404
-
-    user.events.remove( event )
+    if event in user.events:
+        user.events.remove( event )
     user.save()
 
     return json.dumps({"status": "removed"}), 200, jsonType
@@ -370,10 +370,8 @@ def checkout(event_id):
     if not attendee:
         return "Attendee not found", 404
 
-    if not event in attendee.checkins:
-        return "Attendeee not checked in", 401
-
-    attendee.checkins.remove( event )
+    if event in attendee.checkins:
+        attendee.checkins.remove( event )
     attendee.save()
 
     return json.dumps({"status": "removed"}), 200, jsonType
