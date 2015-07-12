@@ -129,12 +129,13 @@ def start():
 
 	@app.errorhandler(500)
 	def serverError(error):
-		print(error)
+		app.logger.error(error)
 		return "ERROR!"
 
 	@app.errorhandler(Exception)
 	def defaultHandler(e):
 		app.logger.error("Exception: %s", e)
+		app.logger.error(traceback.format_exc())
 		print(traceback.format_exc())
 		return 'Internal Server Error', 500
 
