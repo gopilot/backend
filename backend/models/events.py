@@ -24,7 +24,7 @@ class Event(document.Document):
 
     price = orm.IntField(default=0)
 
-    schedule = orm.SortedListField(orm.EmbeddedDocumentField(ScheduleItem), ordering='time')
+    schedule = orm.ListField(orm.EmbeddedDocumentField(ScheduleItem))
     
     @classmethod
     def find_event(cls, id):

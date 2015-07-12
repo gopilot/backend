@@ -12,7 +12,7 @@ import json
 jsonType = {'Content-Type': 'application/json'}
 
 def redeemDiscount(user, event, discount_code):
-    discount = Discount.find_id(code=discount_code.lower(), event=event)[0]
+    discount = Discount.objects(code=discount_code.lower(), event=event)[0]
     if not (discount and discount.active):
         return False
 
