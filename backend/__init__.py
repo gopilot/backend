@@ -59,18 +59,19 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 
 print("Config done");
 
-if app.config['PRODUCTION']:
-	app.config['TESTING'] = False
-	app.config['DEBUG'] = False
-	for key, value in app.config:
-		if value == "[ERROR]":
-			print("MISSING CONFIG: "+key)
+# if app.config['PRODUCTION']:
+# 	app.config['TESTING'] = False
+# 	app.config['DEBUG'] = False
+# 	for key, value in app.config:
+# 		if value == "[ERROR]":
+# 			print("MISSING CONFIG: "+key)
 
 app.debug = False
 
 ADMINS = ['peter@gopilot.org']
 
 def init_logging(app):
+	print("init logging");
 	papertrail = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
 	formatter = logging.Formatter('%(asctime)s api.gopilot.org %(filename)s%(lineno)s %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
 	papertrail.setFormatter(formatter)
