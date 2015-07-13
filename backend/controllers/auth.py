@@ -8,13 +8,13 @@ from backend import sessions, AuthBlueprint, app
 
 from backend.models import User
 
-from azure.storage import BlobService, AccessPolicy, SharedAccessPolicy, BlobSharedAccessPermissions
+from azure.storage import BlobService, AccessPolicy, SharedAccessPolicy, SharedAccessSignature, BlobSharedAccessPermissions
 
 import datetime
 
 
 azure_storage = BlobService(app.config['AZURE_NAME'], app.config['AZURE_KEY'])
-
+files_url = app.config['AZURE_URL']
 
 
 jsonType = {'Content-Type': 'application/json'}
@@ -118,7 +118,8 @@ def request_upload(upload_location):
     
 
     upload_policy = SharedAccessPolicy(AccessPolicy(
-        expiry= str(datetime.datetime.now() + datetime.timedelta(minutes=10)),
+        start=(datetime.datetime.utcnow() - datetime.timedelta(minutes=45)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        expiry=(datetime.datetime.utcnow() + datetime.timedelta(minutes=45)).strftime("%Y-%m-%dT%H:%M:%SZ"),
         permission=BlobSharedAccessPermissions.WRITE,
     ))
     destination_url = upload_location+"/"+create_filename()+'.'+filetype
@@ -126,14 +127,15 @@ def request_upload(upload_location):
     # TODO: fix "Incorrect Padding" exception on this line
     upload_token = azure_storage.generate_shared_access_signature(
         container_name='user-files',
-        blob_name= destination_url,
+        blob_name=destination_url,
         shared_access_policy=upload_policy,
     )
+        
     print("Created Destination Url "+destination_url)
-    print("Created upload url "+upload_token.url())
+    print("Created upload token "+upload_token)
     return json.dumps({
-            "upload_url": upload_token.url(),
-            "file_url": "https://files.gopilot.org/user-files/"+destination_url
+            "upload_url": files_url+destination_url+"?"+upload_token,
+            "file_url": files_url+destination_url
         }), 200, jsonType
 
     

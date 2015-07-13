@@ -39,6 +39,7 @@ app.config['TOPSY_KEY']		= os.getenv('TOPSY_KEY', '[ERROR]')
 
 app.config['AZURE_NAME']	= os.getenv('AZURE_NAME', '[ERROR]')
 app.config['AZURE_KEY']		= os.getenv('AZURE_KEY', '[ERROR]')
+app.config['AZURE_URL']		= os.getenv('AZURE_URL', 'https://files.gopilot.org/user-files/')
 
 
 
