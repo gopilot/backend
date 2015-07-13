@@ -118,8 +118,8 @@ def request_upload(upload_location):
     
 
     upload_policy = SharedAccessPolicy(AccessPolicy(
-        start=(datetime.datetime.utcnow() - datetime.timedelta(minutes=45)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        expiry=(datetime.datetime.utcnow() + datetime.timedelta(minutes=45)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        start=(datetime.datetime.utcnow() - datetime.timedelta(minutes=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        expiry=(datetime.datetime.utcnow() + datetime.timedelta(minutes=15)).strftime("%Y-%m-%dT%H:%M:%SZ"),
         permission=BlobSharedAccessPermissions.WRITE,
     ))
     destination_url = upload_location+"/"+create_filename()+'.'+filetype
