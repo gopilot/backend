@@ -169,19 +169,13 @@ def register(event_id):
                     email = user.email
                 )
             except stripe.CardError, e:
-                print("Customer Card Error", e)
+                app.logger.error("Customer Card Error", e)
                 err = e.json_body['error']
                 return json.dumps({
                     "status": "failed",
                     "reason": err['param'] if ('param' in err) else 'customer',
                     "message": err['message']
                 }), 400, jsonType
-            except:
-                return json.dumps({
-                    "status": "failed",
-                    "reason": "error",
-                    "message": "Uh oh, something went wrong..."
-                }), 500, jsonType  
 
             user.stripe_id = customer.id
             try:
@@ -199,12 +193,7 @@ def register(event_id):
                     "reason": err['param'] if ('param' in err) else 'charge',
                     "message": err['message']
                 }), 400, jsonType
-            except:
-                return json.dumps({
-                    "status": "failed",
-                    "reason": "error",
-                    "message": "Uh oh, something went wrong..."
-                }), 500, jsonType
+
         elif price > 0:
             print("price > 0")
             return json.dumps({
