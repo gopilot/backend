@@ -164,7 +164,7 @@ def register(event_id):
 
             try:
                 customer = stripe.Customer.create(
-                    card = str(request.json['stripe_token']).strip(),
+                    source = request.json['stripe_token'],
                     description = user.name,
                     email = user.email
                 )
