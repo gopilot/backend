@@ -23,7 +23,7 @@ requests==1.1.0
 sendgrid==1.1.2
 six==1.7.2
 smtpapi==0.1.2
-stripe==1.19.0
+stripe==1.23.0
 twitter==1.16.0
 unittest2==0.5.1
 wsgiref==0.1.2
