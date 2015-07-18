@@ -136,6 +136,13 @@ def register(event_id):
     price = event.price
 
     if hasattr(request, 'json') and request.json and 'user' in request.json:
+        if User.objects(email=request.json['user']['email']).first():
+            return json.dumps({
+                "status": "failed",
+                "reason": "email",
+                "message": "Your email already has a Pilot account."
+            }), 400, jsonType
+        
         print("has user")
         user = Student()
         user.name = request.json['user']['name']
@@ -143,12 +150,6 @@ def register(event_id):
         user.complete = False
         user.completion_token = random_uuid().hex
 
-        if User.objects(email=user.email).first():
-            return json.dumps({
-                "status": "failed",
-                "reason": "email",
-                "message": "Your email already has a Pilot account."
-            }), 400, jsonType
 
         if 'discount' in request.json and request.json['discount'] != False:
             print("has discount")
