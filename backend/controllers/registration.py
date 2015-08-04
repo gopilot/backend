@@ -170,7 +170,7 @@ def register(event_id):
                     email = user.email
                 )
             except stripe.CardError, e:
-                app.logger.error("Customer Card Error", e)
+                app.logger.error("Customer Card Error: "+str(e))
                 err = e.json_body['error']
                 return json.dumps({
                     "status": "failed",
