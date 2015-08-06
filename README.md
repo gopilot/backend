@@ -10,7 +10,7 @@ Running
 -------
 Running `python setup.py` from the root will run a dev server.
 
-You also must be running mongo and redis (run `mongod` and `redis-server` if the processes aren't running on their own)
+You also must be running mongo and redis (run `mongod` and `redis-server` if the processes aren't running on their own).
 
 Testing
 -------
