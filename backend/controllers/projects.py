@@ -49,6 +49,9 @@ def create_project():
         return "Teammate not registered for event", 400
 
     project.name = request.json.get('name')
+    project.description = request.json.get('description')
+    project.image = request.json.get('image')
+
     project.event = event
     project.team = []
     project.team.append(user)
