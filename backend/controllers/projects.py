@@ -90,9 +90,11 @@ def get_event_projects(event_id):
     for key, obj in request.args.iteritems():
         query[key] = ObjectId(obj)
 
+
+    query['name__exists'] = True;
     query['event'] = event.id
 
-    for project in Project.objects(**query).select_related(max_depth=1):
+    for project in Project.objects(**query).only('name', 'image','description','team', 'prize').select_related(max_depth=1):
         projects.append( project.to_dict() )
 
     return json.dumps( projects ), 200, jsonType

@@ -8,3 +8,4 @@ class Project(document.Document):
     description = orm.StringField()
     event = orm.ReferenceField(events.Event)
     team = orm.ListField( orm.ReferenceField(users.Student), default=[] )
+    prize = orm.StringField()

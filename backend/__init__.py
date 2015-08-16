@@ -49,6 +49,9 @@ app.debug = False
 
 ADMINS = ['peter@gopilot.org']
 
+jsonType = {'Content-Type': 'application/json'}
+
+
 def init_logging(app):
 	print("init logging");
 	papertrail = SysLogHandler(address=('logs2.papertrailapp.com', 16656))
