@@ -1,4 +1,4 @@
-backend
+Pilot Backend
 =======
 
 Backend services for our student/mentor sites
