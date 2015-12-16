@@ -135,16 +135,16 @@ def find_tweets(event_id):
                 'user': tweet['user']['screen_name'],
                 'url': 'https://twitter.com/'+tweet['user']['screen_name']+"/status/"+str(tweet['id'])
             })
-    else: ## Fallback - use Topsy API which returns older tweets
-        r = requests.get('http://otter.topsy.com/search.json?apikey='+app.config['TOPSY_KEY']+'&perpage=20&q=%23'+event.name)
-        tweets = json.loads(r.text)['response']['list']
-        for tweet in tweets:
-            if not tweet['content'].startswith('RT'):
-                data.append({
-                    'time': datetime.utcfromtimestamp(tweet['firstpost_date']).strftime("%Y-%m-%d %H:%M:%S"),
-                    'text': tweet['content'],
-                    'user': tweet['trackback_author_nick'],
-                    'url': tweet['url']
-                })
+    # else: ## Fallback - use Topsy API which returns older tweets
+    #     r = requests.get('http://otter.topsy.com/search.json?apikey='+app.config['TOPSY_KEY']+'&perpage=20&q=%23'+event.name)
+    #     tweets = json.loads(r.text)['response']['list']
+    #     for tweet in tweets:
+    #         if not tweet['content'].startswith('RT'):
+    #             data.append({
+    #                 'time': datetime.utcfromtimestamp(tweet['firstpost_date']).strftime("%Y-%m-%d %H:%M:%S"),
+    #                 'text': tweet['content'],
+    #                 'user': tweet['trackback_author_nick'],
+    #                 'url': tweet['url']
+    #             })
 
     return json.dumps(data), 200, jsonType
